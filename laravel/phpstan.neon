@@ -1,0 +1,6 @@
+includes:
+    - ../php/phpstan.neon
+
+parameters:
+    bootstrapFiles:
+        - %currentWorkingDirectory%/vendor/sinemacula/coding-standards/laravel/phpstan-bootstrap.php

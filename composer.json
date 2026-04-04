@@ -1,0 +1,15 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "sinemacula/coding-standards",
+    "type": "library",
+    "description": "Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.",
+"authors": [
+        {
+            "name": "Ben Carey",
+            "email": "bdmc@sinemacula.co.uk"
+        }
+    ],
+    "require": {
+        "php": "^8.3"
+    }
+}
