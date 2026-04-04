@@ -1,0 +1,14 @@
+# Qlty source definition for sinemacula/coding-standards
+#
+# This file is consumed by qlty when this repository is referenced as a
+# [[source]] in a project's .qlty/qlty.toml. It defines org-wide settings
+# such as exclude patterns, test patterns, plugin preferences, and modes.
+
+# TODO: Populate org-wide qlty settings as we migrate from individual repos.
+
+# Example usage in a consuming project's .qlty/qlty.toml:
+#
+#     [[source]]
+#     name = "sinemacula"
+#     repository = "https://github.com/sinemacula/coding-standards"
+#     tag = "v1.0.0"
