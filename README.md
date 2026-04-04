@@ -108,7 +108,3 @@ tag = "v1.0.0"
 | `laravel/phpstan-bootstrap.php` | PHPStan      | Qlty autoloader workaround for Larastan            |
 | `markdown/.markdownlint.json`   | markdownlint | Markdown linting rules                             |
 | `yaml/.yamllint.yaml`           | yamllint     | YAML linting rules                                 |
-
-## Requirements
-
-- PHP ^8.3
