@@ -5,3 +5,6 @@ exported_config_paths = ["markdown/.markdownlint.json"]
 
 [plugins.definitions.yamllint]
 exported_config_paths = ["yaml/.yamllint.yaml"]
+
+[plugins.definitions.shellcheck]
+exported_config_paths = ["shell/.shellcheckrc"]
