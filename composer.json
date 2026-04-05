@@ -17,5 +17,13 @@
         "psr-4": {
             "SineMacula\\CodingStandards\\": "src/"
         }
+    },
+    "extra": {
+        "phpstan": {
+            "includes": [
+                "php/phpstan.neon",
+                "laravel/phpstan.neon"
+            ]
+        }
     }
 }

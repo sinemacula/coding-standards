@@ -1,29 +1,47 @@
 <?php
 
-/*
- * Register the App namespace autoloader for qlty's PHPStan sandbox.
+/**
+ * Register PSR-4 autoloaders for the qlty PHPStan sandbox.
  *
- * Qlty strips the autoload section from composer.json when installing tools.
- * This bootstrap file restores the PSR-4 mapping so Larastan can resolve App\
- * classes during analysis.
+ * Qlty strips the autoload section from composer.json when installing tools in
+ * its sandbox environment. This bootstrap file reads the project's
+ * composer.json from the workspace root and restores the PSR-4 mappings so
+ * Larastan can resolve application classes during analysis.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  *
  * @SuppressWarnings("php:S4833")
  * @SuppressWarnings("php:S2003")
  */
+$composerFile = getcwd() . '/composer.json';
 
-spl_autoload_register(static function (string $class): void {
-    $prefix  = 'App\\';
-    $baseDir = dirname(__DIR__, 2) . '/modules/';
-    $len     = strlen($prefix);
+if (!file_exists($composerFile)) {
+    return;
+}
 
-    if (strncmp($class, $prefix, $len) !== 0) {
-        return;
-    }
+$config   = json_decode(file_get_contents($composerFile), true);
+$basePath = getcwd();
+$mappings = array_merge(
+    $config['autoload']['psr-4']     ?? [],
+    $config['autoload-dev']['psr-4'] ?? [],
+);
 
-    $relativeClass = substr($class, $len);
-    $file          = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+foreach ($mappings as $prefix => $directory) {
 
-    if (file_exists($file)) {
-        require $file;
-    }
-});
+    $prefixLength = strlen($prefix);
+    $baseDir      = $basePath . '/' . rtrim($directory, '/') . '/';
+
+    spl_autoload_register(static function (string $class) use ($prefix, $prefixLength, $baseDir): void {
+
+        if (strncmp($class, $prefix, $prefixLength) !== 0) {
+            return;
+        }
+
+        $file = $baseDir . str_replace('\\', '/', substr($class, $prefixLength)) . '.php';
+
+        if (file_exists($file)) {
+            require $file; // NOSONAR
+        }
+    });
+}
