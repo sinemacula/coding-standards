@@ -1,7 +1,7 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
     "name": "sinemacula/coding-standards",
-    "type": "library",
+    "type": "phpcodesniffer-standard",
     "description": "Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.",
     "authors": [
         {
