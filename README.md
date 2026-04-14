@@ -46,7 +46,8 @@ return PhpCsFixerConfig::make(
 
 ### PHPCS
 
-The `SineMacula` coding standard is auto-discovered via the `phpcodesniffer-standard` composer type. Create a `phpcs.xml` at your project root:
+The `SineMacula` coding standard is auto-discovered via the `phpcodesniffer-standard` composer type. Create a
+`phpcs.xml` at your project root:
 
 ```xml
 <?xml version="1.0"?>
@@ -59,7 +60,8 @@ The `SineMacula` coding standard is auto-discovered via the `phpcodesniffer-stan
 
 ### PHPStan
 
-The shared PHPStan configs are auto-included via the `extra.phpstan.includes` section in `composer.json`. Your project's `phpstan.neon` only needs project-specific settings:
+The shared PHPStan configs are auto-included via the `extra.phpstan.includes` section in `composer.json`. Your project's
+`phpstan.neon` only needs project-specific settings:
 
 ```neon
 parameters:
@@ -86,17 +88,15 @@ tag = "v1.0.0"
 
 ## What's Included
 
-| Path                            | Tool         | Description                                             |
-|---------------------------------|--------------|---------------------------------------------------------|
-| `src/PhpCsFixerConfig.php`      | PHP CS Fixer | Factory class for building PHP CS Fixer configurations  |
-| `php/.php-cs-fixer.rules.php`   | PHP CS Fixer | Shared rules array (PSR-12 base + org conventions)      |
-| `SineMacula/ruleset.xml`        | PHPCS        | Auto-discovered coding standard (PSR-12 + exclusions)   |
-| `php/phpstan.neon`              | PHPStan      | Base config (org-wide ignored errors + settings)        |
-| `laravel/phpstan.neon`          | PHPStan      | Laravel bootstrap config for Larastan                   |
-| `laravel/phpstan-bootstrap.php` | PHPStan      | Dynamic PSR-4 autoloader for qlty sandbox               |
-| `markdown/.markdownlint.json`   | markdownlint | Markdown linting rules                                  |
-| `yaml/.yamllint.yaml`           | yamllint     | YAML linting rules                                      |
-| `shell/.shellcheckrc`           | ShellCheck   | Shell script linting rules                              |
+| Path                          | Tool         | Description                                            |
+|-------------------------------|--------------|--------------------------------------------------------|
+| `src/PhpCsFixerConfig.php`    | PHP CS Fixer | Factory class for building PHP CS Fixer configurations |
+| `php/.php-cs-fixer.rules.php` | PHP CS Fixer | Shared rules array (PSR-12 base + org conventions)     |
+| `SineMacula/ruleset.xml`      | PHPCS        | Auto-discovered coding standard (PSR-12 + exclusions)  |
+| `php/phpstan.neon`            | PHPStan      | Base config (org-wide ignored errors + settings)       |
+| `markdown/.markdownlint.json` | markdownlint | Markdown linting rules                                 |
+| `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
+| `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
 
 ## Contributing
 
