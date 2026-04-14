@@ -22,8 +22,7 @@
     "extra": {
         "phpstan": {
             "includes": [
-                "php/phpstan.neon",
-                "laravel/phpstan.neon"
+                "php/phpstan.neon"
             ]
         }
     }
