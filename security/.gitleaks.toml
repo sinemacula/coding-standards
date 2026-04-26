@@ -1,0 +1,17 @@
+title = "Sine Macula base gitleaks config"
+
+# Inherit the upstream gitleaks default rule set so every consuming repo
+# gets baseline secret-detection coverage out of the box.
+[extend]
+useDefault = true
+
+# Org-wide allowlist. Keep this empty unless a pattern is genuinely
+# universal (i.e. every Sine Macula repo would have to add it). Repo-
+# local exceptions belong in each consumer's root `.gitleaks.toml`,
+# which extends this file via [extend].path.
+[allowlist]
+description = "Sine Macula org defaults"
+paths = []
+regexes = []
+commits = []
+stopwords = []

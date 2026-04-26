@@ -1,0 +1,116 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true,
+        "defaultBranch": "master"
+    },
+    "files": {
+        "ignoreUnknown": true
+    },
+    "formatter": {
+        "enabled": true,
+        "useEditorconfig": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineEnding": "lf",
+        "lineWidth": 120,
+        "attributePosition": "auto",
+        "bracketSpacing": true,
+        "expand": "auto"
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "complexity": {
+                "noArguments": "warn",
+                "noCommaOperator": "warn",
+                "noExcessiveCognitiveComplexity": "warn",
+                "noExtraBooleanCast": "warn",
+                "noUselessConstructor": "warn",
+                "noUselessLabel": "warn",
+                "noUselessLoneBlockStatements": "warn",
+                "noUselessRename": "warn",
+                "noUselessStringConcat": "warn",
+                "noUselessTernary": "warn",
+                "noUselessUndefinedInitialization": "warn",
+                "noVoid": "warn",
+                "useArrowFunction": "warn",
+                "useLiteralKeys": "warn",
+                "useNumericLiterals": "warn"
+            },
+            "correctness": {
+                "noConstructorReturn": "warn",
+                "noInvalidUseBeforeDeclaration": "warn",
+                "noUnusedPrivateClassMembers": "warn",
+                "noUnusedVariables": "warn"
+            },
+            "security": {
+                "noGlobalEval": "warn"
+            },
+            "style": {
+                "noUselessElse": "warn",
+                "useArrayLiterals": "warn",
+                "useBlockStatements": "warn",
+                "useCollapsedElseIf": "warn",
+                "useConsistentBuiltinInstantiation": "warn",
+                "useConst": "warn",
+                "useDefaultParameterLast": "warn",
+                "useExponentiationOperator": "warn",
+                "useNamingConvention": "warn",
+                "useShorthandAssign": "warn",
+                "useSingleVarDeclarator": "warn",
+                "useTemplate": "warn",
+                "useThrowOnlyError": "warn"
+            },
+            "suspicious": {
+                "noConfusingLabels": "warn",
+                "noDoubleEquals": "warn",
+                "noEmptyBlockStatements": "warn",
+                "noOctalEscape": "warn",
+                "noSelfCompare": "warn",
+                "noTemplateCurlyInString": "warn",
+                "noVar": "warn",
+                "useAwait": "warn",
+                "useDefaultSwitchClauseLast": "warn",
+                "useGuardForIn": "warn"
+            }
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "jsxQuoteStyle": "double",
+            "quoteProperties": "asNeeded",
+            "trailingCommas": "none",
+            "semicolons": "always",
+            "arrowParentheses": "asNeeded",
+            "bracketSameLine": false,
+            "bracketSpacing": true,
+            "attributePosition": "auto"
+        }
+    },
+    "json": {
+        "parser": {
+            "allowComments": false,
+            "allowTrailingCommas": false
+        },
+        "formatter": {
+            "indentStyle": "space",
+            "indentWidth": 4,
+            "lineWidth": 120,
+            "trailingCommas": "none",
+            "bracketSpacing": true
+        }
+    }
+}

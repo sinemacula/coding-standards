@@ -8,3 +8,12 @@ exported_config_paths = ["yaml/.yamllint.yaml"]
 
 [plugins.definitions.shellcheck]
 exported_config_paths = ["shell/.shellcheckrc"]
+
+[plugins.definitions.biome]
+exported_config_paths = ["js/biome.json"]
+
+[plugins.definitions.knip]
+exported_config_paths = ["js/knip.json"]
+
+[plugins.definitions.gitleaks]
+exported_config_paths = ["security/.gitleaks.toml"]
