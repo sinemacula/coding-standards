@@ -1,0 +1,17 @@
+{
+    "$schema": "https://unpkg.com/knip@5/schema.json",
+    "entry": [
+        "src/main.{js,ts}",
+        "src/index.{js,ts,jsx,tsx,vue}",
+        "vite.config.{js,ts,mjs}",
+        "*.config.{js,ts,mjs}"
+    ],
+    "project": [
+        "src/**/*.{js,ts,jsx,tsx,vue}"
+    ],
+    "ignore": [],
+    "ignoreDependencies": [],
+    "ignoreBinaries": [],
+    "ignoreExportsUsedInFile": false,
+    "includeEntryExports": false
+}
