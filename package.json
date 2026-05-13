@@ -1,0 +1,36 @@
+{
+    "name": "@sinemacula/coding-standards",
+    "version": "1.0.4",
+    "description": "Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.",
+    "license": "Apache-2.0",
+    "author": "Ben Carey <bdmc@sinemacula.co.uk>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sinemacula/coding-standards.git"
+    },
+    "homepage": "https://github.com/sinemacula/coding-standards#readme",
+    "bugs": {
+        "url": "https://github.com/sinemacula/coding-standards/issues"
+    },
+    "keywords": [
+        "biome",
+        "knip",
+        "coding-standards",
+        "linting",
+        "config"
+    ],
+    "files": [
+        "js/",
+        "markdown/",
+        "yaml/",
+        "shell/",
+        "security/",
+        "README.md",
+        "LICENSE",
+        "NOTICE"
+    ],
+    "publishConfig": {
+        "access": "public",
+        "registry": "https://registry.npmjs.org/"
+    }
+}
