@@ -1,37 +1,54 @@
-# ============================================================================
-# NPM publish workflow
-# ----------------------------------------------------------------------------
-# Publishes @sinemacula/coding-standards to npmjs.com when a `v*` git tag is
-# pushed. The tag's version must match `package.json`'s `version` field —
-# the workflow refuses to publish on a mismatch.
-#
-# Required repo secret:
-#   NPM_TOKEN  — npm automation token with publish access for the
-#                @sinemacula scope. Create at https://www.npmjs.com/settings/<user>/tokens
-#                with type "Automation" and scope "Publish".
-# ============================================================================
-
+# ==============================================================================
+# NPM PUBLISH
+# ==============================================================================
 name: npm-publish
 
+# ==============================================================================
+# TRIGGERS
+# ==============================================================================
 on:
     push:
         tags:
             -   'v*'
+    workflow_dispatch:
 
+# ==============================================================================
+# CONCURRENCY
+# ==============================================================================
+concurrency:
+    group: npm-publish-${{ github.ref }}
+    cancel-in-progress: false
+
+# ==============================================================================
+# PERMISSIONS
+# ==============================================================================
 permissions:
     contents: read
     id-token: write
 
+# ==============================================================================
+# DEFAULTS
+# ==============================================================================
+defaults:
+    run:
+        shell: bash
+
 jobs:
+
+    # ==========================================================================
+    # JOB: PUBLISH TO NPM
+    # ==========================================================================
     publish:
         name: Publish to npm
         runs-on: ubuntu-latest
 
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
 
-            -   name: Set up Node.js
+            -   name: Setup Node.js
                 uses: actions/setup-node@v4
                 with:
                     node-version: '20'
@@ -40,7 +57,7 @@ jobs:
             -   name: Verify tag matches package.json version
                 run: |
                     TAG_VERSION="${GITHUB_REF_NAME#v}"
-                    PKG_VERSION="$(node -p 'require(\"./package.json\").version')"
+                    PKG_VERSION="$(node -p 'require("./package.json").version')"
                     if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
                         echo "Tag $GITHUB_REF_NAME (=> $TAG_VERSION) does not match package.json version $PKG_VERSION" >&2
                         exit 1
