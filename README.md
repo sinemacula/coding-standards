@@ -1,6 +1,7 @@
 # Coding Standards
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
+[![npm Version](https://img.shields.io/npm/v/@sinemacula/coding-standards.svg)](https://www.npmjs.com/package/@sinemacula/coding-standards)
 [![Maintainability](https://qlty.sh/gh/sinemacula/projects/coding-standards/maintainability.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
 [![Total Downloads](https://img.shields.io/packagist/dt/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
 
@@ -10,11 +11,19 @@ This package ships config files only — no runtime dependencies. Consuming proj
 
 ## Installation
 
-### Composer
+### Composer (PHP-side: PHP CS Fixer, PHPStan, PHPCS)
 
 ```bash
 composer require --dev sinemacula/coding-standards
 ```
+
+### npm (JS-side: Biome, Knip)
+
+```bash
+npm install --save-dev @sinemacula/coding-standards
+```
+
+The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`). The PHP autoloaded code lives in the Composer package.
 
 ## Usage
 
@@ -75,6 +84,33 @@ parameters:
 
 Documentation for Laravel/Larastan integration is coming soon.
 
+### Biome (JavaScript / TypeScript)
+
+After installing the npm package, extend the shared Biome config from your project's `biome.json` (or `.qlty/configs/biome.json` when wired through Qlty):
+
+```json
+{
+    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+    "root": true,
+    "extends": ["@sinemacula/coding-standards/js/biome.json"],
+    "files": {
+        "ignoreUnknown": true,
+        "includes": ["**", "!**/node_modules/**", "!**/vendor/**"]
+    }
+}
+```
+
+`extends` paths are resolved through normal Node module lookup, so the package only needs to be installed (no path math against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer config.
+
+### Knip (JavaScript / TypeScript)
+
+```json
+{
+    "$schema": "https://unpkg.com/knip@6/schema.json",
+    "extends": ["@sinemacula/coding-standards/js/knip.json"]
+}
+```
+
 ### Qlty
 
 Reference this repository as a source in your project's `.qlty/qlty.toml`:
@@ -94,9 +130,12 @@ tag = "v1.0.0"
 | `php/.php-cs-fixer.rules.php` | PHP CS Fixer | Shared rules array (PSR-12 base + org conventions)     |
 | `SineMacula/ruleset.xml`      | PHPCS        | Auto-discovered coding standard (PSR-12 + exclusions)  |
 | `php/phpstan.neon`            | PHPStan      | Base config (org-wide ignored errors + settings)       |
+| `js/biome.json`               | Biome        | JavaScript / TypeScript formatter + linter rules       |
+| `js/knip.json`                | Knip         | Unused-export detection rules                          |
 | `markdown/.markdownlint.json` | markdownlint | Markdown linting rules                                 |
 | `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
 | `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
+| `security/.gitleaks.toml`     | Gitleaks     | Secret-detection ruleset                               |
 
 ## Contributing
 
