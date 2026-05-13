@@ -51,11 +51,8 @@ jobs:
             -   name: Setup Node.js
                 uses: actions/setup-node@v4
                 with:
-                    node-version: '22'
+                    node-version: '26'
                     registry-url: 'https://registry.npmjs.org/'
-
-            -   name: Upgrade npm
-                run: npm install -g npm@latest
 
             -   name: Verify tag matches package.json version
                 run: |
