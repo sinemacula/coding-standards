@@ -136,6 +136,7 @@ tag = "v1.0.0"
 | `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
 | `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
 | `security/.gitleaks.toml`     | Gitleaks     | Secret-detection ruleset                               |
+| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check (formatters own wrapping) |
 
 ## Contributing
 
