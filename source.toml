@@ -17,3 +17,6 @@ exported_config_paths = ["js/knip.json"]
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]
+
+[plugins.definitions.editorconfig-checker]
+exported_config_paths = ["editorconfig/.editorconfig-checker.json"]
