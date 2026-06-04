@@ -93,7 +93,7 @@
             "quoteStyle": "single",
             "jsxQuoteStyle": "double",
             "quoteProperties": "asNeeded",
-            "trailingCommas": "none",
+            "trailingCommas": "all",
             "semicolons": "always",
             "arrowParentheses": "asNeeded",
             "bracketSameLine": false,
