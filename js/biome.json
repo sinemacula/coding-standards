@@ -113,5 +113,43 @@
             "trailingCommas": "none",
             "bracketSpacing": true
         }
-    }
+    },
+    "overrides": [
+        {
+            "includes": [
+                "**/*.test.ts",
+                "**/*.test.tsx",
+                "**/*.test.js",
+                "**/*.test.jsx",
+                "**/*.spec.ts",
+                "**/*.spec.tsx",
+                "**/*.spec.js",
+                "**/*.spec.jsx"
+            ],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "useNamingConvention": {
+                            "level": "warn",
+                            "options": {
+                                "conventions": [
+                                    {
+                                        "selector": {
+                                            "kind": "objectLiteralProperty"
+                                        },
+                                        "formats": [
+                                            "camelCase",
+                                            "PascalCase",
+                                            "CONSTANT_CASE",
+                                            "snake_case"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
 }
