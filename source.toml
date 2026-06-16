@@ -1,5 +1,11 @@
 config_version = "0"
 
+# Release-please writes CHANGELOG.md with `*` bullets; markdownlint (MD004)
+# enforces `-`. The file is tool-generated, so exclude it from markdownlint.
+[[exclude]]
+plugins = ["markdownlint"]
+file_patterns = ["**/CHANGELOG.md"]
+
 [plugins.definitions.markdownlint]
 exported_config_paths = ["markdown/.markdownlint.json"]
 
