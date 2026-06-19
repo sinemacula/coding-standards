@@ -75,4 +75,182 @@
 
     <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation"/>
 
+    <!--
+        Require declare(strict_types=1). Properties are aligned to the exact output
+        produced by php-cs-fixer (declare_strict_types + declare_equal_normalize:single +
+        blank_line_after_opening_tag) so the autofixer and this checker never disagree:
+        <?php / blank line / declare(strict_types = 1); / blank line.
+    -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="declareOnFirstLine" value="false"/>
+            <property name="linesCountBeforeDeclare" value="1"/>
+            <property name="linesCountAfterDeclare" value="1"/>
+            <property name="spacesCountAroundEqualsSign" value="1"/>
+        </properties>
+    </rule>
+
+    <!--
+        Naming: enforce camelCase on functions and methods, reserving the double-underscore
+        prefix for PHP magic methods. Class/interface/trait/enum PascalCase and UPPER_CASE
+        constant names already come from PSR1 (via the PSR12 base), so they are not repeated.
+    -->
+    <rule ref="Squiz.NamingConventions.ValidFunctionName"/>
+
+    <!--
+        Variables, properties and parameters: camelCase. PrivateNoUnderscore is excluded so the
+        legacy `private $_name` convention is not forced; PublicHasUnderscore is kept so public and
+        protected members cannot carry a leading underscore. NB this also checks parameter names, so
+        a parameter whose name is fixed by an overridden dependency method (named-argument BC) needs
+        an inline `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps`.
+    -->
+    <rule ref="Squiz.NamingConventions.ValidVariableName">
+        <exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+    </rule>
+
+    <!--
+        Explicit visibility: PSR12 already enables Squiz.Scope.MethodScope for methods; add the
+        property side so member-variable visibility is hard-failed too, mirroring the cs-fixer
+        visibility_required autofixer.
+    -->
+    <rule ref="Squiz.Scope.MemberVarScope"/>
+
+    <!-- One class/interface/trait/enum per file -->
+    <rule ref="Generic.Files.OneObjectStructurePerFile"/>
+
+    <!--
+        Class/interface/trait/enum docblock with @author. PEAR covers all four type kinds. The
+        PEAR-specific tags we do not use are excluded. NB PEAR treats @copyright as optional, so its
+        presence is not hard-enforced here; @author and @copyright formats are still validated.
+    -->
+    <rule ref="PEAR.Commenting.ClassComment">
+        <exclude name="PEAR.Commenting.ClassComment.MissingCategoryTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingPackageTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingLicenseTag"/>
+        <exclude name="PEAR.Commenting.ClassComment.MissingLinkTag"/>
+    </rule>
+
+    <!-- Require an @throws tag for every exception thrown in a function body -->
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
+
+    <!--
+        Inline comments: enforce // style, a leading capital and spacing, but not terminal
+        punctuation (InvalidEndChar excluded) so short notes need no full stop. Doc comments before
+        promoted properties are allowed (the DocBlock allowlist covers T_READONLY / visibility).
+    -->
+    <rule ref="Squiz.Commenting.InlineComment">
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+    </rule>
+
+    <!-- Warn on commented-out code -->
+    <rule ref="Squiz.PHP.CommentedOutCode"/>
+
+    <!--
+        Nesting depth: 3 is the maximum allowed. The sniff fires when nesting exceeds the threshold,
+        so nestingLevel=3 warns at depth 4 and absoluteNestingLevel=4 errors at depth 5 or deeper.
+    -->
+    <rule ref="Generic.Metrics.NestingLevel">
+        <properties>
+            <property name="nestingLevel" value="3"/>
+            <property name="absoluteNestingLevel" value="4"/>
+        </properties>
+    </rule>
+
+    <!-- Cyclomatic (McCabe) complexity: warn beyond 10, error beyond 20 -->
+    <rule ref="Generic.Metrics.CyclomaticComplexity">
+        <properties>
+            <property name="complexity" value="10"/>
+            <property name="absoluteComplexity" value="20"/>
+        </properties>
+    </rule>
+
+    <!-- No empty or comment-only bodies (catch, if, loops, try/finally, switch, match) -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+
+    <!--
+        Type hints: require native parameter, return and property type hints, and require the
+        contained type for traversables (e.g. @param array<int, Foo>). UselessAnnotation is excluded
+        on each so redundant @param/@return/@var docblocks are kept - house style documents everything.
+    -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.UselessAnnotation"/>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.UselessAnnotation"/>
+    </rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.PropertyTypeHint">
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation"/>
+    </rule>
+
+    <!-- Require constructor property promotion when a parameter is directly assigned to a property -->
+    <rule ref="SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion"/>
+
+    <!-- Require explicit visibility on class constants (hard-fail mirror of cs-fixer visibility_required) -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
+
+    <!--
+        Attributes: doc comment before the attribute, and one attribute per line. Attribute ordering
+        is intentionally left to cs-fixer (ordered_attributes) so two tools never fight over order.
+    -->
+    <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
+    <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
+
+    <!-- Guard clauses / early exit (stronger than cs-fixer no_useless_else) -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
+
+    <!-- Cognitive complexity (Sonar-style): warn beyond 8, error beyond 15 -->
+    <rule ref="SlevomatCodingStandard.Complexity.Cognitive">
+        <properties>
+            <property name="warningThreshold" value="8"/>
+            <property name="errorThreshold" value="15"/>
+        </properties>
+    </rule>
+
+    <!--
+        Unused-code checkers (the pieces cs-fixer can't do). UnusedUses is a hard-fail mirror of the
+        cs-fixer no_unused_imports autofixer. UnusedParameter flags unused parameters - suppress on
+        contract-bound overrides with @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.
+    -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
+        <properties>
+            <property name="ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach" value="true"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter"/>
+
+    <!--
+        Reference imported names, not inline FQCN, in code bodies. Inline FQCN stays allowed for
+        global classes/functions/constants (e.g. \DateTime, \strlen); project namespaces must be
+        imported with a use statement.
+    -->
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
+        <properties>
+            <property name="allowFullyQualifiedGlobalClasses" value="true"/>
+            <property name="allowFullyQualifiedGlobalFunctions" value="true"/>
+            <property name="allowFullyQualifiedGlobalConstants" value="true"/>
+        </properties>
+    </rule>
+
+    <!--
+        Method signatures: single line when they fit within 120 characters, multi-line (one
+        parameter per line) when they exceed it. Constructors are excluded from the single-line rule
+        so promoted-property constructors are always multi-line (withPromotedProperties). cs-fixer
+        method_argument_space is on_multiline:ignore, so it leaves the single/multi decision to these.
+    -->
+    <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature">
+        <properties>
+            <property name="maxLineLength" value="120"/>
+            <property name="excludedMethodPatterns" type="array">
+                <element value="/^__construct$/"/>
+            </property>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
+        <properties>
+            <property name="minLineLength" value="121"/>
+            <property name="withPromotedProperties" value="true"/>
+        </properties>
+    </rule>
+
 </ruleset>

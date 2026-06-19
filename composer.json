@@ -14,6 +14,10 @@
         "php": "^8.3",
         "friendsofphp/php-cs-fixer": "^3.0"
     },
+    "suggest": {
+        "phpstan/phpstan-phpunit": "PHPUnit-aware PHPStan rules: data-provider validation, setUp()/tearDown() parent calls, assertSame discipline, and @covers / mock target existence. Auto-registers via phpstan/extension-installer.",
+        "phpstan/extension-installer": "Auto-registers the shared PHPStan config and installed PHPStan extensions (required for the shared phpstan.neon to load)."
+    },
     "autoload": {
         "psr-4": {
             "SineMacula\\CodingStandards\\": "src/"
