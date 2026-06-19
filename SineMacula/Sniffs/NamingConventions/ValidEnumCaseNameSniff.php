@@ -16,11 +16,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class ValidEnumCaseNameSniff implements Sniff
 {
-    /**
-     * The pattern a valid enum case name must match.
-     *
-     * @var string
-     */
+    /** The pattern a valid enum case name must match. */
     private const string NAME_PATTERN = '/^[A-Z][A-Z0-9_]*$/';
 
     /**
