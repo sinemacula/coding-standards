@@ -15,6 +15,7 @@
         <include>
             <directory suffix="Sniff.php">SineMacula/Sniffs</directory>
             <directory suffix="Sniff.php">src</directory>
+            <directory suffix="Rule.php">src</directory>
         </include>
     </source>
 </phpunit>
