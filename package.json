@@ -1,6 +1,6 @@
 {
     "name": "@sinemacula/coding-standards",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "description": "Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.",
     "license": "Apache-2.0",
     "author": "Ben Carey <bdmc@sinemacula.co.uk>",

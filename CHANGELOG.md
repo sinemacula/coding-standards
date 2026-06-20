@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/sinemacula/coding-standards/compare/v1.3.0...v1.3.1) (2026-06-20)
+
+
+### Bug Fixes
+
+* **phpcs:** stop forcing leading underscore on private methods ([#37](https://github.com/sinemacula/coding-standards/issues/37)) ([c7f3003](https://github.com/sinemacula/coding-standards/commit/c7f30035d0eada77846ecc749b5e464434bc785b))
+
 ## [1.3.0](https://github.com/sinemacula/coding-standards/compare/v1.2.0...v1.3.0) (2026-06-20)
 
 
