@@ -132,7 +132,7 @@ tag = "<version>"
 | `src/PhpCsFixerConfig.php`    | PHP CS Fixer | Factory class for building PHP CS Fixer configurations |
 | `php/.php-cs-fixer.rules.php` | PHP CS Fixer | Shared rules array (PSR-12 base + org conventions)     |
 | `SineMacula/ruleset.xml`      | PHPCS        | Auto-discovered coding standard (PSR-12 + exclusions)  |
-| `php/phpstan.neon`            | PHPStan      | Base config (org-wide ignored errors + settings)       |
+| `php/phpstan-base.neon`       | PHPStan      | Base config (org-wide ignored errors + settings)       |
 | `js/biome.json`               | Biome        | JavaScript / TypeScript formatter + linter rules       |
 | `js/knip.json`                | Knip         | Unused-export detection rules                          |
 | `markdown/.markdownlint.json` | markdownlint | Markdown linting rules                                 |

@@ -1,0 +1,54 @@
+# Self-contained so qlty can copy it into its tool sandbox; a relative
+# `includes` of ../../php/phpstan.neon breaks once copied out of the repo. The
+# parameters below mirror the shared php/phpstan.neon. The phpcs scanDirectories,
+# the autoload bootstrap and the final four ignoreErrors are specific to
+# analysing this repo's own sniff code, which reads PHP_CodeSniffer's mixed
+# token arrays (and so trips level-9 mixed checks).
+parameters:
+    level: 8
+
+    # PHP_CodeSniffer ships a bespoke autoloader (its classes are not on the
+    # Composer classmap); scan its source so the sniff base classes resolve. The
+    # package autoloader is bootstrapped so the in-repo PHPStan rule and sniff
+    # base classes under src/ load in qlty's sandbox.
+    bootstrapFiles:
+        - %currentWorkingDirectory%/vendor/autoload.php
+
+    scanDirectories:
+        - %currentWorkingDirectory%/vendor/squizlabs/php_codesniffer/src
+
+    paths:
+        - %currentWorkingDirectory%/src
+        - %currentWorkingDirectory%/SineMacula/Sniffs
+        - %currentWorkingDirectory%/SineMacula/Tests
+
+    checkMissingCallableSignature: true
+    checkMissingVarTagTypehint: true
+    checkUninitializedProperties: true
+    checkMissingOverrideMethodAttribute: true
+    inferPrivatePropertyTypeFromConstructor: false
+    reportUnmatchedIgnoredErrors: false
+
+    ignoreErrors:
+        # Mirrors php/phpstan.neon.
+        - identifier: argument.type
+        - identifier: ternary.shortNotAllowed
+        - identifier: booleanAnd.leftNotBoolean
+        - identifier: booleanNot.exprNotBoolean
+        - identifier: if.condNotBoolean
+        - identifier: ternary.condNotBoolean
+        - identifier: empty.notAllowed
+        - identifier: staticMethod.alreadyNarrowedType
+        - identifier: offsetAccess.nonOffsetAccessible
+        - identifier: greaterOrEqual.alwaysTrue
+        - identifier: smaller.alwaysTrue
+        - identifier: classConstant.deprecated
+        # PHP_CodeSniffer exposes token data as mixed, so sniff code that reads
+        # and accumulates token values trips these level-9 mixed checks.
+        - identifier: offsetAccess.invalidOffset
+        - identifier: binaryOp.invalid
+        - identifier: assignOp.invalid
+        - identifier: postInc.type
+
+rules:
+    - SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule

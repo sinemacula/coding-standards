@@ -62,6 +62,9 @@ mode = "comment"
 name = "default"
 default = true
 
+[runtimes.enabled]
+php = "8.3"
+
 
 [[plugin]]
 name = "radarlint-php"
@@ -76,6 +79,39 @@ name = "trufflehog"
 
 [[plugin]]
 name = "editorconfig-checker"
+
+# Dogfood this repo's own PHP standards on its own code. The standards are read
+# from the in-tree configs under .qlty/configs (phpcs.xml, .php-cs-fixer.dist.php,
+# phpstan.neon) rather than a released tag of this package, so a change is
+# validated against itself before release. slevomat + the installer are pulled
+# from composer.json so the ruleset's Slevomat sniffs resolve in qlty's sandbox.
+[[plugin]]
+name = "php-codesniffer"
+version = "3.13.5"
+mode = "comment"
+package_file = "composer.json"
+package_filters = ["slevomat", "dealerdirect"]
+
+# Pinned to the last php-cs-fixer release whose symfony/console stays on the 7.x
+# line; 3.90+ pulls symfony/console 8 (needs PHP 8.4.1), which qlty's PHP 8.3
+# runner cannot parse. Bump once the runner ships PHP 8.4.
+[[plugin]]
+name = "php-cs-fixer"
+version = "3.89.0"
+package_file = "composer.json"
+
+[[plugin]]
+name = "phpstan"
+version = "2.2.2"
+package_file = "composer.json"
+
+# The php/ directory holds shipped tool configs (the cs-fixer rules array and the
+# phpstan base config), not source. It stays in the tree so the cs-fixer config can
+# require the rules file, but the PHP plugins skip it - they target the actual
+# source under src/, SineMacula/Sniffs and SineMacula/Tests.
+[[exclude]]
+plugins = ["php-codesniffer", "php-cs-fixer", "phpstan"]
+file_patterns = ["php/**"]
 
 # Release-please writes CHANGELOG.md with long compare/commit-reference lines
 # that exceed .editorconfig's max_line_length, so its release PRs fail qlty. The
