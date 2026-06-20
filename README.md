@@ -83,7 +83,9 @@ parameters:
 
 #### Laravel projects
 
-Documentation for Laravel/Larastan integration is coming soon.
+For Laravel projects, also install [`sinemacula/coding-standards-laravel`](https://github.com/sinemacula/coding-standards-laravel)
+and reference its `SineMaculaLaravel` PHPCS standard (which includes this one) in place of `SineMacula`. It
+adds the Laravel-specific sniffs and PHPStan rules; see that package's README for setup.
 
 ### Biome (JavaScript / TypeScript)
 
@@ -114,13 +116,13 @@ After installing the npm package, extend the shared Biome config from your proje
 
 ### Qlty
 
-Reference this repository as a source in your project's `.qlty/qlty.toml`:
+Reference this repository as a source in your project's `.qlty/qlty.toml`, pinning `tag` to the latest [release](https://github.com/sinemacula/coding-standards/releases):
 
 ```toml
 [[source]]
 name = "sinemacula"
 repository = "https://github.com/sinemacula/coding-standards"
-tag = "v1.3.0"
+tag = "<version>"
 ```
 
 ## What's Included
