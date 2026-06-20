@@ -91,15 +91,19 @@
     </rule>
 
     <!--
-        Naming: enforce camelCase on functions and methods, reserving the double-underscore
-        prefix for PHP magic methods. Class/interface/trait/enum PascalCase and UPPER_CASE
-        constant names already come from PSR1 (via the PSR12 base), so they are not repeated.
+        Naming: enforce camelCase on methods, reserving the double-underscore prefix for PHP
+        magic methods. Class/interface/trait/enum PascalCase and UPPER_CASE constant names
+        already come from PSR1 (via the PSR12 base), so they are not repeated.
         PrivateNoUnderscore is excluded so the legacy `private function _name()` convention is
         not forced; PublicUnderscore is kept so public and protected methods cannot carry a
         leading underscore, mirroring the variable-name rule below.
+        NotCamelCaps is excluded so camelCase is not forced on global (non-member) functions,
+        which are snake_case under the SineMacula.NamingConventions.ValidGlobalFunctionName
+        sniff; methods keep camelCase via ScopeNotCamelCaps, since their visibility is explicit.
     -->
     <rule ref="Squiz.NamingConventions.ValidFunctionName">
         <exclude name="Squiz.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
+        <exclude name="Squiz.NamingConventions.ValidFunctionName.NotCamelCaps"/>
     </rule>
 
     <!--
