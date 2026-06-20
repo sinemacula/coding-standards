@@ -5,11 +5,11 @@
         This repository IS the sinemacula/coding-standards package, so the shared
         standard is referenced from the working tree by path rather than by its
         installed name (it is not present as a vendor package in qlty's tool
-        sandbox). The package autoloader is loaded so the custom sniffs' base
-        classes under src/ resolve.
+        sandbox). A standalone autoloader resolves the custom sniffs' base classes
+        under src/ without the project vendor, which qlty Cloud does not install.
     -->
     <rule ref="../../SineMacula/ruleset.xml"/>
-    <autoload>../../vendor/autoload.php</autoload>
+    <autoload>autoload.php</autoload>
 
     <file>../../src</file>
     <file>../../SineMacula/Sniffs</file>

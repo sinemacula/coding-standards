@@ -80,11 +80,13 @@ name = "trufflehog"
 [[plugin]]
 name = "editorconfig-checker"
 
-# Dogfood this repo's own PHP standards on its own code. The standards are read
-# from the in-tree configs under .qlty/configs (phpcs.xml, .php-cs-fixer.dist.php,
-# phpstan.neon) rather than a released tag of this package, so a change is
-# validated against itself before release. slevomat + the installer are pulled
-# from composer.json so the ruleset's Slevomat sniffs resolve in qlty's sandbox.
+# Dogfood this repo's own PHP standards on its own code. phpcs and php-cs-fixer read
+# the in-tree configs under .qlty/configs (phpcs.xml, .php-cs-fixer.dist.php) rather
+# than a released tag of this package, so a change is validated against itself before
+# release. slevomat + the installer come from composer.json so the ruleset's Slevomat
+# sniffs resolve in qlty's sandbox; the custom sniffs' base class lives in src/ and is
+# loaded via .qlty/configs/autoload.php (qlty Cloud does not install the project
+# vendor, so the config cannot rely on vendor/autoload.php).
 [[plugin]]
 name = "php-codesniffer"
 version = "3.13.5"
@@ -100,18 +102,17 @@ name = "php-cs-fixer"
 version = "3.89.0"
 package_file = "composer.json"
 
-[[plugin]]
-name = "phpstan"
-version = "2.2.2"
-package_file = "composer.json"
+# phpstan is NOT wired here: qlty Cloud never runs `composer install`, so it cannot
+# autoload the in-repo PHPStan rule or scan PHP_CodeSniffer's non-PSR-4 source that
+# the sniff code depends on. It runs in GitHub Actions instead (phpstan.neon.dist).
 
-# The php/ directory holds shipped tool configs (the cs-fixer rules array and the
-# phpstan base config), not source. It stays in the tree so the cs-fixer config can
-# require the rules file, but the PHP plugins skip it - they target the actual
-# source under src/, SineMacula/Sniffs and SineMacula/Tests.
+# php/ holds shipped tool configs (the cs-fixer rules array and the phpstan base)
+# and .qlty/configs holds qlty's own PHP config + autoloader. Neither is source, so
+# the PHP plugins skip them - they target src/, SineMacula/Sniffs and SineMacula/Tests.
+# (php/ stays in the tree so the cs-fixer config can require its rules file.)
 [[exclude]]
-plugins = ["php-codesniffer", "php-cs-fixer", "phpstan"]
-file_patterns = ["php/**"]
+plugins = ["php-codesniffer", "php-cs-fixer"]
+file_patterns = ["php/**", ".qlty/configs/**"]
 
 # Release-please writes CHANGELOG.md with long compare/commit-reference lines
 # that exceed .editorconfig's max_line_length, so its release PRs fail qlty. The

@@ -1,0 +1,28 @@
+# Dogfood the SineMacula PHPStan standard on this repo's own code. Run in CI
+# (GitHub Actions) and locally via `composer analyse`, where the full Composer
+# vendor is installed. NOT run via qlty: qlty Cloud never runs `composer install`,
+# so it cannot scan PHP_CodeSniffer's (non-PSR-4) source that the sniff code
+# depends on, nor autoload the in-repo rule.
+includes:
+    - php/phpstan-base.neon
+
+parameters:
+    level: 9
+
+    # PHP_CodeSniffer ships a bespoke autoloader (its classes are not on the
+    # Composer classmap), so its source is scanned explicitly.
+    scanDirectories:
+        - vendor/squizlabs/php_codesniffer/src
+
+    paths:
+        - src
+        - SineMacula/Sniffs
+        - SineMacula/Tests
+
+    ignoreErrors:
+        # PHP_CodeSniffer exposes token data as mixed, so sniff code that reads
+        # and accumulates token values trips these level-9 mixed checks.
+        - identifier: offsetAccess.invalidOffset
+        - identifier: binaryOp.invalid
+        - identifier: assignOp.invalid
+        - identifier: postInc.type

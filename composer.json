@@ -61,6 +61,9 @@
         "smells": [
             "qlty smells"
         ],
+        "analyse": [
+            "@php vendor/bin/phpstan analyse"
+        ],
         "test": [
             "@php vendor/bin/phpunit"
         ],
@@ -72,6 +75,7 @@
         "check": "Run static analysis and lint checks via qlty.",
         "format": "Format codebase using qlty.",
         "smells": "Report code smells (duplication, complexity) via qlty.",
+        "analyse": "Run PHPStan over the repo's own sniffs and rule (phpstan.neon.dist).",
         "test": "Run the PHPUnit sniff test suite.",
         "test:coverage": "Run the PHPUnit sniff test suite with Clover coverage output (requires Xdebug)."
     }
