@@ -76,7 +76,7 @@ final class DisallowBaseExceptionSniff implements Sniff
         $start  = $phpcsFile->findNext(T_WHITESPACE, $newPtr + 1, null, true);
 
         if ($start === false) {
-            return '';
+            return ''; // @codeCoverageIgnore
         }
 
         $name = '';

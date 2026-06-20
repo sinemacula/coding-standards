@@ -147,7 +147,7 @@ final class DisallowToolingAttributeSniff implements Sniff
 
         // Ignore malformed statements and closure `use (...)`, `use function`, `use const`.
         if ($end === false || in_array($tokens[$next]['code'], [T_OPEN_PARENTHESIS, T_FUNCTION, T_CONST], true)) {
-            return null;
+            return null; // @codeCoverageIgnore
         }
 
         $name  = '';
@@ -167,7 +167,7 @@ final class DisallowToolingAttributeSniff implements Sniff
         $name = ltrim($name, '\\');
 
         if ($name === '') {
-            return null;
+            return null; // @codeCoverageIgnore
         }
 
         if ($alias === null) {

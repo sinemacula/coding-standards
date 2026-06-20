@@ -39,7 +39,7 @@ final class ConsistentEnumCaseCommentsSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         if (isset($tokens[$stackPtr]['scope_opener']) === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $cases      = $this->cases($phpcsFile, $stackPtr);

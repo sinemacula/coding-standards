@@ -42,7 +42,7 @@ final class MaxMethodCountSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         if (isset($tokens[$stackPtr]['scope_opener']) === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $count = $this->countMethods($tokens, $stackPtr);

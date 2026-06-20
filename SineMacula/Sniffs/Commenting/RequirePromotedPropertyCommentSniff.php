@@ -38,7 +38,7 @@ final class RequirePromotedPropertyCommentSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
 
         if (isset($tokens[$stackPtr]['parenthesis_opener']) === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $lowerBound = $tokens[$stackPtr]['parenthesis_opener'];

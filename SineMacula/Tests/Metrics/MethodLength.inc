@@ -17,3 +17,8 @@ class Example
         $x = 1;
     }
 }
+
+abstract class Contract
+{
+    abstract public function pending(): void;
+}

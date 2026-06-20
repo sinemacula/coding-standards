@@ -20,6 +20,6 @@ final class RequireFinalClassSniffTest extends AbstractSniffTestCase
      */
     public function testFlagsNonFinalConcreteClasses(): void
     {
-        $this->assertErrorsOnLines('RequireFinalClass.inc', [13]);
+        $this->assertErrorsOnLines('RequireFinalClass.inc', [13, 33]);
     }
 }

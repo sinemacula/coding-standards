@@ -22,4 +22,15 @@ final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('RequireContractsNamespace.inc', [5]);
     }
+
+    /**
+     * An interface in the global namespace (no namespace declaration) is also
+     * flagged.
+     *
+     * @return void
+     */
+    public function testFlagsInterfaceInGlobalNamespace(): void
+    {
+        $this->assertErrorsOnLines('RequireContractsNamespaceGlobal.inc', [3]);
+    }
 }

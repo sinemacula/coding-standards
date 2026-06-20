@@ -48,7 +48,7 @@ final class RequireConstantTypeSniff implements Sniff
         $equalPtr = $phpcsFile->findNext(T_EQUAL, $stackPtr + 1);
 
         if ($equalPtr === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $namePtr  = $phpcsFile->findPrevious(T_STRING, $equalPtr - 1, $stackPtr);

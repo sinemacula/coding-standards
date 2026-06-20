@@ -26,3 +26,10 @@ class Extendable
 final readonly class Value
 {
 }
+
+/**
+ * Documented but still concrete.
+ */
+class Documented
+{
+}
