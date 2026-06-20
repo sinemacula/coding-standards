@@ -2,8 +2,7 @@
 
 namespace SineMacula\Sniffs\Metrics;
 
-use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
 
 /**
  * Method count sniff.
@@ -15,7 +14,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
-final class MaxMethodCountSniff implements Sniff
+final class MaxMethodCountSniff extends AbstractMetricSniff
 {
     /** The maximum number of methods allowed on a single structure. */
     public int $maxMethods = 20;
@@ -31,40 +30,13 @@ final class MaxMethodCountSniff implements Sniff
     }
 
     /**
-     * Process an object structure token.
-     *
-     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  int  $stackPtr
-     * @return void
-     */
-    public function process(File $phpcsFile, $stackPtr): void
-    {
-        $tokens = $phpcsFile->getTokens();
-
-        if (isset($tokens[$stackPtr]['scope_opener']) === false) {
-            return; // @codeCoverageIgnore
-        }
-
-        $count = $this->countMethods($tokens, $stackPtr);
-
-        if ($count > $this->maxMethods) {
-            $phpcsFile->addError(
-                'Structure declares %d methods; the maximum is %d.',
-                $stackPtr,
-                'TooManyMethods',
-                [$count, $this->maxMethods]
-            );
-        }
-    }
-
-    /**
      * Count the methods declared directly on the structure.
      *
      * @param  array<int, array<string, mixed>>  $tokens
      * @param  int  $stackPtr
      * @return int
      */
-    private function countMethods(array $tokens, int $stackPtr): int
+    protected function measure(array $tokens, int $stackPtr): int
     {
         $count = 0;
 
@@ -75,5 +47,35 @@ final class MaxMethodCountSniff implements Sniff
         }
 
         return $count;
+    }
+
+    /**
+     * The maximum number of methods permitted.
+     *
+     * @return int
+     */
+    protected function limit(): int
+    {
+        return $this->maxMethods;
+    }
+
+    /**
+     * The error message.
+     *
+     * @return string
+     */
+    protected function message(): string
+    {
+        return 'Structure declares %d methods; the maximum is %d.';
+    }
+
+    /**
+     * The sniff error code.
+     *
+     * @return string
+     */
+    protected function errorCode(): string
+    {
+        return 'TooManyMethods';
     }
 }

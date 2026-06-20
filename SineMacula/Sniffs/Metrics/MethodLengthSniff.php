@@ -2,9 +2,8 @@
 
 namespace SineMacula\Sniffs\Metrics;
 
-use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
+use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
 
 /**
  * Method length sniff.
@@ -17,7 +16,7 @@ use PHP_CodeSniffer\Util\Tokens;
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
-final class MethodLengthSniff implements Sniff
+final class MethodLengthSniff extends AbstractMetricSniff
 {
     /** The maximum number of significant lines allowed in a body. */
     public int $maxLength = 50;
@@ -33,40 +32,13 @@ final class MethodLengthSniff implements Sniff
     }
 
     /**
-     * Process a function declaration token.
-     *
-     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  int  $stackPtr
-     * @return void
-     */
-    public function process(File $phpcsFile, $stackPtr): void
-    {
-        $tokens = $phpcsFile->getTokens();
-
-        if (isset($tokens[$stackPtr]['scope_opener']) === false) {
-            return;
-        }
-
-        $length = $this->significantLines($tokens, $stackPtr);
-
-        if ($length > $this->maxLength) {
-            $phpcsFile->addError(
-                'Method body has %d lines; the maximum is %d.',
-                $stackPtr,
-                'TooLong',
-                [$length, $this->maxLength]
-            );
-        }
-    }
-
-    /**
      * Count the body lines that carry a non-comment, non-whitespace token.
      *
      * @param  array<int, array<string, mixed>>  $tokens
      * @param  int  $stackPtr
      * @return int
      */
-    private function significantLines(array $tokens, int $stackPtr): int
+    protected function measure(array $tokens, int $stackPtr): int
     {
         $lines = [];
 
@@ -77,5 +49,35 @@ final class MethodLengthSniff implements Sniff
         }
 
         return count($lines);
+    }
+
+    /**
+     * The maximum number of significant lines permitted.
+     *
+     * @return int
+     */
+    protected function limit(): int
+    {
+        return $this->maxLength;
+    }
+
+    /**
+     * The error message.
+     *
+     * @return string
+     */
+    protected function message(): string
+    {
+        return 'Method body has %d lines; the maximum is %d.';
+    }
+
+    /**
+     * The sniff error code.
+     *
+     * @return string
+     */
+    protected function errorCode(): string
+    {
+        return 'TooLong';
     }
 }
