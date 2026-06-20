@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Attributes\Audited;
+use App\Other\Thing as Alias;
 use JetBrains\PhpStorm\ArrayShape;
 use JetBrains\PhpStorm\Pure;
 
@@ -25,7 +26,7 @@ class Service
         return [];
     }
 
-    #[Audited]
+    #[Audited, Override]
     public function audited(): void
     {
     }
