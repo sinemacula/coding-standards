@@ -227,6 +227,9 @@ return [
         'keep_multiple_spaces_after_comma' => false,
         'on_multiline'                     => 'ignore',
     ],
+    'multiline_promoted_properties' => [
+        'minimum_number_of_parameters' => 1,
+    ],
     'no_spaces_after_function_name'                    => true,
     'no_unreachable_default_argument_value'            => true,
     'no_useless_sprintf'                               => true,
