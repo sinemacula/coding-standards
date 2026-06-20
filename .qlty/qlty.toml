@@ -76,3 +76,11 @@ name = "trufflehog"
 
 [[plugin]]
 name = "editorconfig-checker"
+
+# Release-please writes CHANGELOG.md with long compare/commit-reference lines
+# that exceed .editorconfig's max_line_length, so its release PRs fail qlty. The
+# file is tool-generated, so exclude it from editorconfig-checker. This mirrors
+# the markdownlint CHANGELOG exclude in source.toml that consuming repos inherit.
+[[exclude]]
+plugins = ["editorconfig-checker"]
+file_patterns = ["**/CHANGELOG.md"]
