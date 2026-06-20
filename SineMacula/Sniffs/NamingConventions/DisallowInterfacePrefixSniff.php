@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\NamingConventions;
 
 use PHP_CodeSniffer\Files\File;
@@ -16,7 +18,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class DisallowInterfacePrefixSniff implements Sniff
 {
-    /** The pattern matching a disallowed "I" prefix (I followed by an upper-case letter). */
+    /** Pattern matching a disallowed "I" prefix (I + an upper-case letter). */
     private const string PREFIX_PATTERN = '/^I[A-Z]/';
 
     /**
@@ -24,6 +26,7 @@ final class DisallowInterfacePrefixSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_INTERFACE];
@@ -36,6 +39,7 @@ final class DisallowInterfacePrefixSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $name = $phpcsFile->getDeclarationName($stackPtr);
@@ -48,7 +52,7 @@ final class DisallowInterfacePrefixSniff implements Sniff
             'Interface "%s" must not use an "I" prefix.',
             $stackPtr,
             'Prefixed',
-            [$name]
+            [$name],
         );
     }
 }

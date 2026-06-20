@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Tests;
 
 use PHP_CodeSniffer\Config;
 use PHP_CodeSniffer\Files\LocalFile;
 use PHP_CodeSniffer\Ruleset;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 /**
  * Base test case for Sine Macula PHP_CodeSniffer sniffs.
@@ -14,7 +15,7 @@ use ReflectionClass;
  * A concrete test is named "<SniffName>SniffTest" and lives under
  * SineMacula/Tests/<Category>/ alongside its fixtures. The sniff under test,
  * its file path and its dotted code are all derived from the test class by
- * convention, so a sniff test is just a fixture plus one assertion per scenario.
+ * convention, so a test is just a fixture plus one assertion per scenario.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -35,7 +36,18 @@ abstract class AbstractSniffTestCase extends TestCase
         sort($actualLines);
         sort($expectedLines);
 
-        self::assertSame($expectedLines, $actualLines);
+        static::assertSame($expectedLines, $actualLines);
+    }
+
+    /**
+     * Property overrides to apply to the sniff under test (e.g. lowered
+     * limits).
+     *
+     * @return array<string, mixed>
+     */
+    protected function sniffProperties(): array
+    {
+        return [];
     }
 
     /**
@@ -59,7 +71,7 @@ abstract class AbstractSniffTestCase extends TestCase
 
         foreach ($ruleset->sniffs as $sniff) {
             foreach ($this->sniffProperties() as $property => $value) {
-                $sniff->$property = $value;
+                $sniff->{$property} = $value;
             }
         }
 
@@ -67,16 +79,6 @@ abstract class AbstractSniffTestCase extends TestCase
         $file->process();
 
         return $file;
-    }
-
-    /**
-     * Property overrides to apply to the sniff under test (e.g. lowered limits).
-     *
-     * @return array<string, mixed>
-     */
-    protected function sniffProperties(): array
-    {
-        return [];
     }
 
     /**
@@ -89,7 +91,7 @@ abstract class AbstractSniffTestCase extends TestCase
         return str_replace(
             [DIRECTORY_SEPARATOR . 'Tests' . DIRECTORY_SEPARATOR, 'SniffTest.php'],
             [DIRECTORY_SEPARATOR . 'Sniffs' . DIRECTORY_SEPARATOR, 'Sniff.php'],
-            (new ReflectionClass(static::class))->getFileName()
+            (new \ReflectionClass(static::class))->getFileName(),
         );
     }
 
@@ -100,6 +102,6 @@ abstract class AbstractSniffTestCase extends TestCase
      */
     private function directory(): string
     {
-        return dirname((new ReflectionClass(static::class))->getFileName());
+        return dirname((new \ReflectionClass(static::class))->getFileName());
     }
 }

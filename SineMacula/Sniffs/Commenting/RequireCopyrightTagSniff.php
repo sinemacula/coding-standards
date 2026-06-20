@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
@@ -10,8 +12,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *
  * Requires an @copyright tag in the docblock of every class, interface, enum or
  * trait. The PEAR class-comment sniff already requires the docblock and @author
- * but treats @copyright as optional, so this closes that gap. Structures with no
- * docblock are left to the class-comment sniff.
+ * but treats @copyright as optional, so this closes that gap. Structures with
+ * no docblock are left to the class-comment sniff.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -23,6 +25,7 @@ final class RequireCopyrightTagSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
@@ -35,6 +38,7 @@ final class RequireCopyrightTagSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -48,7 +52,7 @@ final class RequireCopyrightTagSniff implements Sniff
             'Doc comment for "%s" must include an @copyright tag.',
             $stackPtr,
             'Missing',
-            [$phpcsFile->getDeclarationName($stackPtr)]
+            [$phpcsFile->getDeclarationName($stackPtr)],
         );
     }
 
@@ -66,7 +70,7 @@ final class RequireCopyrightTagSniff implements Sniff
             [T_WHITESPACE, T_ABSTRACT, T_FINAL, T_READONLY],
             $stackPtr - 1,
             null,
-            true
+            true,
         );
 
         if ($before !== false && $tokens[$before]['code'] === T_DOC_COMMENT_CLOSE_TAG) {
@@ -86,7 +90,8 @@ final class RequireCopyrightTagSniff implements Sniff
     private function hasCopyrightTag(array $tokens, int $closer): bool
     {
         for ($i = $tokens[$closer]['comment_opener']; $i < $closer; $i++) {
-            if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG
+            if (
+                $tokens[$i]['code']                   === T_DOC_COMMENT_TAG
                 && strtolower($tokens[$i]['content']) === '@copyright'
             ) {
                 return true;

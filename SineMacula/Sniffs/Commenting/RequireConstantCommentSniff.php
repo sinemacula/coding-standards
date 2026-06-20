@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
@@ -22,6 +24,7 @@ final class RequireConstantCommentSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_CONST];
@@ -34,6 +37,7 @@ final class RequireConstantCommentSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -46,7 +50,7 @@ final class RequireConstantCommentSniff implements Sniff
             [T_WHITESPACE, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_FINAL],
             $stackPtr - 1,
             null,
-            true
+            true,
         );
 
         if ($before !== false && $tokens[$before]['code'] === T_DOC_COMMENT_CLOSE_TAG) {

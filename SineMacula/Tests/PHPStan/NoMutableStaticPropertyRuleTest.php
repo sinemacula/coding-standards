@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Tests\PHPStan;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule;
 
 /**
@@ -12,20 +15,13 @@ use SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule;
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  *
- * @extends RuleTestCase<NoMutableStaticPropertyRule>
+ * @extends \PHPStan\Testing\RuleTestCase<\SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule>
+ *
+ * @internal
  */
+#[CoversNothing]
 final class NoMutableStaticPropertyRuleTest extends RuleTestCase
 {
-    /**
-     * Provide the rule under test.
-     *
-     * @return \PHPStan\Rules\Rule
-     */
-    protected function getRule(): Rule
-    {
-        return new NoMutableStaticPropertyRule();
-    }
-
     /**
      * Static properties are flagged; instance properties and constants are not.
      *
@@ -39,5 +35,16 @@ final class NoMutableStaticPropertyRuleTest extends RuleTestCase
                 7,
             ],
         ]);
+    }
+
+    /**
+     * Provide the rule under test.
+     *
+     * @return \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Property>
+     */
+    #[\Override]
+    protected function getRule(): Rule
+    {
+        return new NoMutableStaticPropertyRule;
     }
 }

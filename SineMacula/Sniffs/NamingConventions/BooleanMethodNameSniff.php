@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\NamingConventions;
 
 use PHP_CodeSniffer\Files\File;
@@ -31,6 +33,7 @@ final class BooleanMethodNameSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_FUNCTION];
@@ -43,6 +46,7 @@ final class BooleanMethodNameSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $properties = $phpcsFile->getMethodProperties($stackPtr);
@@ -61,7 +65,7 @@ final class BooleanMethodNameSniff implements Sniff
             'Boolean method "%s" should read as a predicate (is/has/can/...).',
             $stackPtr,
             'NotPredicate',
-            [$name]
+            [$name],
         );
     }
 

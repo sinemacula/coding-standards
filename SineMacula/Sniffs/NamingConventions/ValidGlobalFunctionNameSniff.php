@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\NamingConventions;
 
 use PHP_CodeSniffer\Files\File;
@@ -8,8 +10,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * Global function naming sniff.
  *
- * Ensures every global (non-member) function is declared in snake_case, matching
- * the naming convention used by PHP's own global functions.
+ * Ensures every global (non-member) function is declared in snake_case,
+ * matching the naming convention used by PHP's own global functions.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -27,6 +29,7 @@ final class ValidGlobalFunctionNameSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_FUNCTION];
@@ -42,6 +45,7 @@ final class ValidGlobalFunctionNameSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -60,7 +64,7 @@ final class ValidGlobalFunctionNameSniff implements Sniff
             'Global function "%s" must be declared in snake_case.',
             $stackPtr,
             'NotSnakeCase',
-            [$name]
+            [$name],
         );
     }
 }

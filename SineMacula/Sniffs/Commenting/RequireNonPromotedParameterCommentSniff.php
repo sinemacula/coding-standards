@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
@@ -8,9 +10,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * Mixed constructor parameter comment sniff.
  *
- * When a constructor mixes promoted properties with plain parameters, each plain
- * parameter must carry a preceding inline comment explaining why it is not
- * promoted.
+ * When a constructor mixes promoted properties with plain parameters, each
+ * plain parameter must carry a preceding inline comment explaining why it
+ * is not promoted.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -22,6 +24,7 @@ final class RequireNonPromotedParameterCommentSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_FUNCTION];
@@ -34,6 +37,7 @@ final class RequireNonPromotedParameterCommentSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -53,14 +57,15 @@ final class RequireNonPromotedParameterCommentSniff implements Sniff
         foreach ($params as $param) {
             $varPtr = $param['token'];
 
-            if (isset($param['property_visibility']) === false
+            if (
+                isset($param['property_visibility'])                === false
                 && $this->hasComment($tokens, $lowerBound, $varPtr) === false
             ) {
                 $phpcsFile->addError(
                     'Non-promoted parameter "%s" mixed with promoted properties must carry a preceding comment.',
                     $varPtr,
                     'Missing',
-                    [$param['name']]
+                    [$param['name']],
                 );
             }
 
@@ -69,7 +74,7 @@ final class RequireNonPromotedParameterCommentSniff implements Sniff
     }
 
     /**
-     * Determine whether the parameters mix promoted properties and plain params.
+     * Determine whether parameters mix promoted properties and plain params.
      *
      * @param  array<int, array<string, mixed>>  $params
      * @return bool

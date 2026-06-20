@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\NamingConventions;
 
 use PHP_CodeSniffer\Files\File;
@@ -27,6 +29,7 @@ final class ValidEnumCaseNameSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_ENUM_CASE];
@@ -39,6 +42,7 @@ final class ValidEnumCaseNameSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens  = $phpcsFile->getTokens();
@@ -58,7 +62,7 @@ final class ValidEnumCaseNameSniff implements Sniff
             'Enum case "%s" must be declared in SCREAMING_SNAKE_CASE.',
             $namePtr,
             'NotUpperSnakeCase',
-            [$name]
+            [$name],
         );
     }
 }
