@@ -16,5 +16,9 @@ parameters:
     checkMissingCallableSignature: true
     checkMissingVarTagTypehint: true
     checkUninitializedProperties: true
+    checkMissingOverrideMethodAttribute: true
     inferPrivatePropertyTypeFromConstructor: false
     reportUnmatchedIgnoredErrors: false
+
+rules:
+    - SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule
