@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Functions;
 
 use PHP_CodeSniffer\Files\File;
@@ -34,6 +36,7 @@ final class RequireSensitiveParameterSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_FUNCTION, T_CLOSURE, T_FN];
@@ -46,6 +49,7 @@ final class RequireSensitiveParameterSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -59,14 +63,15 @@ final class RequireSensitiveParameterSniff implements Sniff
         foreach ($phpcsFile->getMethodParameters($stackPtr) as $param) {
             $varPtr = $param['token'];
 
-            if ($this->isSensitive($param['name'])
+            if (
+                $this->isSensitive($param['name'])
                 && $this->isMarked($tokens, $lowerBound, $varPtr) === false
             ) {
                 $phpcsFile->addError(
-                    'Parameter "%s" looks sensitive and must be marked #[\\SensitiveParameter].',
+                    'Parameter "%s" looks sensitive and must be marked #[\SensitiveParameter].',
                     $varPtr,
                     'Missing',
-                    [$param['name']]
+                    [$param['name']],
                 );
             }
 
@@ -96,7 +101,7 @@ final class RequireSensitiveParameterSniff implements Sniff
     }
 
     /**
-     * Determine whether a #[\SensitiveParameter] attribute precedes the parameter.
+     * Determine whether a #[\SensitiveParameter] attribute precedes the param.
      *
      * @param  array<int, array<string, mixed>>  $tokens
      * @param  int  $from
@@ -106,7 +111,7 @@ final class RequireSensitiveParameterSniff implements Sniff
     private function isMarked(array $tokens, int $from, int $to): bool
     {
         for ($i = $from + 1; $i < $to; $i++) {
-            if ($tokens[$i]['code'] === T_STRING && $tokens[$i]['content'] === 'SensitiveParameter') {
+            if ($tokens[$i]['code'] === T_STRING && $tokens[$i]['content'] === \SensitiveParameter::class) {
                 return true;
             }
         }

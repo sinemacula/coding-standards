@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
@@ -21,6 +23,7 @@ final class RequirePromotedPropertyCommentSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_FUNCTION];
@@ -33,6 +36,7 @@ final class RequirePromotedPropertyCommentSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -46,14 +50,15 @@ final class RequirePromotedPropertyCommentSniff implements Sniff
         foreach ($phpcsFile->getMethodParameters($stackPtr) as $param) {
             $varPtr = $param['token'];
 
-            if (isset($param['property_visibility'])
+            if (
+                isset($param['property_visibility'])
                 && $this->hasDocComment($tokens, $lowerBound, $varPtr) === false
             ) {
                 $phpcsFile->addError(
                     'Promoted property "%s" must have a doc comment.',
                     $varPtr,
                     'Missing',
-                    [$param['name']]
+                    [$param['name']],
                 );
             }
 

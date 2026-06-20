@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Exceptions;
 
 use PHP_CodeSniffer\Files\File;
@@ -8,9 +10,10 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * Base exception throw sniff.
  *
- * Forbids throwing a base engine exception directly (`throw new \Exception(...)`)
- * so a domain or typed exception is used instead. The forbidden class names are
- * configurable via $forbiddenExceptions. Re-throws of a variable are not checked.
+ * Forbids throwing a base engine exception directly (`throw new
+ * \Exception(...)`) so a domain or typed exception is used instead. The
+ * forbidden class names are configurable via $forbiddenExceptions. Re-throws
+ * of a variable are not checked.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -18,13 +21,14 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 final class DisallowBaseExceptionSniff implements Sniff
 {
     /** @var array<int, string> Base exception names that may not be thrown directly. */
-    public array $forbiddenExceptions = ['Exception'];
+    public array $forbiddenExceptions = [\Exception::class];
 
     /**
      * Register the tokens this sniff listens for.
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_THROW];
@@ -37,6 +41,7 @@ final class DisallowBaseExceptionSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $end    = $phpcsFile->findNext([T_SEMICOLON, T_OPEN_CURLY_BRACKET], $stackPtr + 1);
@@ -55,7 +60,7 @@ final class DisallowBaseExceptionSniff implements Sniff
                     'Throw a domain exception, not the base "%s".',
                     $newPtr,
                     'BaseException',
-                    [$name]
+                    [$name],
                 );
 
                 return;

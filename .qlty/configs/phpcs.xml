@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<ruleset name="SineMacula Project">
+
+    <!--
+        This repository IS the sinemacula/coding-standards package, so the shared
+        standard is referenced from the working tree by path rather than by its
+        installed name (it is not present as a vendor package in qlty's tool
+        sandbox). A standalone autoloader resolves the custom sniffs' base classes
+        under src/ without the project vendor, which qlty Cloud does not install.
+    -->
+    <rule ref="../../SineMacula/ruleset.xml"/>
+    <autoload>autoload.php</autoload>
+
+    <file>../../src</file>
+    <file>../../SineMacula/Sniffs</file>
+    <file>../../SineMacula/Tests</file>
+
+    <!--
+        Scoped exemptions for this repo's PHP_CodeSniffer extension code. The
+        shared standard targets application code; these rules are physically
+        impossible to satisfy in sniff code and ship unchanged to consumers.
+
+        - ParameterTypeHint / ScalarTypeHintMissing: PHP_CodeSniffer's
+        Sniff::process(File $phpcsFile, $stackPtr) interface leaves $stackPtr
+        untyped, and PHP fatals if an implementation narrows it to int.
+        - RequireReadonlyPublicProperty: PHP_CodeSniffer assigns sniff
+        configuration properties from the ruleset at runtime, so they cannot
+        be readonly.
+    -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
+        <exclude-pattern>*/Sniffs/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ScalarTypeHintMissing">
+        <exclude-pattern>*/Sniffs/*</exclude-pattern>
+    </rule>
+    <rule ref="SineMacula.Classes.RequireReadonlyPublicProperty">
+        <exclude-pattern>*/Sniffs/*</exclude-pattern>
+    </rule>
+
+    <!--
+        Every PHP file in this repo is tooling (sniffs, the PHPStan rule, the
+        cs-fixer config factory and their tests) that handles arbitrary token
+        and configuration values, so the no-mixed rule cannot be satisfied here.
+    -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint">
+        <exclude-pattern>*/src/*</exclude-pattern>
+        <exclude-pattern>*/Sniffs/*</exclude-pattern>
+        <exclude-pattern>*/Tests/*</exclude-pattern>
+    </rule>
+
+    <!--
+        PHPStan's Rule::processNode(Node $node, Scope $scope) interface mandates
+        the $scope parameter even for rules that do not consult the scope.
+    -->
+    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter">
+        <exclude-pattern>*/PHPStan/*</exclude-pattern>
+    </rule>
+
+</ruleset>

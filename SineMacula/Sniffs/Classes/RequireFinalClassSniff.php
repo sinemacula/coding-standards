@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
@@ -22,6 +24,7 @@ final class RequireFinalClassSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_CLASS];
@@ -34,6 +37,7 @@ final class RequireFinalClassSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $properties = $phpcsFile->getClassProperties($stackPtr);
@@ -50,7 +54,7 @@ final class RequireFinalClassSniff implements Sniff
             'Class "%s" must be declared final or abstract (or marked @inheritable).',
             $stackPtr,
             'NotFinal',
-            [$phpcsFile->getDeclarationName($stackPtr)]
+            [$phpcsFile->getDeclarationName($stackPtr)],
         );
     }
 
@@ -68,7 +72,7 @@ final class RequireFinalClassSniff implements Sniff
             [T_WHITESPACE, T_ABSTRACT, T_FINAL, T_READONLY],
             $stackPtr - 1,
             null,
-            true
+            true,
         );
 
         if ($before === false || $tokens[$before]['code'] !== T_DOC_COMMENT_CLOSE_TAG) {
@@ -76,7 +80,8 @@ final class RequireFinalClassSniff implements Sniff
         }
 
         for ($i = $tokens[$before]['comment_opener']; $i < $before; $i++) {
-            if ($tokens[$i]['code'] === T_DOC_COMMENT_TAG
+            if (
+                $tokens[$i]['code']                   === T_DOC_COMMENT_TAG
                 && strtolower($tokens[$i]['content']) === '@inheritable'
             ) {
                 return true;

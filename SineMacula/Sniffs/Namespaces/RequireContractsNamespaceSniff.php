@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Namespaces;
 
 use PHP_CodeSniffer\Files\File;
@@ -17,7 +19,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class RequireContractsNamespaceSniff implements Sniff
 {
-    /** The namespace segment that interfaces must live under. */
+    /** @var string The namespace segment that interfaces must live under. */
     public string $contractsSegment = 'Contracts';
 
     /**
@@ -25,6 +27,7 @@ final class RequireContractsNamespaceSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_INTERFACE];
@@ -37,6 +40,7 @@ final class RequireContractsNamespaceSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $segments = explode('\\', $this->namespace($phpcsFile, $stackPtr));
@@ -49,7 +53,7 @@ final class RequireContractsNamespaceSniff implements Sniff
             'Interface "%s" must be declared in a "%s" namespace.',
             $stackPtr,
             'NotInContracts',
-            [$phpcsFile->getDeclarationName($stackPtr), $this->contractsSegment]
+            [$phpcsFile->getDeclarationName($stackPtr), $this->contractsSegment],
         );
     }
 
@@ -73,9 +77,11 @@ final class RequireContractsNamespaceSniff implements Sniff
         $name = '';
 
         for ($i = $nsPtr + 1; $i < $end; $i++) {
-            if (in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
-                $name .= $tokens[$i]['content'];
+            if (!in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
+                continue;
             }
+
+            $name .= $tokens[$i]['content'];
         }
 
         return trim($name, '\\');

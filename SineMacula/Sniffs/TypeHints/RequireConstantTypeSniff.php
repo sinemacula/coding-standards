@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\TypeHints;
 
 use PHP_CodeSniffer\Files\File;
@@ -21,6 +23,7 @@ final class RequireConstantTypeSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_CONST];
@@ -30,13 +33,14 @@ final class RequireConstantTypeSniff implements Sniff
      * Process a constant declaration token.
      *
      * Global constants cannot be typed, so only constants declared inside an
-     * object structure are checked. A type sits between `const` and the name; an
-     * untyped constant has the name immediately after `const`.
+     * object structure are checked. A type sits between `const` and the name;
+     * an untyped constant has the name immediately after `const`.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -62,7 +66,7 @@ final class RequireConstantTypeSniff implements Sniff
             'Class constant "%s" must declare a type.',
             $namePtr,
             'MissingType',
-            [$tokens[$namePtr]['content']]
+            [$tokens[$namePtr]['content']],
         );
     }
 }

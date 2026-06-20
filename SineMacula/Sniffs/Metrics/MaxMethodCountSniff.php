@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Metrics;
 
 use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
@@ -16,7 +18,7 @@ use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
  */
 final class MaxMethodCountSniff extends AbstractMetricSniff
 {
-    /** The maximum number of methods allowed on a single structure. */
+    /** @var int The maximum number of methods allowed on a single structure. */
     public int $maxMethods = 20;
 
     /**
@@ -24,6 +26,7 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
@@ -36,14 +39,17 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
      * @param  int  $stackPtr
      * @return int
      */
+    #[\Override]
     protected function measure(array $tokens, int $stackPtr): int
     {
         $count = 0;
 
         for ($i = $tokens[$stackPtr]['scope_opener'] + 1; $i < $tokens[$stackPtr]['scope_closer']; $i++) {
-            if ($tokens[$i]['code'] === T_FUNCTION && array_key_last($tokens[$i]['conditions']) === $stackPtr) {
-                $count++;
+            if ($tokens[$i]['code'] !== T_FUNCTION || array_key_last($tokens[$i]['conditions']) !== $stackPtr) {
+                continue;
             }
+
+            $count++;
         }
 
         return $count;
@@ -54,6 +60,7 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
      *
      * @return int
      */
+    #[\Override]
     protected function limit(): int
     {
         return $this->maxMethods;
@@ -64,6 +71,7 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
      *
      * @return string
      */
+    #[\Override]
     protected function message(): string
     {
         return 'Structure declares %d methods; the maximum is %d.';
@@ -74,6 +82,7 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
      *
      * @return string
      */
+    #[\Override]
     protected function errorCode(): string
     {
         return 'TooManyMethods';

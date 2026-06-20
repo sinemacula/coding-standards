@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Metrics;
 
 use PHP_CodeSniffer\Util\Tokens;
@@ -18,7 +20,7 @@ use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
  */
 final class MethodLengthSniff extends AbstractMetricSniff
 {
-    /** The maximum number of significant lines allowed in a body. */
+    /** @var int The maximum number of significant lines allowed in a body. */
     public int $maxLength = 50;
 
     /**
@@ -26,6 +28,7 @@ final class MethodLengthSniff extends AbstractMetricSniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_FUNCTION];
@@ -38,14 +41,17 @@ final class MethodLengthSniff extends AbstractMetricSniff
      * @param  int  $stackPtr
      * @return int
      */
+    #[\Override]
     protected function measure(array $tokens, int $stackPtr): int
     {
         $lines = [];
 
         for ($i = $tokens[$stackPtr]['scope_opener'] + 1; $i < $tokens[$stackPtr]['scope_closer']; $i++) {
-            if (isset(Tokens::$emptyTokens[$tokens[$i]['code']]) === false) {
-                $lines[$tokens[$i]['line']] = true;
+            if (isset(Tokens::$emptyTokens[$tokens[$i]['code']]) !== false) {
+                continue;
             }
+
+            $lines[$tokens[$i]['line']] = true;
         }
 
         return count($lines);
@@ -56,6 +62,7 @@ final class MethodLengthSniff extends AbstractMetricSniff
      *
      * @return int
      */
+    #[\Override]
     protected function limit(): int
     {
         return $this->maxLength;
@@ -66,6 +73,7 @@ final class MethodLengthSniff extends AbstractMetricSniff
      *
      * @return string
      */
+    #[\Override]
     protected function message(): string
     {
         return 'Method body has %d lines; the maximum is %d.';
@@ -76,6 +84,7 @@ final class MethodLengthSniff extends AbstractMetricSniff
      *
      * @return string
      */
+    #[\Override]
     protected function errorCode(): string
     {
         return 'TooLong';

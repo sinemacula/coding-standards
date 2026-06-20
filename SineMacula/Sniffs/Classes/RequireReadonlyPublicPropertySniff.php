@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
-use Throwable;
 
 /**
  * Readonly public property sniff.
@@ -24,6 +25,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_VARIABLE, T_FUNCTION];
@@ -36,6 +38,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_FUNCTION) {
@@ -58,21 +61,24 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     {
         try {
             $properties = $phpcsFile->getMemberProperties($stackPtr);
-        } catch (Throwable) {
+        } catch (\Throwable) {
             return;
         }
 
-        if ($properties['is_static'] === false
-            && $properties['scope'] === 'public'
-            && $properties['is_readonly'] === false
+        if (
+            $properties['is_static']      !== false
+            || $properties['scope']       !== 'public'
+            || $properties['is_readonly'] !== false
         ) {
-            $phpcsFile->addError(
-                'Public property "%s" must be readonly; mutable public state breaks encapsulation.',
-                $stackPtr,
-                'Mutable',
-                [$phpcsFile->getTokens()[$stackPtr]['content']]
-            );
+            return;
         }
+
+        $phpcsFile->addError(
+            'Public property "%s" must be readonly; mutable public state breaks encapsulation.',
+            $stackPtr,
+            'Mutable',
+            [$phpcsFile->getTokens()[$stackPtr]['content']],
+        );
     }
 
     /**
@@ -91,16 +97,19 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
         }
 
         foreach ($phpcsFile->getMethodParameters($stackPtr) as $parameter) {
-            if (($parameter['property_visibility'] ?? null) === 'public'
-                && ($parameter['property_readonly'] ?? false) === false
+            if (
+                ($parameter['property_visibility'] ?? null)   !== 'public'
+                || ($parameter['property_readonly'] ?? false) !== false
             ) {
-                $phpcsFile->addError(
-                    'Public property "%s" must be readonly; mutable public state breaks encapsulation.',
-                    $parameter['token'],
-                    'Mutable',
-                    [$parameter['name']]
-                );
+                continue;
             }
+
+            $phpcsFile->addError(
+                'Public property "%s" must be readonly; mutable public state breaks encapsulation.',
+                $parameter['token'],
+                'Mutable',
+                [$parameter['name']],
+            );
         }
     }
 }

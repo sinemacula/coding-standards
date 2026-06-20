@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
@@ -22,6 +24,7 @@ final class ConsistentEnumCaseCommentsSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_ENUM];
@@ -34,6 +37,7 @@ final class ConsistentEnumCaseCommentsSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -50,13 +54,15 @@ final class ConsistentEnumCaseCommentsSniff implements Sniff
         }
 
         foreach ($cases as $casePtr => $hasComment) {
-            if ($hasComment === false) {
-                $phpcsFile->addError(
-                    'Enum case must have a doc comment because other cases in this enum are documented.',
-                    $casePtr,
-                    'Inconsistent'
-                );
+            if ($hasComment !== false) {
+                continue;
             }
+
+            $phpcsFile->addError(
+                'Enum case must have a doc comment because other cases in this enum are documented.',
+                $casePtr,
+                'Inconsistent',
+            );
         }
     }
 
@@ -73,9 +79,11 @@ final class ConsistentEnumCaseCommentsSniff implements Sniff
         $cases  = [];
 
         for ($i = $tokens[$stackPtr]['scope_opener'] + 1; $i < $tokens[$stackPtr]['scope_closer']; $i++) {
-            if ($tokens[$i]['code'] === T_ENUM_CASE && array_key_last($tokens[$i]['conditions']) === $stackPtr) {
-                $cases[$i] = $this->hasDocComment($phpcsFile, $i);
+            if ($tokens[$i]['code'] !== T_ENUM_CASE || array_key_last($tokens[$i]['conditions']) !== $stackPtr) {
+                continue;
             }
+
+            $cases[$i] = $this->hasDocComment($phpcsFile, $i);
         }
 
         return $cases;

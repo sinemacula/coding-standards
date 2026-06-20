@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\CodingStandards\Sniffs;
 
 use PHP_CodeSniffer\Files\File;
@@ -8,10 +10,11 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * Base sniff for size metrics measured across a token scope.
  *
- * Subclasses register the structures to inspect and implement measure() to turn
- * a scope into a number; this base flags any structure whose measure exceeds the
- * configured limit. It lives under the Composer-autoloaded namespace (not the
- * PHP_CodeSniffer-scanned Sniffs tree) so it is never registered as a sniff.
+ * Subclasses register the structures to inspect and implement measure() to
+ * turn a scope into a number; this base flags any structure whose measure
+ * exceeds the configured limit. It lives under the Composer-autoloaded
+ * namespace (not the PHP_CodeSniffer-scanned Sniffs tree) so it is never
+ * registered as a sniff.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -19,12 +22,13 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 abstract class AbstractMetricSniff implements Sniff
 {
     /**
-     * Process a structure token, flagging it when its measure exceeds the limit.
+     * Process a structure token, flagging when its measure exceeds the limit.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
@@ -35,9 +39,11 @@ abstract class AbstractMetricSniff implements Sniff
 
         $value = $this->measure($tokens, $stackPtr);
 
-        if ($value > $this->limit()) {
-            $phpcsFile->addError($this->message(), $stackPtr, $this->errorCode(), [$value, $this->limit()]);
+        if ($value <= $this->limit()) {
+            return;
         }
+
+        $phpcsFile->addError($this->message(), $stackPtr, $this->errorCode(), [$value, $this->limit()]);
     }
 
     /**

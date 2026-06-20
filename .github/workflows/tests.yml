@@ -77,3 +77,32 @@ jobs:
                 with:
                     oidc: true
                     files: clover.xml
+
+    # ==========================================================================
+    # JOB: STATIC ANALYSIS
+    # ==========================================================================
+    # PHPStan dogfoods the SineMacula standard on this repo's own sniffs and rule.
+    # It runs here rather than via qlty: qlty Cloud never runs composer install, so
+    # it cannot autoload the in-repo rule or scan PHP_CodeSniffer's non-PSR-4 source.
+    static-analysis:
+        name: Static Analysis
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
+                    coverage: none
+                    tools: composer
+
+            -   name: Install dependencies
+                run: composer install --prefer-dist --no-interaction --no-progress
+
+            -   name: PHPStan
+                run: composer analyse

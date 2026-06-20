@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
@@ -19,7 +21,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class CommentLineLengthSniff implements Sniff
 {
-    /** The maximum number of characters a comment line may occupy. */
+    /** @var int The maximum number of characters a comment line may occupy. */
     public int $maxLength = 80;
 
     /**
@@ -27,6 +29,7 @@ final class CommentLineLengthSniff implements Sniff
      *
      * @return array<int, int|string>
      */
+    #[\Override]
     public function register(): array
     {
         return [T_OPEN_TAG];
@@ -39,6 +42,7 @@ final class CommentLineLengthSniff implements Sniff
      * @param  int  $stackPtr
      * @return void
      */
+    #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
         if ($phpcsFile->findPrevious(T_OPEN_TAG, $stackPtr - 1) !== false) {
@@ -58,7 +62,7 @@ final class CommentLineLengthSniff implements Sniff
                 'Comment line must not exceed %d characters.',
                 $info['ptr'],
                 'TooLong',
-                [$this->maxLength]
+                [$this->maxLength],
             );
         }
     }
@@ -99,11 +103,14 @@ final class CommentLineLengthSniff implements Sniff
                 $tags[$line] = true;
             }
 
-            if (isset($first[$line]) === false
-                && in_array($token['code'], [T_WHITESPACE, T_DOC_COMMENT_WHITESPACE], true) === false
+            if (
+                isset($first[$line])                                                        !== false
+                || in_array($token['code'], [T_WHITESPACE, T_DOC_COMMENT_WHITESPACE], true) !== false
             ) {
-                $first[$line] = $ptr;
+                continue;
             }
+
+            $first[$line] = $ptr;
         }
 
         return $this->filterCommentLines($tokens, $first, $tags);
@@ -131,9 +138,11 @@ final class CommentLineLengthSniff implements Sniff
         $result = [];
 
         foreach ($first as $line => $ptr) {
-            if (in_array($tokens[$ptr]['code'], $starters, true)) {
-                $result[$line] = ['ptr' => $ptr, 'tag' => isset($tags[$line])];
+            if (!in_array($tokens[$ptr]['code'], $starters, true)) {
+                continue;
             }
+
+            $result[$line] = ['ptr' => $ptr, 'tag' => isset($tags[$line])];
         }
 
         return $result;
@@ -142,8 +151,8 @@ final class CommentLineLengthSniff implements Sniff
     /**
      * Determine whether an over-long line cannot be wrapped to fit.
      *
-     * A line is unbreakable when its overflow is a single token (an FQCN or URL)
-     * that would still exceed the limit on a line of its own.
+     * A line is unbreakable when its overflow is a single token (an FQCN or
+     * URL) that would still exceed the limit on a line of its own.
      *
      * @param  string  $text
      * @return bool
