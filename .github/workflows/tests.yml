@@ -54,22 +54,22 @@ jobs:
                 with:
                     persist-credentials: false
 
-            # The shared action provisions pcov, but php_codesniffer loads sniffs
-            # through its own include()-based autoloader, which pcov does not
-            # instrument. Xdebug is added so the coverage script can use it.
+            # This repo diverges from the shared setup-php action, which pins the
+            # coverage driver to pcov: php_codesniffer loads sniffs through its own
+            # include()-based autoloader, which pcov does not instrument (it reports
+            # 0%). Xdebug is the only driver that sees them, so it is set directly.
             -   name: Setup PHP
-                uses: sinemacula/.github/.github/actions/setup-php@v1.1.1
+                uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.php }}
-                    extensions: xdebug
+                    coverage: xdebug
+                    tools: composer
 
-            # The shared action pins the coverage driver to pcov (which cannot see
-            # php_codesniffer's include()-loaded sniffs). XDEBUG_MODE wins over that,
-            # forcing Xdebug into coverage mode; test:coverage then disables pcov.
+            -   name: Install dependencies
+                run: composer install --prefer-dist --no-interaction --no-progress
+
             -   name: PHPUnit
                 run: composer test:coverage
-                env:
-                    XDEBUG_MODE: coverage
 
             -   name: Publish code coverage
                 if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.php == '8.3' }}
