@@ -182,6 +182,13 @@
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.UselessAnnotation"/>
     </rule>
 
+    <!--
+        Disallow the `mixed` type hint (all-or-nothing; there is no "except at boundaries"
+        option). Suppress with `// phpcs:ignore SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`
+        at genuine boundaries (external input, JSON) or where an overridden signature forces it.
+    -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint"/>
+
     <!-- Require constructor property promotion when a parameter is directly assigned to a property -->
     <rule ref="SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion"/>
 
