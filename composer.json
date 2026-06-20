@@ -40,6 +40,27 @@
         "phpunit/phpunit": "^12"
     },
     "scripts": {
-        "test": "phpunit"
+        "check": [
+            "qlty check"
+        ],
+        "format": [
+            "qlty fmt"
+        ],
+        "smells": [
+            "qlty smells"
+        ],
+        "test": [
+            "@php vendor/bin/phpunit"
+        ],
+        "test:coverage": [
+            "@php -d pcov.enabled=0 -d xdebug.mode=coverage vendor/bin/phpunit --coverage-clover=clover.xml"
+        ]
+    },
+    "scripts-descriptions": {
+        "check": "Run static analysis and lint checks via qlty.",
+        "format": "Format codebase using qlty.",
+        "smells": "Report code smells (duplication, complexity) via qlty.",
+        "test": "Run the PHPUnit sniff test suite.",
+        "test:coverage": "Run the PHPUnit sniff test suite with Clover coverage output (requires Xdebug)."
     }
 }

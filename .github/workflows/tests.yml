@@ -1,0 +1,79 @@
+# ==============================================================================
+# TESTS
+# ==============================================================================
+name: Tests
+
+# ==============================================================================
+# TRIGGERS
+# ==============================================================================
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        types: [ opened, synchronize, reopened, ready_for_review ]
+    workflow_dispatch:
+
+# ==============================================================================
+# CONCURRENCY
+# ==============================================================================
+concurrency:
+    group: tests-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+# ==============================================================================
+# PERMISSIONS
+# ==============================================================================
+permissions:
+    contents: read
+    id-token: write
+
+# ==============================================================================
+# DEFAULTS
+# ==============================================================================
+defaults:
+    run:
+        shell: bash
+
+jobs:
+
+    # ==========================================================================
+    # JOB: TESTS
+    # ==========================================================================
+    tests:
+        name: Test / PHP ${{ matrix.php }}
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ 8.3, 8.4 ]
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            # This repo diverges from the shared setup-php action, which pins the
+            # coverage driver to pcov: php_codesniffer loads sniffs through its own
+            # include()-based autoloader, which pcov does not instrument (it reports
+            # 0%). Xdebug is the only driver that sees them, so it is set directly.
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: xdebug
+                    tools: composer
+
+            -   name: Install dependencies
+                run: composer install --prefer-dist --no-interaction --no-progress
+
+            -   name: PHPUnit
+                run: composer test:coverage
+
+            -   name: Publish code coverage
+                if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.php == '8.3' }}
+                uses: qltysh/qlty-action/coverage@v2
+                with:
+                    oidc: true
+                    files: clover.xml
