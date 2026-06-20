@@ -45,7 +45,7 @@ final class ValidEnumCaseNameSniff implements Sniff
         $namePtr = $phpcsFile->findNext(T_STRING, $stackPtr + 1);
 
         if ($namePtr === false) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $name = $tokens[$namePtr]['content'];

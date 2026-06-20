@@ -21,3 +21,10 @@ class Example
         $result = $this->compute($argument); // a trailing comment that pushes this code line beyond eighty
     }
 }
+
+//ThisIsASingleVeryLongCommentTokenWithoutAnySpacesThatExceedsTheEightyCharacterLimitForSureXX
+
+?>
+<?php
+
+// A short comment in a second PHP block.

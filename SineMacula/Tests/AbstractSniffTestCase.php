@@ -57,10 +57,26 @@ abstract class AbstractSniffTestCase extends TestCase
         $ruleset->registerSniffs([$this->sniffFile()], [], []);
         $ruleset->populateTokenListeners();
 
+        foreach ($ruleset->sniffs as $sniff) {
+            foreach ($this->sniffProperties() as $property => $value) {
+                $sniff->$property = $value;
+            }
+        }
+
         $file = new LocalFile($this->directory() . DIRECTORY_SEPARATOR . $fixture, $ruleset, $config);
         $file->process();
 
         return $file;
+    }
+
+    /**
+     * Property overrides to apply to the sniff under test (e.g. lowered limits).
+     *
+     * @return array<string, mixed>
+     */
+    protected function sniffProperties(): array
+    {
+        return [];
     }
 
     /**

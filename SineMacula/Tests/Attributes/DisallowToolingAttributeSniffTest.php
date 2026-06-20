@@ -20,6 +20,6 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
      */
     public function testFlagsToolingAttributes(): void
     {
-        $this->assertErrorsOnLines('DisallowToolingAttribute.inc', [11, 17, 22]);
+        $this->assertErrorsOnLines('DisallowToolingAttribute.inc', [12, 18, 23]);
     }
 }
