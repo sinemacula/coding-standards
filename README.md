@@ -8,7 +8,7 @@
 
 Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.
 
-This package ships config files only — no runtime dependencies. Consuming projects install the tools themselves.
+This package ships config files only - no runtime dependencies. Consuming projects install the tools themselves.
 
 ## Installation
 
@@ -120,7 +120,7 @@ Reference this repository as a source in your project's `.qlty/qlty.toml`:
 [[source]]
 name = "sinemacula"
 repository = "https://github.com/sinemacula/coding-standards"
-tag = "v1.0.0"
+tag = "v1.3.0"
 ```
 
 ## What's Included
