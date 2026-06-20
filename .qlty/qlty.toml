@@ -47,6 +47,11 @@ exclude_patterns = [
 test_patterns = [
     "**/test/**",
     "**/spec/**",
+    # This repo follows PHPUnit's PascalCase convention (SineMacula/Tests, *Test.php),
+    # which the default lowercase patterns below do not match; without these, qlty
+    # treats the sniff tests as source and reports their boilerplate as duplication.
+    "**/Tests/**",
+    "**/*Test.php",
     "**/*.test.*",
     "**/*.spec.*",
     "**/*_test.*",
