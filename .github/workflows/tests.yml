@@ -63,8 +63,13 @@ jobs:
                     php-version: ${{ matrix.php }}
                     extensions: xdebug
 
+            # The shared action pins the coverage driver to pcov (which cannot see
+            # php_codesniffer's include()-loaded sniffs). XDEBUG_MODE wins over that,
+            # forcing Xdebug into coverage mode; test:coverage then disables pcov.
             -   name: PHPUnit
                 run: composer test:coverage
+                env:
+                    XDEBUG_MODE: coverage
 
             -   name: Publish code coverage
                 if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' && matrix.php == '8.3' }}
