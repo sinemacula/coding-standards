@@ -147,6 +147,43 @@ tag = "<version>"
 | `security/.gitleaks.toml`     | Gitleaks     | Secret-detection ruleset                               |
 | `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check |
 
+## Rules
+
+These are the custom rules this package enforces on top of PSR-12. A deliberate exception can be bypassed with the
+native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <identifier>` for a rule.
+
+### PHPCS sniffs
+
+| Sniff | Enforces |
+|-------|----------|
+| `SineMacula.Attributes.DisallowToolingAttribute` | No IDE/tooling attributes (e.g. `JetBrains\PhpStorm`). |
+| `SineMacula.Classes.RequireFinalClass` | Concrete classes must be `final` or `abstract` (`@inheritable` opts out). |
+| `SineMacula.Classes.RequireReadonlyPublicProperty` | Public properties (declared or promoted) must be `readonly`. |
+| `SineMacula.Commenting.CommentLineLength` | Standalone comment lines must not exceed 80 chars (FQCN/URL exempt). |
+| `SineMacula.Commenting.ConsistentEnumCaseComments` | Enum case docs are all-or-nothing within an enum. |
+| `SineMacula.Commenting.RequireConstantComment` | Every class/interface/enum/trait constant needs a doc comment. |
+| `SineMacula.Commenting.RequireCopyrightTag` | Class/interface/enum/trait docblocks must carry an `@copyright` tag. |
+| `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment. |
+| `SineMacula.Commenting.RequirePromotedPropertyComment` | Every constructor-promoted property needs a doc comment. |
+| `SineMacula.Exceptions.DisallowBaseException` | No throwing the base `\Exception`; throw a domain exception. |
+| `SineMacula.Functions.RequireSensitiveParameter` | Secret-named params need `#[\SensitiveParameter]`. |
+| `SineMacula.Metrics.MaxMethodCount` | A class/interface/trait/enum may declare at most 20 methods. |
+| `SineMacula.Metrics.MethodLength` | A method body may have at most 50 significant lines. |
+| `SineMacula.Namespaces.RequireConcernsNamespace` | Traits must live under a `Concerns` namespace segment. |
+| `SineMacula.Namespaces.RequireContractsNamespace` | Interfaces must live under a `Contracts` namespace segment. |
+| `SineMacula.Namespaces.RequireEnumsNamespace` | Enums must live under an `Enums` namespace segment. |
+| `SineMacula.NamingConventions.BooleanMethodName` | `bool`-returning methods must read as predicates. |
+| `SineMacula.NamingConventions.DisallowInterfacePrefix` | Interface names must not use the Hungarian `I` prefix. |
+| `SineMacula.NamingConventions.ValidEnumCaseName` | Enum cases must be `SCREAMING_SNAKE_CASE`. |
+| `SineMacula.NamingConventions.ValidGlobalFunctionName` | Global functions must be declared in `snake_case`. |
+| `SineMacula.TypeHints.RequireConstantType` | Class/interface/enum/trait constants must declare a native type. |
+
+### PHPStan rules
+
+| Identifier | Enforces |
+|------------|----------|
+| `sineMacula.mutableStaticProperty` | No mutable static state; use instance state or a constant instead. |
+
 ## Requirements
 
 - PHP ^8.3 (Composer package)
