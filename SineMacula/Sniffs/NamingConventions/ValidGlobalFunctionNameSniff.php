@@ -18,7 +18,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class ValidGlobalFunctionNameSniff implements Sniff
 {
-    /** The pattern a valid global function name must match. */
+    /** @var string The pattern a valid global function name must match. */
     private const string NAME_PATTERN = '/^[a-z][a-z0-9_]*$/';
 
     /**

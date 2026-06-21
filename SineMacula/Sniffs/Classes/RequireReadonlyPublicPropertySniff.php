@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace SineMacula\Sniffs\Classes;
 
+use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -61,7 +62,8 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     {
         try {
             $properties = $phpcsFile->getMemberProperties($stackPtr);
-        } catch (\Throwable) {
+        } catch (RuntimeException) {
+            // Not a class member variable (e.g. a local); nothing to check.
             return;
         }
 
