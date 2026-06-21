@@ -9,6 +9,12 @@ includes:
 parameters:
     level: 9
 
+    # PHP_CodeSniffer's File API declares some returns more tightly in 4.x than
+    # 3.x via PHPDoc (e.g. getDeclarationName(): string), so version-defensive
+    # null guards read as "always false" under whichever major is installed.
+    # Treat stub PHPDoc as uncertain so those guards stay valid on both.
+    treatPhpDocTypesAsCertain: false
+
     # PHP_CodeSniffer ships a bespoke autoloader (its classes are not on the
     # Composer classmap), so its source is scanned explicitly.
     scanDirectories:

@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Functions;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
  * Sensitive parameter attribute sniff.
@@ -19,6 +20,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class RequireSensitiveParameterSniff implements Sniff
 {
+    use ResolvesQualifiedNames;
+
     /** @var array<int, string> Lower-case keywords that mark a parameter as sensitive. */
     public array $sensitiveNames = [
         'password',
@@ -110,8 +113,13 @@ final class RequireSensitiveParameterSniff implements Sniff
      */
     private function isMarked(array $tokens, int $from, int $to): bool
     {
+        $names = [\SensitiveParameter::class, '\\' . \SensitiveParameter::class];
+
         for ($i = $from + 1; $i < $to; $i++) {
-            if ($tokens[$i]['code'] === T_STRING && $tokens[$i]['content'] === \SensitiveParameter::class) {
+            if (
+                in_array($tokens[$i]['code'], $this->nameTokenCodes(), true)
+                && in_array($tokens[$i]['content'], $names, true)
+            ) {
                 return true;
             }
         }

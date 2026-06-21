@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Attributes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
  * Disallow IDE / tooling attributes.
@@ -21,6 +22,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class DisallowToolingAttributeSniff implements Sniff
 {
+    use ResolvesQualifiedNames;
+
     /** @var array<int, string> Namespaces whose attributes are forbidden. */
     public array $forbiddenNamespaces = ['JetBrains\PhpStorm'];
 
@@ -83,7 +86,7 @@ final class DisallowToolingAttributeSniff implements Sniff
         $i      = $opener + 1;
 
         while ($i < $closer) {
-            if (in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true) === false) {
+            if (in_array($tokens[$i]['code'], $this->nameTokenCodes(), true) === false) {
                 $i++;
 
                 continue;
@@ -183,7 +186,7 @@ final class DisallowToolingAttributeSniff implements Sniff
     {
         $name = '';
 
-        while ($i < $end && in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
+        while ($i < $end && in_array($tokens[$i]['code'], $this->nameTokenCodes(), true)) {
             $name .= $tokens[$i]['content'];
             $i++;
         }
