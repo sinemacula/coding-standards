@@ -20,7 +20,8 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
 {
     /**
      * Boolean methods whose name is not a predicate are flagged; predicate
-     * names, non-boolean returns, and magic methods are not.
+     * names, the handle() convention, non-boolean returns, and magic methods
+     * are not.
      *
      * @return void
      */

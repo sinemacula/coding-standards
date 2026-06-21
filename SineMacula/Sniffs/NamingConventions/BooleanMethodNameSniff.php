@@ -11,21 +11,22 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Boolean method name sniff.
  *
  * A method (or function) that returns `bool` should read as a predicate, i.e.
- * begin with one of the configured predicate verbs (is/has/can/...). The verb
- * list is configurable via $allowedPrefixes; magic methods are exempt.
+ * begin with one of the configured prefixes - a predicate verb (is/has/can/...)
+ * or a conventional handler name (handle). The list is configurable via
+ * $allowedPrefixes; magic methods are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 final class BooleanMethodNameSniff implements Sniff
 {
-    /** @var array<int, string> Verbs a boolean method name may begin with. */
+    /** @var array<int, string> Prefixes a boolean method name may begin with. */
     public array $allowedPrefixes = [
         'is', 'are', 'was', 'were', 'has', 'have', 'had', 'can', 'could',
         'should', 'shall', 'will', 'would', 'must', 'may', 'might', 'do',
         'does', 'did', 'contains', 'supports', 'allows', 'accepts', 'matches',
         'equals', 'includes', 'requires', 'exists', 'needs', 'wants', 'knows',
-        'owns', 'uses', 'expects', 'starts', 'ends', 'begins', 'lacks',
+        'owns', 'uses', 'expects', 'starts', 'ends', 'begins', 'lacks', 'handle',
     ];
 
     /**
