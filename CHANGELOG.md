@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/sinemacula/coding-standards/compare/v1.5.0...v1.5.1) (2026-06-21)
+
+
+### Bug Fixes
+
+* **qlty:** accept phpcs 4.x exit code 3 so findings aren't dropped ([#51](https://github.com/sinemacula/coding-standards/issues/51)) ([df42e16](https://github.com/sinemacula/coding-standards/commit/df42e16d2b16f09e9d9ecaffec92c01fd2d69f17))
+
 ## [1.5.0](https://github.com/sinemacula/coding-standards/compare/v1.4.0...v1.5.0) (2026-06-21)
 
 
