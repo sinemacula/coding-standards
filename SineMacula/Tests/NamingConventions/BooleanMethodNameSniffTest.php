@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace SineMacula\Tests\NamingConventions;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
+use SineMacula\Sniffs\NamingConventions\BooleanMethodNameSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
 /**
@@ -15,7 +16,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(BooleanMethodNameSniff::class)]
 final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
 {
     /**

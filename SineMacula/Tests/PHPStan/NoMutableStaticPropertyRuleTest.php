@@ -6,7 +6,7 @@ namespace SineMacula\Tests\PHPStan;
 
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
 use SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule;
 
 /**
@@ -19,7 +19,7 @@ use SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(NoMutableStaticPropertyRule::class)]
 final class NoMutableStaticPropertyRuleTest extends RuleTestCase
 {
     /**

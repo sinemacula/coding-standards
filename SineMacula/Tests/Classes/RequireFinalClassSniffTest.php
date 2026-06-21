@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace SineMacula\Tests\Classes;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
+use SineMacula\Sniffs\Classes\RequireFinalClassSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
 /**
@@ -15,7 +16,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(RequireFinalClassSniff::class)]
 final class RequireFinalClassSniffTest extends AbstractSniffTestCase
 {
     /**

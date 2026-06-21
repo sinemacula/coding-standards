@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace SineMacula\Tests\TypeHints;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
+use SineMacula\Sniffs\TypeHints\RequireConstantTypeSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
 /**
@@ -15,7 +16,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(RequireConstantTypeSniff::class)]
 final class RequireConstantTypeSniffTest extends AbstractSniffTestCase
 {
     /**

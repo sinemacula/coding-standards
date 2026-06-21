@@ -122,7 +122,7 @@ final class DisallowToolingAttributeSniff implements Sniff
             $import = $this->parseImport($phpcsFile, $ptr);
 
             if ($import === null) {
-                continue;
+                continue; // @codeCoverageIgnore
             }
 
             $map[$import[0]] = $import[1];

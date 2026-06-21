@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace SineMacula\Tests\Classes;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
+use SineMacula\Sniffs\Classes\RequireReadonlyPublicPropertySniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
 /**
@@ -15,7 +16,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(RequireReadonlyPublicPropertySniff::class)]
 final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
 {
     /**

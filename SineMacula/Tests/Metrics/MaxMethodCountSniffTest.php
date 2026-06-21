@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace SineMacula\Tests\Metrics;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
+use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
+use SineMacula\Sniffs\Metrics\MaxMethodCountSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
 /**
@@ -15,7 +17,8 @@ use SineMacula\Tests\AbstractSniffTestCase;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(MaxMethodCountSniff::class)]
+#[CoversClass(AbstractMetricSniff::class)]
 final class MaxMethodCountSniffTest extends AbstractSniffTestCase
 {
     /**
