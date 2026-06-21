@@ -18,7 +18,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class DisallowInterfacePrefixSniff implements Sniff
 {
-    /** Pattern matching a disallowed "I" prefix (I + an upper-case letter). */
+    /** @var string Disallowed "I" interface prefix (I + uppercase letter). */
     private const string PREFIX_PATTERN = '/^I[A-Z]/';
 
     /**

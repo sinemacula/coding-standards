@@ -51,16 +51,16 @@ final class CommentLineLengthSniff implements Sniff
 
         $lines = $this->fileLines($phpcsFile);
 
-        foreach ($this->commentLines($phpcsFile) as $line => $info) {
+        foreach ($this->commentLines($phpcsFile) as $line => $commentLine) {
             $text = rtrim($lines[$line - 1] ?? '', "\r");
 
-            if ($info['tag'] || mb_strlen($text) <= $this->maxLength || $this->isUnbreakable($text)) {
+            if ($commentLine['tag'] || mb_strlen($text) <= $this->maxLength || $this->isUnbreakable($text)) {
                 continue;
             }
 
             $phpcsFile->addError(
                 'Comment line must not exceed %d characters.',
-                $info['ptr'],
+                $commentLine['ptr'],
                 'TooLong',
                 [$this->maxLength],
             );
@@ -135,17 +135,17 @@ final class CommentLineLengthSniff implements Sniff
             T_DOC_COMMENT_TAG,
         ];
 
-        $result = [];
+        $commentLines = [];
 
         foreach ($first as $line => $ptr) {
             if (!in_array($tokens[$ptr]['code'], $starters, true)) {
                 continue;
             }
 
-            $result[$line] = ['ptr' => $ptr, 'tag' => isset($tags[$line])];
+            $commentLines[$line] = ['ptr' => $ptr, 'tag' => isset($tags[$line])];
         }
 
-        return $result;
+        return $commentLines;
     }
 
     /**
