@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/sinemacula/coding-standards/compare/v1.3.1...v1.4.0) (2026-06-21)
+
+
+### Features
+
+* **phpcs:** allow handle() as a boolean method name ([#41](https://github.com/sinemacula/coding-standards/issues/41)) ([c9df7c9](https://github.com/sinemacula/coding-standards/commit/c9df7c9fadcf00f7bf89b78f9270b7fab2c71f72))
+* **phpcs:** require traits to live in a Concerns namespace ([#42](https://github.com/sinemacula/coding-standards/issues/42)) ([7029c60](https://github.com/sinemacula/coding-standards/commit/7029c60798f861a899df7a9091fd84532a7120fb))
+
 ## [1.3.1](https://github.com/sinemacula/coding-standards/compare/v1.3.0...v1.3.1) (2026-06-20)
 
 
