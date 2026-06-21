@@ -42,4 +42,9 @@ class Validator
     {
         return false;
     }
+
+    public function handle(): bool
+    {
+        return true;
+    }
 }
