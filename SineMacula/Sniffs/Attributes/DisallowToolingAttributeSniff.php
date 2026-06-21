@@ -81,9 +81,10 @@ final class DisallowToolingAttributeSniff implements Sniff
         $tokens = $phpcsFile->getTokens();
         $names  = [];
         $i      = $opener + 1;
+        $parts  = [T_STRING, T_NS_SEPARATOR, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED];
 
         while ($i < $closer) {
-            if (in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true) === false) {
+            if (in_array($tokens[$i]['code'], $parts, true) === false) {
                 $i++;
 
                 continue;
@@ -181,9 +182,10 @@ final class DisallowToolingAttributeSniff implements Sniff
      */
     private function readName(array $tokens, int &$i, int $end): string
     {
-        $name = '';
+        $name  = '';
+        $parts = [T_STRING, T_NS_SEPARATOR, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED];
 
-        while ($i < $end && in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
+        while ($i < $end && in_array($tokens[$i]['code'], $parts, true)) {
             $name .= $tokens[$i]['content'];
             $i++;
         }

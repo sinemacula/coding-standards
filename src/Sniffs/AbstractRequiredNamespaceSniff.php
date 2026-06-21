@@ -85,8 +85,13 @@ abstract class AbstractRequiredNamespaceSniff implements Sniff
         $end  = $phpcsFile->findNext([T_SEMICOLON, T_OPEN_CURLY_BRACKET], $nsPtr + 1);
         $name = '';
 
+        // PHP 8 tokenises a qualified name as a single T_NAME_QUALIFIED token.
+        // PHP_CodeSniffer 3.x splits it back into T_STRING/T_NS_SEPARATOR for
+        // compatibility, but 4.x keeps it whole, so both forms are collected.
+        $parts = [T_STRING, T_NS_SEPARATOR, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED];
+
         for ($i = $nsPtr + 1; $i < $end; $i++) {
-            if (!in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
+            if (!in_array($tokens[$i]['code'], $parts, true)) {
                 continue;
             }
 

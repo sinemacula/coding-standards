@@ -84,9 +84,10 @@ final class DisallowBaseExceptionSniff implements Sniff
             return ''; // @codeCoverageIgnore
         }
 
-        $name = '';
+        $name  = '';
+        $parts = [T_STRING, T_NS_SEPARATOR, T_NAME_QUALIFIED, T_NAME_FULLY_QUALIFIED];
 
-        for ($i = $start; isset($tokens[$i]) && in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true); $i++) {
+        for ($i = $start; isset($tokens[$i]) && in_array($tokens[$i]['code'], $parts, true); $i++) {
             $name .= $tokens[$i]['content'];
         }
 
