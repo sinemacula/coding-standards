@@ -7,19 +7,19 @@ namespace SineMacula\Sniffs\Namespaces;
 use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
 
 /**
- * Contracts namespace sniff.
+ * Enums namespace sniff.
  *
- * Requires every interface to be declared under a `Contracts` namespace segment
- * (at any depth, e.g. `App\Contracts` or `App\Billing\Contracts`), keeping
- * ports and contracts grouped and discoverable.
+ * Requires every enum to be declared under an `Enums` namespace segment (at
+ * any depth, e.g. `App\Enums` or `App\Billing\Enums`), keeping enumerations
+ * grouped and discoverable, mirroring the Contracts rule for interfaces.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
-final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSniff
+final class RequireEnumsNamespaceSniff extends AbstractRequiredNamespaceSniff
 {
-    /** @var string The namespace segment that interfaces must live under. */
-    public string $contractsSegment = 'Contracts';
+    /** @var string The namespace segment that enums must live under. */
+    public string $enumsSegment = 'Enums';
 
     /**
      * Register the tokens this sniff listens for.
@@ -29,18 +29,18 @@ final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSnif
     #[\Override]
     public function register(): array
     {
-        return [T_INTERFACE];
+        return [T_ENUM];
     }
 
     /**
-     * The namespace segment interfaces must live under.
+     * The namespace segment enums must live under.
      *
      * @return string
      */
     #[\Override]
     protected function segment(): string
     {
-        return $this->contractsSegment;
+        return $this->enumsSegment;
     }
 
     /**
@@ -51,7 +51,7 @@ final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSnif
     #[\Override]
     protected function subject(): string
     {
-        return 'Interface';
+        return 'Enum';
     }
 
     /**
@@ -62,6 +62,6 @@ final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSnif
     #[\Override]
     protected function errorCode(): string
     {
-        return 'NotInContracts';
+        return 'NotInEnums';
     }
 }

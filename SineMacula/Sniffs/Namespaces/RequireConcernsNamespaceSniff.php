@@ -7,19 +7,20 @@ namespace SineMacula\Sniffs\Namespaces;
 use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
 
 /**
- * Contracts namespace sniff.
+ * Concerns namespace sniff.
  *
- * Requires every interface to be declared under a `Contracts` namespace segment
- * (at any depth, e.g. `App\Contracts` or `App\Billing\Contracts`), keeping
- * ports and contracts grouped and discoverable.
+ * Requires every trait to be declared under a `Concerns` namespace segment (at
+ * any depth, e.g. `App\Concerns` or `App\Billing\Concerns`), keeping reusable
+ * behaviour grouped and discoverable, mirroring the Contracts rule for
+ * interfaces.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
-final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSniff
+final class RequireConcernsNamespaceSniff extends AbstractRequiredNamespaceSniff
 {
-    /** @var string The namespace segment that interfaces must live under. */
-    public string $contractsSegment = 'Contracts';
+    /** @var string The namespace segment that traits must live under. */
+    public string $concernsSegment = 'Concerns';
 
     /**
      * Register the tokens this sniff listens for.
@@ -29,18 +30,18 @@ final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSnif
     #[\Override]
     public function register(): array
     {
-        return [T_INTERFACE];
+        return [T_TRAIT];
     }
 
     /**
-     * The namespace segment interfaces must live under.
+     * The namespace segment traits must live under.
      *
      * @return string
      */
     #[\Override]
     protected function segment(): string
     {
-        return $this->contractsSegment;
+        return $this->concernsSegment;
     }
 
     /**
@@ -51,7 +52,7 @@ final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSnif
     #[\Override]
     protected function subject(): string
     {
-        return 'Interface';
+        return 'Trait';
     }
 
     /**
@@ -62,6 +63,6 @@ final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSnif
     #[\Override]
     protected function errorCode(): string
     {
-        return 'NotInContracts';
+        return 'NotInConcerns';
     }
 }
