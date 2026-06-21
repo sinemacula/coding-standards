@@ -24,7 +24,8 @@ composer require --dev sinemacula/coding-standards
 npm install --save-dev @sinemacula/coding-standards
 ```
 
-The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`). The PHP autoloaded code lives in the Composer package.
+The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`). The PHP autoloaded
+code lives in the Composer package.
 
 ## Usage
 
@@ -83,13 +84,15 @@ parameters:
 
 #### Laravel projects
 
-For Laravel projects, also install [`sinemacula/coding-standards-laravel`](https://github.com/sinemacula/coding-standards-laravel)
-and reference its `SineMaculaLaravel` PHPCS standard (which includes this one) in place of `SineMacula`. It
-adds the Laravel-specific sniffs and PHPStan rules; see that package's README for setup.
+For Laravel projects, also install
+[`sinemacula/coding-standards-laravel`](https://github.com/sinemacula/coding-standards-laravel) and reference its
+`SineMaculaLaravel` PHPCS standard (which includes this one) in place of `SineMacula`. It adds the
+Laravel-specific sniffs and PHPStan rules; see that package's README for setup.
 
 ### Biome (JavaScript / TypeScript)
 
-After installing the npm package, extend the shared Biome config from your project's `biome.json` (or `.qlty/configs/biome.json` when wired through Qlty):
+After installing the npm package, extend the shared Biome config from your project's `biome.json` (or
+`.qlty/configs/biome.json` when wired through Qlty):
 
 ```json
 {
@@ -103,7 +106,9 @@ After installing the npm package, extend the shared Biome config from your proje
 }
 ```
 
-`extends` paths are resolved through normal Node module lookup, so the package only needs to be installed (no path math against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer config.
+`extends` paths are resolved through normal Node module lookup, so the package only needs to be installed (no path
+math against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer
+config.
 
 ### Knip (JavaScript / TypeScript)
 
@@ -116,7 +121,8 @@ After installing the npm package, extend the shared Biome config from your proje
 
 ### Qlty
 
-Reference this repository as a source in your project's `.qlty/qlty.toml`, pinning `tag` to the latest [release](https://github.com/sinemacula/coding-standards/releases):
+Reference this repository as a source in your project's `.qlty/qlty.toml`, pinning `tag` to the latest
+[release](https://github.com/sinemacula/coding-standards/releases):
 
 ```toml
 [[source]]
@@ -139,15 +145,74 @@ tag = "<version>"
 | `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
 | `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
 | `security/.gitleaks.toml`     | Gitleaks     | Secret-detection ruleset                               |
-| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check (formatters own wrapping) |
+| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check |
+
+## Rules
+
+These are the custom rules this package enforces on top of PSR-12. A deliberate exception can be bypassed with the
+native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <identifier>` for a rule.
+
+### PHPCS sniffs
+
+| Sniff | Enforces |
+|-------|----------|
+| `SineMacula.Attributes.DisallowToolingAttribute` | No IDE/tooling attributes (e.g. `JetBrains\PhpStorm`). |
+| `SineMacula.Classes.RequireFinalClass` | Concrete classes must be `final` or `abstract` (`@inheritable` opts out). |
+| `SineMacula.Classes.RequireReadonlyPublicProperty` | Public properties (declared or promoted) must be `readonly`. |
+| `SineMacula.Commenting.CommentLineLength` | Standalone comment lines must not exceed 80 chars (FQCN/URL exempt). |
+| `SineMacula.Commenting.ConsistentEnumCaseComments` | Enum case docs are all-or-nothing within an enum. |
+| `SineMacula.Commenting.RequireConstantComment` | Every class/interface/enum/trait constant needs a doc comment. |
+| `SineMacula.Commenting.RequireCopyrightTag` | Class/interface/enum/trait docblocks must carry an `@copyright` tag. |
+| `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment. |
+| `SineMacula.Commenting.RequirePromotedPropertyComment` | Every constructor-promoted property needs a doc comment. |
+| `SineMacula.Exceptions.DisallowBaseException` | No throwing the base `\Exception`; throw a domain exception. |
+| `SineMacula.Functions.RequireSensitiveParameter` | Secret-named params need `#[\SensitiveParameter]`. |
+| `SineMacula.Metrics.MaxMethodCount` | A class/interface/trait/enum may declare at most 20 methods. |
+| `SineMacula.Metrics.MethodLength` | A method body may have at most 50 significant lines. |
+| `SineMacula.Namespaces.RequireConcernsNamespace` | Traits must live under a `Concerns` namespace segment. |
+| `SineMacula.Namespaces.RequireContractsNamespace` | Interfaces must live under a `Contracts` namespace segment. |
+| `SineMacula.Namespaces.RequireEnumsNamespace` | Enums must live under an `Enums` namespace segment. |
+| `SineMacula.NamingConventions.BooleanMethodName` | `bool`-returning methods must read as predicates. |
+| `SineMacula.NamingConventions.DisallowInterfacePrefix` | Interface names must not use the Hungarian `I` prefix. |
+| `SineMacula.NamingConventions.ValidEnumCaseName` | Enum cases must be `SCREAMING_SNAKE_CASE`. |
+| `SineMacula.NamingConventions.ValidGlobalFunctionName` | Global functions must be declared in `snake_case`. |
+| `SineMacula.TypeHints.RequireConstantType` | Class/interface/enum/trait constants must declare a native type. |
+
+### PHPStan rules
+
+| Identifier | Enforces |
+|------------|----------|
+| `sineMacula.mutableStaticProperty` | No mutable static state; use instance state or a constant instead. |
+
+## Requirements
+
+- PHP ^8.3 (Composer package)
+- Node.js (npm package)
+
+## Testing
+
+```bash
+composer test           # PHPUnit suite for the custom sniffs and PHPStan rule
+composer test:coverage  # suite with Clover coverage output
+composer analyse        # PHPStan static analysis
+composer check          # static analysis and lint via qlty
+composer format         # format via qlty
+composer smells         # duplication / complexity smells via qlty
+```
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for a list of notable changes.
 
 ## Contributing
 
-Contributions are welcome via GitHub pull requests.
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on branching, commits, code
+quality, and pull requests.
 
 ## Security
 
-If you discover a security issue, please contact Sine Macula directly rather than opening a public issue.
+If you discover a security vulnerability, please report it responsibly. See [SECURITY.md](SECURITY.md) for the
+disclosure policy and contact details.
 
 ## License
 
