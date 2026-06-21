@@ -22,3 +22,14 @@ class Config
         $this->immutable = 'x';
     }
 }
+
+final readonly class ValueObject
+{
+    public int $value;
+
+    public function __construct(
+        public string $label,
+    ) {
+        $this->value = 1;
+    }
+}

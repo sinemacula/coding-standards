@@ -21,7 +21,8 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
 {
     /**
      * Public mutable properties (declared and promoted) are flagged; readonly,
-     * non-public, and static properties are not.
+     * non-public, and static properties are not, nor are any properties in a
+     * class declared `readonly`.
      *
      * @return void
      */

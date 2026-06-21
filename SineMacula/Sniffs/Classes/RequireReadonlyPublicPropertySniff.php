@@ -42,6 +42,10 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
+        if ($this->isInReadonlyClass($phpcsFile, $stackPtr)) {
+            return;
+        }
+
         if ($phpcsFile->getTokens()[$stackPtr]['code'] === T_FUNCTION) {
             $this->checkPromoted($phpcsFile, $stackPtr);
 
@@ -49,6 +53,21 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
         }
 
         $this->checkMember($phpcsFile, $stackPtr);
+    }
+
+    /**
+     * Whether the token sits in a class declared `readonly`, where every
+     * property is already immutable through the class modifier (PHP 8.2+).
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isInReadonlyClass(File $phpcsFile, int $stackPtr): bool
+    {
+        $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
+
+        return $classPtr !== false && $phpcsFile->getClassProperties($classPtr)['is_readonly'] === true;
     }
 
     /**
