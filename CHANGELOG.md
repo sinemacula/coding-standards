@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/sinemacula/coding-standards/compare/v1.4.0...v1.5.0) (2026-06-21)
+
+
+### Features
+
+* **phpcs:** support PHP_CodeSniffer 4.x ([#49](https://github.com/sinemacula/coding-standards/issues/49)) ([f7ebff3](https://github.com/sinemacula/coding-standards/commit/f7ebff32328168da1152b9d2b350e7d62326f244))
+
 ## [1.4.0](https://github.com/sinemacula/coding-standards/compare/v1.3.1...v1.4.0) (2026-06-21)
 
 
