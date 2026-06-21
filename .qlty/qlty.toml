@@ -97,6 +97,15 @@ mode = "comment"
 package_file = "composer.json"
 package_filters = ["slevomat", "dealerdirect"]
 
+# phpcs 4.x exits 3 on errors (bitmask: 1 errors + 2 fixable), which qlty's
+# built-in driver, written for 3.x exit semantics, treats as a plugin failure -
+# silently discarding the findings. The self-lint resolves php-codesniffer from
+# the default source (not this repo's source.toml), so the override that
+# source.toml ships to consumers is mirrored here. 0/1/2/3 = "ran and found
+# issues" on both majors; a real fatal exits higher (255) and still errors.
+[plugins.definitions.php-codesniffer.drivers.lint]
+success_codes = [0, 1, 2, 3]
+
 # Pinned: 3.90+ pulls symfony/console 8 (needs PHP 8.4.1), which qlty's PHP 8.3
 # runner cannot parse. Bump once the runner ships PHP 8.4.
 [[plugin]]
