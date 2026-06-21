@@ -6,6 +6,7 @@ namespace SineMacula\CodingStandards\Sniffs;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
  * Base sniff requiring a declaration to live under a namespace segment.
@@ -21,6 +22,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 abstract class AbstractRequiredNamespaceSniff implements Sniff
 {
+    use ResolvesQualifiedNames;
+
     /**
      * Process a declaration token, flagging it when the segment is absent.
      *
@@ -86,7 +89,7 @@ abstract class AbstractRequiredNamespaceSniff implements Sniff
         $name = '';
 
         for ($i = $nsPtr + 1; $i < $end; $i++) {
-            if (!in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
+            if (!in_array($tokens[$i]['code'], $this->nameTokenCodes(), true)) {
                 continue;
             }
 

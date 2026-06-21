@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Exceptions;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
  * Base exception throw sniff.
@@ -20,6 +21,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class DisallowBaseExceptionSniff implements Sniff
 {
+    use ResolvesQualifiedNames;
+
     /** @var array<int, string> Base exception names that may not be thrown directly. */
     public array $forbiddenExceptions = [\Exception::class];
 
@@ -86,7 +89,7 @@ final class DisallowBaseExceptionSniff implements Sniff
 
         $name = '';
 
-        for ($i = $start; isset($tokens[$i]) && in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true); $i++) {
+        for ($i = $start; isset($tokens[$i]) && in_array($tokens[$i]['code'], $this->nameTokenCodes(), true); $i++) {
             $name .= $tokens[$i]['content'];
         }
 

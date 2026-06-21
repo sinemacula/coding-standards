@@ -90,7 +90,9 @@ name = "editorconfig-checker"
 # (qlty Cloud has no project vendor/autoload.php).
 [[plugin]]
 name = "php-codesniffer"
-version = "3.13.5"
+# Pinned to 4.0.1, the major consumers run via qlty; the suite is tested on both
+# 3.x and 4.x in CI (the Tests workflow's phpcs matrix).
+version = "4.0.1"
 mode = "comment"
 package_file = "composer.json"
 package_filters = ["slevomat", "dealerdirect"]
