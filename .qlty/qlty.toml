@@ -47,9 +47,8 @@ exclude_patterns = [
 test_patterns = [
     "**/test/**",
     "**/spec/**",
-    # This repo follows PHPUnit's PascalCase convention (SineMacula/Tests, *Test.php),
-    # which the default lowercase patterns below do not match; without these, qlty
-    # treats the sniff tests as source and reports their boilerplate as duplication.
+    # Match PHPUnit's PascalCase layout (Tests/, *Test.php); the defaults below
+    # are lowercase-only, so without these qlty treats tests as source.
     "**/Tests/**",
     "**/*Test.php",
     "**/*.test.*",
@@ -85,13 +84,10 @@ name = "trufflehog"
 [[plugin]]
 name = "editorconfig-checker"
 
-# Dogfood this repo's own PHP standards on its own code. phpcs and php-cs-fixer read
-# the in-tree configs under .qlty/configs (phpcs.xml, .php-cs-fixer.dist.php) rather
-# than a released tag of this package, so a change is validated against itself before
-# release. slevomat + the installer come from composer.json so the ruleset's Slevomat
-# sniffs resolve in qlty's sandbox; the custom sniffs' base class lives in src/ and is
-# loaded via .qlty/configs/autoload.php (qlty Cloud does not install the project
-# vendor, so the config cannot rely on vendor/autoload.php).
+# Dogfood this repo's own standards on its own code: phpcs and php-cs-fixer use
+# the in-tree configs under .qlty/configs, not a released tag. slevomat comes
+# from composer.json; the base class loads via .qlty/configs/autoload.php
+# (qlty Cloud has no project vendor/autoload.php).
 [[plugin]]
 name = "php-codesniffer"
 version = "3.13.5"
@@ -99,30 +95,25 @@ mode = "comment"
 package_file = "composer.json"
 package_filters = ["slevomat", "dealerdirect"]
 
-# Pinned to the last php-cs-fixer release whose symfony/console stays on the 7.x
-# line; 3.90+ pulls symfony/console 8 (needs PHP 8.4.1), which qlty's PHP 8.3
+# Pinned: 3.90+ pulls symfony/console 8 (needs PHP 8.4.1), which qlty's PHP 8.3
 # runner cannot parse. Bump once the runner ships PHP 8.4.
 [[plugin]]
 name = "php-cs-fixer"
 version = "3.89.0"
 package_file = "composer.json"
 
-# phpstan is NOT wired here: qlty Cloud never runs `composer install`, so it cannot
-# autoload the in-repo PHPStan rule or scan PHP_CodeSniffer's non-PSR-4 source that
-# the sniff code depends on. It runs in GitHub Actions instead (phpstan.neon.dist).
+# phpstan is NOT wired here: it needs the project vendor (composer install) that
+# qlty Cloud lacks. Run it locally with `composer analyse` (phpstan.neon.dist).
 
-# php/ holds shipped tool configs (the cs-fixer rules array and the phpstan base)
-# and .qlty/configs holds qlty's own PHP config + autoloader. Neither is source, so
-# the PHP plugins skip them - they target src/, SineMacula/Sniffs and SineMacula/Tests.
-# (php/ stays in the tree so the cs-fixer config can require its rules file.)
+# php/ and .qlty/configs hold tool configs, not source, so the PHP plugins skip
+# them; php/ stays so the cs-fixer config can require its rules file.
 [[exclude]]
 plugins = ["php-codesniffer", "php-cs-fixer"]
 file_patterns = ["php/**", ".qlty/configs/**"]
 
-# Release-please writes CHANGELOG.md with long compare/commit-reference lines
-# that exceed .editorconfig's max_line_length, so its release PRs fail qlty. The
-# file is tool-generated, so exclude it from editorconfig-checker. This mirrors
-# the markdownlint CHANGELOG exclude in source.toml that consuming repos inherit.
+# Release-please writes CHANGELOG.md with long lines exceeding max_line_length,
+# failing its release PRs. It is tool-generated, so exclude it from
+# editorconfig-checker (mirrors the markdownlint exclude in source.toml).
 [[exclude]]
 plugins = ["editorconfig-checker"]
 file_patterns = ["**/CHANGELOG.md"]
