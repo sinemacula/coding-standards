@@ -4,8 +4,7 @@ declare(strict_types = 1);
 
 namespace SineMacula\Sniffs\Namespaces;
 
-use PHP_CodeSniffer\Files\File;
-use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
 
 /**
  * Concerns namespace sniff.
@@ -18,7 +17,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
-final class RequireConcernsNamespaceSniff implements Sniff
+final class RequireConcernsNamespaceSniff extends AbstractRequiredNamespaceSniff
 {
     /** @var string The namespace segment that traits must live under. */
     public string $concernsSegment = 'Concerns';
@@ -35,56 +34,35 @@ final class RequireConcernsNamespaceSniff implements Sniff
     }
 
     /**
-     * Process a trait declaration token.
+     * The namespace segment traits must live under.
      *
-     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  int  $stackPtr
-     * @return void
+     * @return string
      */
     #[\Override]
-    public function process(File $phpcsFile, $stackPtr): void
+    protected function segment(): string
     {
-        $segments = explode('\\', $this->namespace($phpcsFile, $stackPtr));
-
-        if (in_array($this->concernsSegment, $segments, true)) {
-            return;
-        }
-
-        $phpcsFile->addError(
-            'Trait "%s" must be declared in a "%s" namespace.',
-            $stackPtr,
-            'NotInConcerns',
-            [$phpcsFile->getDeclarationName($stackPtr), $this->concernsSegment],
-        );
+        return $this->concernsSegment;
     }
 
     /**
-     * Resolve the namespace the trait is declared in.
+     * The subject noun used in the error message.
      *
-     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  int  $stackPtr
      * @return string
      */
-    private function namespace(File $phpcsFile, int $stackPtr): string
+    #[\Override]
+    protected function subject(): string
     {
-        $tokens = $phpcsFile->getTokens();
-        $nsPtr  = $phpcsFile->findPrevious(T_NAMESPACE, $stackPtr - 1);
+        return 'Trait';
+    }
 
-        if ($nsPtr === false) {
-            return '';
-        }
-
-        $end  = $phpcsFile->findNext([T_SEMICOLON, T_OPEN_CURLY_BRACKET], $nsPtr + 1);
-        $name = '';
-
-        for ($i = $nsPtr + 1; $i < $end; $i++) {
-            if (!in_array($tokens[$i]['code'], [T_STRING, T_NS_SEPARATOR], true)) {
-                continue;
-            }
-
-            $name .= $tokens[$i]['content'];
-        }
-
-        return trim($name, '\\');
+    /**
+     * The sniff error code.
+     *
+     * @return string
+     */
+    #[\Override]
+    protected function errorCode(): string
+    {
+        return 'NotInConcerns';
     }
 }
