@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace SineMacula\Tests\Namespaces;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\CoversClass;
+use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
+use SineMacula\Sniffs\Namespaces\RequireContractsNamespaceSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
 /**
@@ -15,7 +17,8 @@ use SineMacula\Tests\AbstractSniffTestCase;
  *
  * @internal
  */
-#[CoversNothing]
+#[CoversClass(RequireContractsNamespaceSniff::class)]
+#[CoversClass(AbstractRequiredNamespaceSniff::class)]
 final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
 {
     /**
