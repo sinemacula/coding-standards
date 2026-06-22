@@ -22,3 +22,14 @@ abstract class Contract
 {
     abstract public function pending(): void;
 }
+
+class ExampleTest extends TestCase
+{
+    public function testLongScenario(): void
+    {
+        $a = 1;
+        $b = 2;
+        $c = 3;
+        $d = 4;
+    }
+}

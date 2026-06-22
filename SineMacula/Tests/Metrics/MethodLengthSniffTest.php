@@ -22,7 +22,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class MethodLengthSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Only methods whose body exceeds the line limit should be flagged.
+     * Methods whose body exceeds the line limit are flagged; test methods not.
      *
      * @return void
      */

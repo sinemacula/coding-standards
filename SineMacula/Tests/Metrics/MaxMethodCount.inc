@@ -27,3 +27,18 @@ class Fine
     {
     }
 }
+
+class BigSuite extends TestCase
+{
+    public function a(): void
+    {
+    }
+
+    public function b(): void
+    {
+    }
+
+    public function c(): void
+    {
+    }
+}

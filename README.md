@@ -167,8 +167,8 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Commenting.RequirePromotedPropertyComment` | Every constructor-promoted property needs a doc comment. |
 | `SineMacula.Exceptions.DisallowBaseException` | No throwing the base `\Exception`; throw a domain exception. |
 | `SineMacula.Functions.RequireSensitiveParameter` | Secret-named params need `#[\SensitiveParameter]`. |
-| `SineMacula.Metrics.MaxMethodCount` | A class/interface/trait/enum may declare at most 20 methods. |
-| `SineMacula.Metrics.MethodLength` | A method body may have at most 50 significant lines. |
+| `SineMacula.Metrics.MaxMethodCount` | A class/interface/trait/enum may declare at most 20 methods (tests exempt). |
+| `SineMacula.Metrics.MethodLength` | A method body may have at most 50 significant lines (tests exempt). |
 | `SineMacula.Namespaces.RequireConcernsNamespace` | Traits must live under a `Concerns` namespace segment. |
 | `SineMacula.Namespaces.RequireContractsNamespace` | Interfaces must live under a `Contracts` namespace segment. |
 | `SineMacula.Namespaces.RequireEnumsNamespace` | Enums must live under an `Enums` namespace segment. |

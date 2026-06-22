@@ -22,7 +22,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class MaxMethodCountSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Only structures exceeding the method limit should be flagged.
+     * Structures exceeding the method limit are flagged; test classes are not.
      *
      * @return void
      */
