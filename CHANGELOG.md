@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.6.0](https://github.com/sinemacula/coding-standards/compare/v1.5.1...v1.6.0) (2026-06-22)
+
+
+### Features
+
+* **phpcs:** blank-line padding for promoted constructors ([#57](https://github.com/sinemacula/coding-standards/issues/57)) ([dfe9488](https://github.com/sinemacula/coding-standards/commit/dfe948845694e1ee264956cfcfd6cf5ff94a3685))
+* **phpstan:** [@managed-static](https://github.com/managed-static) opt-out for the mutable-static rule ([#55](https://github.com/sinemacula/coding-standards/issues/55)) ([3ee6af4](https://github.com/sinemacula/coding-standards/commit/3ee6af4bba039159344a8d295c538045da6a203a))
+
+
+### Bug Fixes
+
+* **phpcs:** skip RequireReadonlyPublicProperty in readonly classes ([#53](https://github.com/sinemacula/coding-standards/issues/53)) ([9c88811](https://github.com/sinemacula/coding-standards/commit/9c888119b9df89ca0564172d49bdf9e6a5248859))
+
 ## [1.5.1](https://github.com/sinemacula/coding-standards/compare/v1.5.0...v1.5.1) (2026-06-21)
 
 
