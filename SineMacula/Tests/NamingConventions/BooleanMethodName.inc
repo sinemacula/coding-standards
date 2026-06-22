@@ -80,4 +80,12 @@ class Example
     {
         return false;
     }
+
+    /**
+     * Reports whether the system is ready, but without the opt-out tag.
+     */
+    public function ready(): bool
+    {
+        return true;
+    }
 }
