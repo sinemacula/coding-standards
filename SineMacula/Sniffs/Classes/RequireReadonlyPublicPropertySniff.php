@@ -21,6 +21,9 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class RequireReadonlyPublicPropertySniff implements Sniff
 {
+    /** @var array<int, string> Parent classes whose subclasses are exempt. */
+    public array $ignoredParentClasses = [];
+
     /**
      * Register the tokens this sniff listens for.
      *
@@ -42,7 +45,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
-        if ($this->isInReadonlyClass($phpcsFile, $stackPtr)) {
+        if ($this->isInReadonlyClass($phpcsFile, $stackPtr) || $this->isInIgnoredClass($phpcsFile, $stackPtr)) {
             return;
         }
 
@@ -68,6 +71,25 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
         $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
 
         return $classPtr !== false && $phpcsFile->getClassProperties($classPtr)['is_readonly'] === true;
+    }
+
+    /**
+     * Whether the token sits in a class extending a configured ignored parent.
+     *
+     * Standards layered on top of this one (e.g. a framework standard) can set
+     * $ignoredParentClasses to exempt mutable entity bases such as Eloquent's
+     * Model, where the readonly contract does not apply.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isInIgnoredClass(File $phpcsFile, int $stackPtr): bool
+    {
+        $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
+        $parent   = $classPtr === false ? false : $phpcsFile->findExtendedClassName($classPtr);
+
+        return $parent !== false && in_array($parent, $this->ignoredParentClasses, true);
     }
 
     /**
