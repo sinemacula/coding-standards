@@ -2,7 +2,7 @@
 
 namespace App;
 
-class Validator
+class Example
 {
     public function isValid(): bool
     {
@@ -14,19 +14,57 @@ class Validator
         return false;
     }
 
-    public function matches(string $input): bool
+    public function canProcess(): bool
     {
         return true;
     }
 
-    public function validate(): bool
+    public function permitsFilter(): bool
     {
         return true;
     }
 
-    public function check(): bool
+    public function passesGuards(): bool
+    {
+        return true;
+    }
+
+    public function execute(): bool
+    {
+        return true;
+    }
+
+    public function persist(): bool
+    {
+        return true;
+    }
+
+    public function handle(): bool
+    {
+        return true;
+    }
+
+    public function frobnicate(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @imperative reconcile performs an action and reports success
+     */
+    public function reconcile(): bool
+    {
+        return true;
+    }
+
+    public function negated(): bool
     {
         return false;
+    }
+
+    public function succeeded(): bool
+    {
+        return true;
     }
 
     public function process(): void
@@ -41,10 +79,5 @@ class Validator
     public function __isset(string $name): bool
     {
         return false;
-    }
-
-    public function handle(): bool
-    {
-        return true;
     }
 }

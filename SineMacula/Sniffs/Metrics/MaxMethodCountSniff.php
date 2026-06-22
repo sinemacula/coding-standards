@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace SineMacula\Sniffs\Metrics;
 
+use PHP_CodeSniffer\Files\File;
 use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 
 /**
  * Method count sniff.
@@ -18,6 +20,8 @@ use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
  */
 final class MaxMethodCountSniff extends AbstractMetricSniff
 {
+    use DetectsTestClasses;
+
     /** @var int The maximum number of methods allowed on a single structure. */
     public int $maxMethods = 20;
 
@@ -30,6 +34,24 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
     public function register(): array
     {
         return [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM];
+    }
+
+    /**
+     * Skip test classes, which legitimately declare many methods, then defer
+     * to the base metric check.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return void
+     */
+    #[\Override]
+    public function process(File $phpcsFile, $stackPtr): void
+    {
+        if ($this->isTestClass($phpcsFile, $stackPtr)) {
+            return;
+        }
+
+        parent::process($phpcsFile, $stackPtr);
     }
 
     /**

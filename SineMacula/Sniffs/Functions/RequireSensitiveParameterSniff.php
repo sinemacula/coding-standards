@@ -12,8 +12,10 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
  * Sensitive parameter attribute sniff.
  *
  * Requires #[\SensitiveParameter] on parameters whose name signals a secret
- * (password, token, apiKey, ...), so their values are redacted from stack
- * traces. Name matching is heuristic and configurable via $sensitiveNames.
+ * (password, secret, access_token, ...), so their values are redacted from
+ * stack traces. Bare "token" is intentionally excluded - it matches operator
+ * and CSRF tokens that are not secrets. The list is a public $sensitiveNames
+ * array a ruleset can extend or override.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -27,11 +29,16 @@ final class RequireSensitiveParameterSniff implements Sniff
         'password',
         'passwd',
         'secret',
-        'token',
+        'passphrase',
         'apikey',
         'privatekey',
         'credential',
         'credentials',
+        'accesstoken',
+        'authtoken',
+        'refreshtoken',
+        'bearertoken',
+        'idtoken',
     ];
 
     /**

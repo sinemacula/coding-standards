@@ -22,3 +22,24 @@ class Config
         $this->immutable = 'x';
     }
 }
+
+final readonly class ValueObject
+{
+    public int $value;
+
+    public function __construct(
+        public string $label,
+    ) {
+        $this->value = 1;
+    }
+}
+
+class Entity extends Model
+{
+    public int $count = 0;
+}
+
+class Aggregate extends Base
+{
+    public int $total = 0;
+}

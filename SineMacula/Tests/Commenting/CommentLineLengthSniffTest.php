@@ -21,7 +21,8 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
 {
     /**
      * Over-long standalone comment lines are flagged, while tag lines, lines
-     * whose overflow is an unbreakable token, and trailing comments are not.
+     * whose overflow is an unbreakable token, suppression directives
+     * (phpstan-ignore), and trailing comments are not.
      *
      * @return void
      */

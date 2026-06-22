@@ -4,8 +4,10 @@ declare(strict_types = 1);
 
 namespace SineMacula\Sniffs\Metrics;
 
+use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Util\Tokens;
 use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 
 /**
  * Method length sniff.
@@ -20,6 +22,8 @@ use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
  */
 final class MethodLengthSniff extends AbstractMetricSniff
 {
+    use DetectsTestClasses;
+
     /** @var int The maximum number of significant lines allowed in a body. */
     public int $maxLength = 50;
 
@@ -32,6 +36,26 @@ final class MethodLengthSniff extends AbstractMetricSniff
     public function register(): array
     {
         return [T_FUNCTION];
+    }
+
+    /**
+     * Skip methods in test classes, where long bodies are legitimate, then
+     * defer to the base metric check.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return void
+     */
+    #[\Override]
+    public function process(File $phpcsFile, $stackPtr): void
+    {
+        $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
+
+        if ($classPtr !== false && $this->isTestClass($phpcsFile, $classPtr)) {
+            return;
+        }
+
+        parent::process($phpcsFile, $stackPtr);
     }
 
     /**

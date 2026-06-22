@@ -20,13 +20,13 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Sensitive parameters without the attribute are flagged; marked ones and
-     * lookalikes such as $tokenizer are not.
+     * Sensitive parameters without the attribute are flagged; marked ones, the
+     * ambiguous $token, and lookalikes such as $tokenizer are not.
      *
      * @return void
      */
     public function testFlagsUnmarkedSensitiveParameters(): void
     {
-        $this->assertErrorsOnLines('RequireSensitiveParameter.inc', [11]);
+        $this->assertErrorsOnLines('RequireSensitiveParameter.inc', [7, 11, 15]);
     }
 }

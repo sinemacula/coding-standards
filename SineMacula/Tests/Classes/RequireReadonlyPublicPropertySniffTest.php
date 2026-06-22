@@ -21,12 +21,24 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
 {
     /**
      * Public mutable properties (declared and promoted) are flagged; readonly,
-     * non-public, and static properties are not.
+     * non-public, and static properties are not, nor are any properties in a
+     * class declared `readonly` or extending a configured ignored parent.
      *
      * @return void
      */
     public function testFlagsMutablePublicProperties(): void
     {
         $this->assertErrorsOnLines('RequireReadonlyPublicProperty.inc', [7, 18]);
+    }
+
+    /**
+     * Exempt classes extending the fixture's mutable entity bases.
+     *
+     * @return array<string, mixed>
+     */
+    #[\Override]
+    protected function sniffProperties(): array
+    {
+        return ['ignoredParentClasses' => ['Model', 'Base']];
     }
 }
