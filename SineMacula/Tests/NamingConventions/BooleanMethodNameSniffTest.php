@@ -20,14 +20,26 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Boolean methods whose name is not a predicate are flagged; predicate
-     * names, the handle() convention, non-boolean returns, and magic methods
-     * are not.
+     * Predicate prefixes, third-person verbs, command verbs (built-in and a
+     * project-supplied one), @imperative-tagged methods, magic methods, and
+     * non-boolean returns are accepted; adjective/participle names are flagged.
      *
      * @return void
      */
     public function testFlagsNonPredicateBooleanMethods(): void
     {
-        $this->assertErrorsOnLines('BooleanMethodName.inc', [22, 27]);
+        $this->assertErrorsOnLines('BooleanMethodName.inc', [60, 65]);
+    }
+
+    /**
+     * Extend the built-in command verbs with a project-supplied one, mirroring
+     * a consumer ruleset's property override with extend set.
+     *
+     * @return array<string, mixed>
+     */
+    #[\Override]
+    protected function sniffProperties(): array
+    {
+        return ['commandVerbs' => [...(new BooleanMethodNameSniff)->commandVerbs, 'frobnicate']];
     }
 }

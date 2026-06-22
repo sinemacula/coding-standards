@@ -172,7 +172,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Namespaces.RequireConcernsNamespace` | Traits must live under a `Concerns` namespace segment. |
 | `SineMacula.Namespaces.RequireContractsNamespace` | Interfaces must live under a `Contracts` namespace segment. |
 | `SineMacula.Namespaces.RequireEnumsNamespace` | Enums must live under an `Enums` namespace segment. |
-| `SineMacula.NamingConventions.BooleanMethodName` | `bool`-returning methods must read as predicates. |
+| `SineMacula.NamingConventions.BooleanMethodName` | `bool` methods are predicates; command verbs/@imperative exempt. |
 | `SineMacula.NamingConventions.DisallowInterfacePrefix` | Interface names must not use the Hungarian `I` prefix. |
 | `SineMacula.NamingConventions.ValidEnumCaseName` | Enum cases must be `SCREAMING_SNAKE_CASE`. |
 | `SineMacula.NamingConventions.ValidGlobalFunctionName` | Global functions must be declared in `snake_case`. |

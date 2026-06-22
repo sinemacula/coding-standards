@@ -10,23 +10,34 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * Boolean method name sniff.
  *
- * A method (or function) that returns `bool` should read as a predicate, i.e.
- * begin with one of the configured prefixes - a predicate verb (is/has/can/...)
- * or a conventional handler name (handle). The list is configurable via
- * $allowedPrefixes; magic methods are exempt.
+ * A method (or function) returning `bool` should read as a predicate. A name is
+ * accepted when its first camelCase word is a copular or modal prefix (is, has,
+ * can, ...) or a third-person-singular verb (ends in `s`: permits, passes). An
+ * imperative command verb (execute, persist, guard, ...) that returns a result
+ * bool is exempt via $commandVerbs, which a consuming ruleset can extend. A
+ * method may also opt out with an @imperative docblock tag. Magic methods are
+ * exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 final class BooleanMethodNameSniff implements Sniff
 {
-    /** @var array<int, string> Prefixes a boolean method name may begin with. */
+    /** @var array<int, string> Copular and modal prefixes that read as predicates. */
     public array $allowedPrefixes = [
         'is', 'are', 'was', 'were', 'has', 'have', 'had', 'can', 'could',
-        'should', 'shall', 'will', 'would', 'must', 'may', 'might', 'do',
-        'does', 'did', 'contains', 'supports', 'allows', 'accepts', 'matches',
-        'equals', 'includes', 'requires', 'exists', 'needs', 'wants', 'knows',
-        'owns', 'uses', 'expects', 'starts', 'ends', 'begins', 'lacks', 'handle',
+        'should', 'shall', 'will', 'would', 'may', 'might', 'must', 'needs',
+        'does',
+    ];
+
+    /** @var array<int, string> Imperative command verbs that may return a result bool. */
+    public array $commandVerbs = [
+        'execute', 'run', 'handle', 'process', 'perform', 'persist', 'save',
+        'store', 'write', 'read', 'load', 'fetch', 'delete', 'remove', 'forget',
+        'flush', 'purge', 'clear', 'reset', 'refresh', 'sync', 'send', 'dispatch',
+        'emit', 'apply', 'guard', 'validate', 'verify', 'authorize', 'ensure',
+        'assert', 'register', 'boot', 'build', 'make', 'resolve', 'render',
+        'compute', 'calculate', 'expose', 'parse', 'format', 'transform', 'toggle',
     ];
 
     /**
@@ -58,7 +69,15 @@ final class BooleanMethodNameSniff implements Sniff
 
         $name = $phpcsFile->getDeclarationName($stackPtr);
 
-        if ($name === null || str_starts_with($name, '__') || $this->isPredicate($name)) {
+        if ($name === null || str_starts_with($name, '__')) {
+            return;
+        }
+
+        if (
+            $this->isMarkedImperative($phpcsFile, $stackPtr)
+            || $this->isCommandVerb($name)
+            || $this->isPredicate($name)
+        ) {
             return;
         }
 
@@ -71,16 +90,71 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Determine whether a name begins with an allowed predicate verb.
+     * The leading camelCase word of a method name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    private function firstWord(string $name): string
+    {
+        return preg_match('/^[a-z]+/', $name, $matches) === 1 ? $matches[0] : '';
+    }
+
+    /**
+     * Whether the name is an imperative command verb, not a predicate.
+     *
+     * @param  string  $name
+     * @return bool
+     */
+    private function isCommandVerb(string $name): bool
+    {
+        return in_array($this->firstWord($name), $this->commandVerbs, true);
+    }
+
+    /**
+     * Whether the name reads as a predicate: a copular/modal prefix or a
+     * third-person-singular verb (first word ending in `s`).
      *
      * @param  string  $name
      * @return bool
      */
     private function isPredicate(string $name): bool
     {
-        $verbs   = implode('|', array_map('preg_quote', $this->allowedPrefixes));
-        $pattern = '/^(' . $verbs . ')([A-Z0-9]|$)/';
+        $first = $this->firstWord($name);
 
-        return preg_match($pattern, $name) === 1;
+        return in_array($first, $this->allowedPrefixes, true) || str_ends_with($first, 's');
+    }
+
+    /**
+     * Whether the method docblock carries an @imperative opt-out tag.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isMarkedImperative(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $before = $phpcsFile->findPrevious(
+            [T_WHITESPACE, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_STATIC, T_ABSTRACT, T_FINAL],
+            $stackPtr - 1,
+            null,
+            true,
+        );
+
+        if ($before === false || $tokens[$before]['code'] !== T_DOC_COMMENT_CLOSE_TAG) {
+            return false;
+        }
+
+        for ($i = $tokens[$before]['comment_opener']; $i < $before; $i++) {
+            if (
+                $tokens[$i]['code']                   === T_DOC_COMMENT_TAG
+                && strtolower($tokens[$i]['content']) === '@imperative'
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
