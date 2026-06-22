@@ -23,28 +23,42 @@ use SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule;
 final class NoMutableStaticPropertyRuleTest extends RuleTestCase
 {
     /**
-     * Static properties are flagged; instance properties and constants are not.
+     * Un-annotated static properties are flagged, including ones with a
+     * non-managed docblock. A property or class carrying the opt-out tag,
+     * instance properties, and constants are not.
      *
      * @return void
      */
     public function testFlagsStaticProperties(): void
     {
         $this->analyse([__DIR__ . '/data/mutable-static.inc'], [
-            [
-                'Static property $cache introduces mutable static state; use instance state or a constant instead.',
-                7,
-            ],
+            [$this->message('cache'), 7],
+            [$this->message('documented'), 10],
         ]);
     }
 
     /**
      * Provide the rule under test.
      *
-     * @return \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\Property>
+     * @return \PHPStan\Rules\Rule<\PhpParser\Node\Stmt\ClassLike>
      */
     #[\Override]
     protected function getRule(): Rule
     {
         return new NoMutableStaticPropertyRule;
+    }
+
+    /**
+     * The expected error message for a flagged static property.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    private function message(string $name): string
+    {
+        return sprintf(
+            'Static property $%s introduces mutable static state; use instance state or a constant instead.',
+            $name,
+        );
     }
 }
