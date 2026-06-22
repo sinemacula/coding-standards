@@ -28,3 +28,5 @@ class Example
 <?php
 
 // A short comment in a second PHP block.
+
+// @phpstan-ignore-next-line because the third-party stub returns mixed when it is a string

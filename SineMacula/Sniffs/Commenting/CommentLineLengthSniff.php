@@ -11,10 +11,10 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Comment line length sniff.
  *
  * Keeps standalone comment lines within a readable width. Docblock tag lines
- * (@param, @return, ...) are exempt because they routinely carry an unbreakable
- * fully qualified name, and any line whose overflow is a single unbreakable
- * token (a long FQCN or URL) is allowed. Trailing comments after code are left
- * to the general line-length rule.
+ * (@param, @return, ...) are exempt, as is any line whose overflow is a single
+ * unbreakable token (a long FQCN or URL). Tool suppression directives (the
+ * phpstan-ignore family) are also exempt: their position is fixed, so the line
+ * cannot be wrapped. Trailing comments after code are left to the general rule.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -54,7 +54,12 @@ final class CommentLineLengthSniff implements Sniff
         foreach ($this->commentLines($phpcsFile) as $line => $commentLine) {
             $text = rtrim($lines[$line - 1] ?? '', "\r");
 
-            if ($commentLine['tag'] || mb_strlen($text) <= $this->maxLength || $this->isUnbreakable($text)) {
+            if (
+                $commentLine['tag']
+                || mb_strlen($text) <= $this->maxLength
+                || $this->isUnbreakable($text)
+                || $this->isSuppressionDirective($text)
+            ) {
                 continue;
             }
 
@@ -172,5 +177,17 @@ final class CommentLineLengthSniff implements Sniff
         $tail   = trim(mb_substr($text, $lastWrap + 1));
 
         return ($indent + mb_strlen($tail)) > $this->maxLength;
+    }
+
+    /**
+     * Whether a comment line carries a tool suppression directive whose
+     * position is fixed (e.g. phpstan-ignore), so it cannot be wrapped.
+     *
+     * @param  string  $text
+     * @return bool
+     */
+    private function isSuppressionDirective(string $text): bool
+    {
+        return str_contains($text, '@phpstan-ignore');
     }
 }
