@@ -75,9 +75,10 @@ final class PromotedConstructorSpacingSniff implements Sniff
         $previous = $opener;
 
         foreach ($params as $param) {
-            $blockStart = $phpcsFile->findNext(T_WHITESPACE, $previous + 1, $closer, true);
+            $boundary   = $this->skipTrailingDirective($phpcsFile, $previous, $closer);
+            $blockStart = $phpcsFile->findNext(T_WHITESPACE, $boundary + 1, $closer, true);
 
-            if ($blockStart !== false && ($tokens[$blockStart]['line'] - $tokens[$previous]['line']) < 2) {
+            if ($blockStart !== false && ($tokens[$blockStart]['line'] - $tokens[$boundary]['line']) < 2) {
                 $phpcsFile->addError(
                     'Constructor parameter "%s" must be preceded by a blank line.',
                     $blockStart,
@@ -88,6 +89,42 @@ final class PromotedConstructorSpacingSniff implements Sniff
 
             $previous = $param['comma_token'] === false ? $param['token'] : $param['comma_token'];
         }
+    }
+
+    /**
+     * Advance past a tool-directive suppression comment (qlty-ignore, phpstan,
+     * phpcs) that trails the boundary line, so the blank is measured after it.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $boundary
+     * @param  int  $closer
+     * @return int
+     */
+    private function skipTrailingDirective(File $phpcsFile, int $boundary, int $closer): int
+    {
+        $tokens = $phpcsFile->getTokens();
+        $next   = $phpcsFile->findNext(T_WHITESPACE, $boundary + 1, $closer, true);
+
+        if (
+            $next !== false
+            && $tokens[$next]['line'] === $tokens[$boundary]['line']
+            && $this->isDirectiveComment($tokens[$next]['content'])
+        ) {
+            return $next;
+        }
+
+        return $boundary;
+    }
+
+    /**
+     * Determine whether a comment is a tool-directive (suppression) comment.
+     *
+     * @param  string  $content
+     * @return bool
+     */
+    private function isDirectiveComment(string $content): bool
+    {
+        return preg_match('~^[/#\s]*(?:qlty-ignore:|phpcs:|phpstan:|@phpstan-ignore)~', $content) === 1;
     }
 
     /**
