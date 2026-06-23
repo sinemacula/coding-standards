@@ -43,3 +43,13 @@ class Aggregate extends Base
 {
     public int $total = 0;
 }
+
+class FakeMailerTest
+{
+    public bool $sent = false;
+}
+
+class SpyHandler extends TestCase
+{
+    public int $calls = 0;
+}
