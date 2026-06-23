@@ -109,12 +109,16 @@
     <!--
         Variables, properties and parameters: camelCase. PrivateNoUnderscore is excluded so the
         legacy `private $_name` convention is not forced; PublicHasUnderscore is kept so public and
-        protected members cannot carry a leading underscore. NB this also checks parameter names, so
-        a parameter whose name is fixed by an overridden dependency method (named-argument BC) needs
-        an inline `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps`.
+        protected members cannot carry a leading underscore. MemberNotCamelCaps is excluded because
+        snake_case data-object access ($model->created_at, $row->first_name for DB columns / JSON
+        fields) is idiomatic and cannot be renamed; NotCamelCaps still holds, so local variables
+        must stay camelCase. NB this also checks parameter names, so a parameter whose name is fixed
+        by an overridden dependency method (named-argument BC) needs an inline
+        `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps`.
     -->
     <rule ref="Squiz.NamingConventions.ValidVariableName">
         <exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+        <exclude name="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps"/>
     </rule>
 
     <!--
