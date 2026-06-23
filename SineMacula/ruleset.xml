@@ -182,8 +182,14 @@
         </properties>
     </rule>
 
-    <!-- No empty or comment-only bodies (catch, if, loops, try/finally, switch, match) -->
-    <rule ref="Generic.CodeAnalysis.EmptyStatement"/>
+    <!--
+        No empty or comment-only bodies for if, loops, try/finally, switch and match. Catch is
+        excluded and replaced by SineMacula.Exceptions.RequireEmptyCatchComment, which allows a
+        documented swallow (a comment) but still flags a bare catch (E $e) {}.
+    -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement">
+        <exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedCatch"/>
+    </rule>
 
     <!--
         Type hints: require native parameter, return and property type hints, and require the
