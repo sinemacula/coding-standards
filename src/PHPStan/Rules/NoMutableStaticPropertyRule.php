@@ -22,7 +22,8 @@ use SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyWriteCollector;
  * declared and read is configuration (like `$fillable`), not mutable state, and
  * is left alone. Deliberately-mutated statics (e.g. a memo cache flushed at a
  * known boundary) opt out with a `@managed-static` doc tag on the property or
- * its declaring class.
+ * its declaring class. Test classes are exempt - mutable statics there track
+ * state across assertions, not production global state.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
