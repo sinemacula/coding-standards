@@ -166,6 +166,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment. |
 | `SineMacula.Commenting.RequirePromotedPropertyComment` | Every constructor-promoted property needs a doc comment. |
 | `SineMacula.Exceptions.DisallowBaseException` | No throwing the base `\Exception`; throw a domain exception. |
+| `SineMacula.Exceptions.RequireEmptyCatchComment` | An empty catch block must comment its intentional swallow. |
 | `SineMacula.Functions.RequireSensitiveParameter` | Secret-named params need `#[\SensitiveParameter]`. |
 | `SineMacula.Metrics.MaxMethodCount` | A class/interface/trait/enum may declare at most 20 methods (tests exempt). |
 | `SineMacula.Metrics.MethodLength` | A method body may have at most 50 significant lines (tests exempt). |
