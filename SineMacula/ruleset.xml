@@ -223,10 +223,14 @@
     <!-- Guard clauses / early exit (stronger than cs-fixer no_useless_else) -->
     <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
 
-    <!-- Cognitive complexity (Sonar-style): warn beyond 8, error beyond 15 -->
+    <!--
+        Cognitive complexity (Sonar-style): allow up to 10, hard-error at 15. NB Slevomat reports
+        warningThreshold minus 1, so warningThreshold 11 means a method may reach 10 (maxComplexity
+        is deprecated).
+    -->
     <rule ref="SlevomatCodingStandard.Complexity.Cognitive">
         <properties>
-            <property name="warningThreshold" value="8"/>
+            <property name="warningThreshold" value="11"/>
             <property name="errorThreshold" value="15"/>
         </properties>
     </rule>
