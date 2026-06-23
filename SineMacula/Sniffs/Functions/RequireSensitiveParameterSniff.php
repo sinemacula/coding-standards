@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Functions;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
@@ -15,13 +16,15 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
  * (password, secret, access_token, ...), so their values are redacted from
  * stack traces. Bare "token" is intentionally excluded - it matches operator
  * and CSRF tokens that are not secrets. The list is a public $sensitiveNames
- * array a ruleset can extend or override.
+ * array a ruleset can extend or override. Test classes are exempt, where
+ * sensitive-looking names exercise redaction rather than handle real secrets.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 final class RequireSensitiveParameterSniff implements Sniff
 {
+    use DetectsTestClasses;
     use ResolvesQualifiedNames;
 
     /** @var array<int, string> Lower-case keywords that mark a parameter as sensitive. */
@@ -68,6 +71,10 @@ final class RequireSensitiveParameterSniff implements Sniff
             return; // @codeCoverageIgnore
         }
 
+        if ($this->isInTestClass($phpcsFile, $stackPtr)) {
+            return;
+        }
+
         $lowerBound = $tokens[$stackPtr]['parenthesis_opener'];
 
         foreach ($phpcsFile->getMethodParameters($stackPtr) as $param) {
@@ -87,6 +94,21 @@ final class RequireSensitiveParameterSniff implements Sniff
 
             $lowerBound = $varPtr;
         }
+    }
+
+    /**
+     * Whether the function is declared in a test class, where sensitive-looking
+     * parameter names exercise redaction rather than handle real secrets.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isInTestClass(File $phpcsFile, int $stackPtr): bool
+    {
+        $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
+
+        return $classPtr !== false && $this->isTestClass($phpcsFile, $classPtr);
     }
 
     /**

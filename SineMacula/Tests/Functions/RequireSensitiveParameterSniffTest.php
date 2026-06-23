@@ -21,12 +21,23 @@ final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
 {
     /**
      * Sensitive parameters without the attribute are flagged; marked ones, the
-     * ambiguous $token, and lookalikes such as $tokenizer are not.
+     * ambiguous $token, lookalikes such as $tokenizer, and parameters in a test
+     * class are not.
      *
      * @return void
      */
     public function testFlagsUnmarkedSensitiveParameters(): void
     {
         $this->assertErrorsOnLines('RequireSensitiveParameter.inc', [7, 11, 15]);
+    }
+
+    /**
+     * Fixtures under a tests/ directory are exempt whatever their class name.
+     *
+     * @return void
+     */
+    public function testExemptsFixturesUnderTestsDirectory(): void
+    {
+        $this->assertErrorsOnLines('tests/SensitiveParameterFixture.inc', []);
     }
 }
