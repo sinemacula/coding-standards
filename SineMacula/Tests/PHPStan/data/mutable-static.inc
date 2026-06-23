@@ -54,3 +54,23 @@ final class NoStatics
 $anon = new class {
     public static int $z = 0;
 };
+
+class ChildClassTest
+{
+    public static string $childClass = '';
+
+    public function configure(): void
+    {
+        self::$childClass = 'Foo';
+    }
+}
+
+class SchemaCase extends TestCase
+{
+    public static array $schema = [];
+
+    public function rebuild(): void
+    {
+        self::$schema = ['x'];
+    }
+}

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace SineMacula\CodingStandards\PHPStan\Collectors;
 
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\Property;
 use PHPStan\Analyser\Scope;
@@ -14,9 +15,11 @@ use PHPStan\Collectors\Collector;
  * Collect static property declarations eligible for the mutable-static rule.
  *
  * Records every static property declaration that is not opted out with a
- * `@managed-static` doc tag (on the property or its declaring class). Each
- * record carries the "Class::property" key, the property name and the
- * declaration line, so the rule can flag the ones that are also written.
+ * `@managed-static` doc tag (on the property or its declaring class). Test
+ * classes and anonymous classes are skipped entirely - mutable statics there
+ * track state across assertions, not production global state. Each record
+ * carries the "Class::property" key, the property name and the declaration
+ * line, so the rule can flag the ones that are also written.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -46,7 +49,7 @@ final class StaticPropertyDeclarationCollector implements Collector
     #[\Override]
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if ($node->namespacedName === null) {
+        if ($node->namespacedName === null || $this->isTestClass($node, $scope)) {
             return null;
         }
 
@@ -59,6 +62,21 @@ final class StaticPropertyDeclarationCollector implements Collector
         }
 
         return $records === [] ? null : $records;
+    }
+
+    /**
+     * Whether the class is a test class, where mutable statics track state
+     * across assertions rather than introduce production global state.
+     *
+     * @param  \PhpParser\Node\Stmt\ClassLike  $node
+     * @param  \PHPStan\Analyser\Scope  $scope
+     * @return bool
+     */
+    private function isTestClass(ClassLike $node, Scope $scope): bool
+    {
+        return str_ends_with($node->name?->toString() ?? '', 'Test')
+            || str_contains(str_replace('\\', '/', $scope->getFile()), '/tests/')
+            || ($node instanceof Class_ && str_ends_with($node->extends?->getLast() ?? '', 'TestCase'));
     }
 
     /**

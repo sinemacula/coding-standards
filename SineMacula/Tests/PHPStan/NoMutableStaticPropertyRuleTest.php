@@ -30,7 +30,8 @@ final class NoMutableStaticPropertyRuleTest extends RuleTestCase
 {
     /**
      * Only static properties written at runtime are flagged; read-only config,
-     * a @managed-static opt-out, instance properties and constants are not.
+     * a @managed-static opt-out, instance/constant members, and members of test
+     * classes (named *Test or extending *TestCase) are not.
      *
      * @return void
      */
@@ -40,6 +41,16 @@ final class NoMutableStaticPropertyRuleTest extends RuleTestCase
             [$this->message('count'), 7],
             [$this->message('shared'), 14],
         ]);
+    }
+
+    /**
+     * Static properties in a helper under a tests/ directory are exempt too.
+     *
+     * @return void
+     */
+    public function testExemptsStaticsInTestHelpers(): void
+    {
+        $this->analyse([__DIR__ . '/data/tests/mutable-static-helper.inc'], []);
     }
 
     /**
