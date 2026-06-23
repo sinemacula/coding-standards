@@ -233,8 +233,11 @@
 
     <!--
         Unused-code checkers (the pieces cs-fixer can't do). UnusedUses is a hard-fail mirror of the
-        cs-fixer no_unused_imports autofixer. UnusedParameter flags unused parameters - suppress on
-        contract-bound overrides with @phpcsSuppress SlevomatCodingStandard.Functions.UnusedParameter.
+        cs-fixer no_unused_imports autofixer. UnusedParameter is intentionally NOT enabled: it is
+        near-total false-positives here - parameters mandated by interface contracts, #[\Override]
+        parent signatures, and framework callback signatures (e.g. fn($app, $config) with a
+        positional-but-unused $app) cannot be removed, and IDEs / PHPStan still catch genuinely-dead
+        parameters.
     -->
     <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
     <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
@@ -242,7 +245,6 @@
             <property name="ignoreUnusedValuesWhenOnlyKeysAreUsedInForeach" value="true"/>
         </properties>
     </rule>
-    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter"/>
 
     <!--
         Reference imported names, not inline FQCN, in code bodies. Inline FQCN stays allowed for
