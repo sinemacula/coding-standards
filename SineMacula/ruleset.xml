@@ -143,12 +143,15 @@
     <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
 
     <!--
-        Inline comments: enforce // style, a leading capital and spacing, but not terminal
-        punctuation (InvalidEndChar excluded) so short notes need no full stop. Doc comments before
-        promoted properties are allowed (the DocBlock allowlist covers T_READONLY / visibility).
+        Inline comments: enforce // style and spacing, but not terminal punctuation (InvalidEndChar
+        excluded) so short notes need no full stop, and not leading capitalisation (NotCapital
+        excluded) so tool-directive comments like // qlty-ignore: and // phpstan: are not flagged.
+        Doc comments before promoted properties are allowed (the DocBlock allowlist covers
+        T_READONLY / visibility).
     -->
     <rule ref="Squiz.Commenting.InlineComment">
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+        <exclude name="Squiz.Commenting.InlineComment.NotCapital"/>
     </rule>
 
     <!-- Warn on commented-out code -->
@@ -238,13 +241,17 @@
     <!--
         Reference imported names, not inline FQCN, in code bodies. Inline FQCN stays allowed for
         global classes/functions/constants (e.g. \DateTime, \strlen); project namespaces must be
-        imported with a use statement.
+        imported with a use statement. FQCNs are also allowed where importing would collide with an
+        already-imported name (allowFullyQualifiedNameForColliding*), e.g. referencing
+        \Illuminate\Support\Facades\Request alongside an imported Illuminate\Http\Request.
     -->
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
         <properties>
             <property name="allowFullyQualifiedGlobalClasses" value="true"/>
             <property name="allowFullyQualifiedGlobalFunctions" value="true"/>
             <property name="allowFullyQualifiedGlobalConstants" value="true"/>
+            <property name="allowFullyQualifiedNameForCollidingClasses" value="true"/>
+            <property name="allowFullyQualifiedNameForCollidingFunctions" value="true"/>
         </properties>
     </rule>
 

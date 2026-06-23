@@ -52,3 +52,13 @@ class MixedNoTrailingComma
     ) {
     }
 }
+
+class DirectiveOnOpener
+{
+    public function __construct( // @phpstan-ignore-line
+
+        /** The id. */
+        public int $id,
+    ) {
+    }
+}
