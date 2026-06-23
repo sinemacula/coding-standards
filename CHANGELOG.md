@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.7.0](https://github.com/sinemacula/coding-standards/compare/v1.6.0...v1.7.0) (2026-06-23)
+
+
+### Features
+
+* **phpcs:** documented-swallow empty-catch sniff ([#66](https://github.com/sinemacula/coding-standards/issues/66)) ([c026642](https://github.com/sinemacula/coding-standards/commit/c026642693ac19134394d940cab4c6014749cf01))
+* **phpstan:** flag static properties only when written at runtime ([#63](https://github.com/sinemacula/coding-standards/issues/63)) ([11882cf](https://github.com/sinemacula/coding-standards/commit/11882cf22c944ad3e4a7b4029151eaa543d5e4a8))
+
+
+### Bug Fixes
+
+* **phpcs:** accept past-tense and idiomatic boolean method names ([#67](https://github.com/sinemacula/coding-standards/issues/67)) ([0e8d37f](https://github.com/sinemacula/coding-standards/commit/0e8d37f574b60842f427359ee62348853ed06a65))
+* **phpcs:** allow snake_case data-object access (exclude MemberNotCamelCaps) ([#61](https://github.com/sinemacula/coding-standards/issues/61)) ([0e26903](https://github.com/sinemacula/coding-standards/commit/0e269036cc2d75c73a9dae042fdf8090e7ab46ca))
+* **phpcs:** drop UnusedParameter (near-total false-positives) ([#62](https://github.com/sinemacula/coding-standards/issues/62)) ([a054fb6](https://github.com/sinemacula/coding-standards/commit/a054fb6c53f948e34b38f4c1b5484f39d1e7d113))
+* **phpcs:** exclude InlineComment.DocBlock false-positives ([#60](https://github.com/sinemacula/coding-standards/issues/60)) ([c1b89e7](https://github.com/sinemacula/coding-standards/commit/c1b89e703e421ea5bb67d6ba3ff06822b5b77c75))
+* **phpcs:** exempt test classes from RequireReadonlyPublicProperty ([#65](https://github.com/sinemacula/coding-standards/issues/65)) ([d1b0442](https://github.com/sinemacula/coding-standards/commit/d1b044273f23e61fcf8fc815f87aae23828948d6))
+* **phpcs:** exempt test classes from RequireSensitiveParameter ([#68](https://github.com/sinemacula/coding-standards/issues/68)) ([6f33bb3](https://github.com/sinemacula/coding-standards/commit/6f33bb31165d138302617f777d96340d56bbb643))
+* **phpcs:** raise cognitive complexity limit to 10 ([#64](https://github.com/sinemacula/coding-standards/issues/64)) ([1d23cad](https://github.com/sinemacula/coding-standards/commit/1d23cadce3745d94ca50f9e38c1ef24b19372cf7))
+* **phpcs:** tolerate tool-directive comments and colliding FQCNs ([#58](https://github.com/sinemacula/coding-standards/issues/58)) ([4126863](https://github.com/sinemacula/coding-standards/commit/41268633294e70d9757edff1fccae7e01f639288))
+
 ## [1.6.0](https://github.com/sinemacula/coding-standards/compare/v1.5.1...v1.6.0) (2026-06-22)
 
 
