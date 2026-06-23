@@ -24,3 +24,10 @@ class Auth
     {
     }
 }
+
+class RedactionTest
+{
+    public function assertsUnredactedTrace(string $secret): void
+    {
+    }
+}
