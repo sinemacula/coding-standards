@@ -26,12 +26,3 @@ exported_config_paths = ["security/.gitleaks.toml"]
 
 [plugins.definitions.editorconfig-checker]
 exported_config_paths = ["editorconfig/.editorconfig-checker.json"]
-
-# PHP_CodeSniffer 4.x returns exit code 3 when it finds errors (bitmask:
-# 1 errors + 2 fixable). qlty's built-in php-codesniffer driver, written for the
-# 3.x exit semantics, treats that as a plugin failure and discards the findings,
-# so consumers on phpcs 4.x see only a fraction of the violations. Accept "ran
-# and found issues" for both majors (3.x: 0/1/2, 4.x: 3); a real fatal still
-# exits higher (e.g. PHP fatal = 255), so genuine failures are still surfaced.
-[plugins.definitions.php-codesniffer.drivers.lint]
-success_codes = [0, 1, 2, 3]
