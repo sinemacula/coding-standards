@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/sinemacula/coding-standards/compare/v1.7.1...v1.7.2) (2026-06-23)
+
+
+### Bug Fixes
+
+* **qlty:** drop phpcs driver block from source.toml that broke all exports ([#71](https://github.com/sinemacula/coding-standards/issues/71)) ([660a74a](https://github.com/sinemacula/coding-standards/commit/660a74aacb57770dd8b04dd953c8e8711ec7b4f6))
+
 ## [1.7.1](https://github.com/sinemacula/coding-standards/compare/v1.7.0...v1.7.1) (2026-06-23)
 
 
