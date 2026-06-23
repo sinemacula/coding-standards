@@ -88,4 +88,9 @@ class Example
     {
         return true;
     }
+
+    public function successful(): bool
+    {
+        return true;
+    }
 }

@@ -12,11 +12,12 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  *
  * A method (or function) returning `bool` should read as a predicate. A name is
  * accepted when its first camelCase word is a copular or modal prefix (is, has,
- * can, ...) or a third-person-singular verb (ends in `s`: permits, passes). An
- * imperative command verb (execute, persist, guard, ...) that returns a result
- * bool is exempt via $commandVerbs, which a consuming ruleset can extend. A
- * method may also opt out with an @imperative docblock tag. Magic methods are
- * exempt.
+ * can, ...), an idiomatic predicate from $allowedPredicates (e.g. successful),
+ * or a verb ending in `s` (third-person: permits, passes) or `ed` (past tense:
+ * succeeded, failed, expired). An imperative command verb (execute, persist,
+ * guard, ...) that returns a result bool is exempt via $commandVerbs, which a
+ * consuming ruleset can extend. A method may also opt out with an @imperative
+ * docblock tag. Magic methods are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -29,6 +30,9 @@ final class BooleanMethodNameSniff implements Sniff
         'should', 'shall', 'will', 'would', 'may', 'might', 'must', 'needs',
         'does',
     ];
+
+    /** @var array<int, string> Idiomatic predicate first words that need no is/has/can prefix. */
+    public array $allowedPredicates = ['successful'];
 
     /** @var array<int, string> Imperative command verbs that may return a result bool. */
     public array $commandVerbs = [
@@ -112,8 +116,9 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the name reads as a predicate: a copular/modal prefix or a
-     * third-person-singular verb (first word ending in `s`).
+     * Whether the name reads as a predicate: a copular/modal prefix, an
+     * idiomatic predicate, or a verb ending in `s` (third-person) or `ed`
+     * (past tense).
      *
      * @param  string  $name
      * @return bool
@@ -122,7 +127,10 @@ final class BooleanMethodNameSniff implements Sniff
     {
         $first = $this->firstWord($name);
 
-        return in_array($first, $this->allowedPrefixes, true) || str_ends_with($first, 's');
+        return in_array($first, $this->allowedPrefixes, true)
+            || in_array($first, $this->allowedPredicates, true)
+            || str_ends_with($first, 's')
+            || str_ends_with($first, 'ed');
     }
 
     /**
