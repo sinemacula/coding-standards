@@ -143,15 +143,17 @@
     <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
 
     <!--
-        Inline comments: enforce // style and spacing, but not terminal punctuation (InvalidEndChar
-        excluded) so short notes need no full stop, and not leading capitalisation (NotCapital
-        excluded) so tool-directive comments like // qlty-ignore: and // phpstan: are not flagged.
-        Doc comments before promoted properties are allowed (the DocBlock allowlist covers
-        T_READONLY / visibility).
+        Inline comments: enforce // style and spacing, with three sub-rules excluded.
+        InvalidEndChar: short notes need no terminal full stop. NotCapital: tool-directive
+        comments like // qlty-ignore: and // phpstan: start lowercase. DocBlock: only
+        false-positives here - it fights the PHPStan inline type-assertion idiom
+        (/** @var Type $x */ before a statement) and the house enum/constant rules that
+        require /** */ blocks.
     -->
     <rule ref="Squiz.Commenting.InlineComment">
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
         <exclude name="Squiz.Commenting.InlineComment.NotCapital"/>
+        <exclude name="Squiz.Commenting.InlineComment.DocBlock"/>
     </rule>
 
     <!-- Warn on commented-out code -->
