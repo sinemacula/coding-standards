@@ -7,12 +7,12 @@ namespace SineMacula\CodingStandards\Sniffs\Concerns;
 use PHP_CodeSniffer\Files\File;
 
 /**
- * Detects PHPUnit test classes.
+ * Detects test classes.
  *
- * A class is treated as a test when its name ends in `Test` or it extends a
- * class whose name ends in `TestCase`. Size metrics that are a smell in
- * production code (long methods, many methods) are legitimate in tests, so a
- * sniff can use this to exempt them.
+ * A class is treated as a test when its name ends in `Test`, it extends a class
+ * whose name ends in `TestCase`, or its file lives under a `tests/` directory.
+ * Rules that only apply to production code (size metrics, the readonly mandate)
+ * can use this to exempt test fixtures - recording spies, fakes and the like.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -29,6 +29,10 @@ trait DetectsTestClasses
     protected function isTestClass(File $phpcsFile, int $classPtr): bool
     {
         if (str_ends_with((string) $phpcsFile->getDeclarationName($classPtr), 'Test')) {
+            return true;
+        }
+
+        if (str_contains(str_replace('\\', '/', $phpcsFile->getFilename()), '/tests/')) {
             return true;
         }
 

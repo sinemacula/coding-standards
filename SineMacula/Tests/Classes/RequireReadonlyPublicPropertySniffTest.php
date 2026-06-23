@@ -21,14 +21,24 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
 {
     /**
      * Public mutable properties (declared and promoted) are flagged; readonly,
-     * non-public, and static properties are not, nor are any properties in a
-     * class declared `readonly` or extending a configured ignored parent.
+     * non-public and static properties, readonly/ignored-parent classes, and
+     * test classes (named *Test or extending *TestCase) are not.
      *
      * @return void
      */
     public function testFlagsMutablePublicProperties(): void
     {
         $this->assertErrorsOnLines('RequireReadonlyPublicProperty.inc', [7, 18]);
+    }
+
+    /**
+     * Test doubles under a tests/ directory are exempt whatever their name.
+     *
+     * @return void
+     */
+    public function testExemptsTestDoublesUnderTestsDirectory(): void
+    {
+        $this->assertErrorsOnLines('tests/ReadonlyTestDouble.inc', []);
     }
 
     /**

@@ -7,6 +7,7 @@ namespace SineMacula\Sniffs\Classes;
 use PHP_CodeSniffer\Exceptions\RuntimeException;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 
 /**
  * Readonly public property sniff.
@@ -14,13 +15,16 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Public properties (declared or constructor-promoted) must be `readonly`.
  * Mutable public state breaks encapsulation; the legitimate data-holder case is
  * expressed with `public readonly`. Static properties are left to the mutable
- * static state rule, and non-public properties are unaffected.
+ * static state rule, and non-public properties are unaffected. Test classes are
+ * exempt (recording spies and fakes legitimately hold mutable public state).
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 final class RequireReadonlyPublicPropertySniff implements Sniff
 {
+    use DetectsTestClasses;
+
     /** @var array<int, string> Parent classes whose subclasses are exempt. */
     public array $ignoredParentClasses = [];
 
@@ -45,7 +49,11 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
-        if ($this->isInReadonlyClass($phpcsFile, $stackPtr) || $this->isInIgnoredClass($phpcsFile, $stackPtr)) {
+        if (
+            $this->isInReadonlyClass($phpcsFile, $stackPtr)
+            || $this->isInIgnoredClass($phpcsFile, $stackPtr)
+            || $this->isInTestClass($phpcsFile, $stackPtr)
+        ) {
             return;
         }
 
@@ -90,6 +98,21 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
         $parent   = $classPtr === false ? false : $phpcsFile->findExtendedClassName($classPtr);
 
         return $parent !== false && in_array($parent, $this->ignoredParentClasses, true);
+    }
+
+    /**
+     * Whether the token sits in a test class, where mutable public recording
+     * state (spies, fakes) is legitimate rather than a smell.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isInTestClass(File $phpcsFile, int $stackPtr): bool
+    {
+        $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
+
+        return $classPtr !== false && $this->isTestClass($phpcsFile, $classPtr);
     }
 
     /**
