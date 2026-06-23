@@ -20,5 +20,15 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: false
     reportUnmatchedIgnoredErrors: false
 
+services:
+    -
+        class: SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyWriteCollector
+        tags:
+            - phpstan.collector
+    -
+        class: SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyDeclarationCollector
+        tags:
+            - phpstan.collector
+
 rules:
     - SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule

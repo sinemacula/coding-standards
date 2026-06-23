@@ -183,7 +183,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 
 | Identifier | Enforces |
 |------------|----------|
-| `sineMacula.mutableStaticProperty` | No mutable static state; use instance state or a constant instead. |
+| `sineMacula.mutableStaticProperty` | Static properties written at runtime; `@managed-static` opts out. |
 
 ## Requirements
 

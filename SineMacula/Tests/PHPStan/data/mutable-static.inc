@@ -2,19 +2,40 @@
 
 namespace SineMacula\Tests\PHPStan\Data;
 
-final class Counter
+class Counter
 {
-    private static int $cache = 0;
+    private static int $count = 0;
 
-    /** The shared total. */
-    private static int $documented = 0;
+    protected static array $default = ['a'];
 
-    /** @managed-static reset per request */
+    /** @managed-static */
     private static array $memo = [];
 
-    private int $value = 0;
+    public static int $shared = 0;
 
-    public const int MAX = 100;
+    public int $value = 0;
+
+    public static function bump(): void
+    {
+        self::$count++;
+        self::$memo['k'] = 1;
+        $local       = 1;
+        $cls         = self::class;
+        $cls::$count = $local;
+    }
+
+    public function readDefault(): array
+    {
+        return static::$default;
+    }
+}
+
+final class Mutator
+{
+    public function set(): void
+    {
+        Counter::$shared = 5;
+    }
 }
 
 /**
@@ -24,3 +45,12 @@ final class Registry
 {
     private static array $items = [];
 }
+
+final class NoStatics
+{
+    public int $only = 0;
+}
+
+$anon = new class {
+    public static int $z = 0;
+};
