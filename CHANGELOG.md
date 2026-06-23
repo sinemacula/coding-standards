@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/sinemacula/coding-standards/compare/v1.7.0...v1.7.1) (2026-06-23)
+
+
+### Bug Fixes
+
+* **phpstan:** exempt test classes from sineMacula.mutableStaticProperty ([#69](https://github.com/sinemacula/coding-standards/issues/69)) ([6121a63](https://github.com/sinemacula/coding-standards/commit/6121a63f7f357346b36e32c53dcbb1320927f5b9))
+
 ## [1.7.0](https://github.com/sinemacula/coding-standards/compare/v1.6.0...v1.7.0) (2026-06-23)
 
 
