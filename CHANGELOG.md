@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/sinemacula/coding-standards/compare/v1.8.0...v1.8.1) (2026-06-24)
+
+
+### Bug Fixes
+
+* **ci:** pin renovate action to a resolvable tag ([#75](https://github.com/sinemacula/coding-standards/issues/75)) ([96cd387](https://github.com/sinemacula/coding-standards/commit/96cd387468e7b600adfa6296d3628621aca05999))
+
 ## [1.8.0](https://github.com/sinemacula/coding-standards/compare/v1.7.2...v1.8.0) (2026-06-24)
 
 
