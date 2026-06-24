@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/sinemacula/coding-standards/compare/v1.8.1...v1.8.2) (2026-06-24)
+
+
+### Bug Fixes
+
+* re-release to verify the dependency-updates pipeline ([#79](https://github.com/sinemacula/coding-standards/issues/79)) ([e7a3a36](https://github.com/sinemacula/coding-standards/commit/e7a3a3656ca88c60ab9166cd80b042d75932f5f3))
+
 ## [1.8.1](https://github.com/sinemacula/coding-standards/compare/v1.8.0...v1.8.1) (2026-06-24)
 
 
