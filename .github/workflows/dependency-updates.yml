@@ -43,7 +43,7 @@ jobs:
 
             -   name: Trigger the dependency-updates worker
                 env:
-                    GH_TOKEN: ${{ secrets.DEPENDENCY_DISPATCH_TOKEN }}
+                    GH_TOKEN: ${{ secrets.DEPENDENCIES_DISPATCH_TOKEN }}
                 run: |
                     gh api -X POST \
                         repos/sinemacula/dependency-updates-worker/dispatches \
