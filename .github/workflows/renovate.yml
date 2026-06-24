@@ -1,0 +1,112 @@
+# ==============================================================================
+# RENOVATE
+# ==============================================================================
+name: Renovate
+
+# ==============================================================================
+# TRIGGERS
+# ==============================================================================
+on:
+    release:
+        types: [ published ]
+    schedule:
+        -   cron: '0 */6 * * *'
+    workflow_dispatch:
+        inputs:
+            log_level:
+                description: Renovate log level
+                default: info
+
+# ==============================================================================
+# CONCURRENCY
+# ==============================================================================
+concurrency:
+    group: renovate
+    cancel-in-progress: false
+
+# ==============================================================================
+# PERMISSIONS
+# ==============================================================================
+permissions: {}
+
+# ==============================================================================
+# DEFAULTS
+# ==============================================================================
+defaults:
+    run:
+        shell: bash
+
+jobs:
+
+    # ==========================================================================
+    # JOB: DISCOVER INSTALLATIONS
+    # ==========================================================================
+    discover:
+        name: Discover installations
+        runs-on: ubuntu-latest
+
+        outputs:
+            owners: ${{ steps.list.outputs.owners }}
+
+        steps:
+
+            # The orgs the app is installed on are the source of truth for what
+            # gets updated. They are read at run time from the app's own
+            # installations, so no consuming org is ever named in this repo.
+            -   name: Discover the orgs the app is installed on
+                id: list
+                env:
+                    CLIENT_ID: ${{ secrets.RENOVATE_CLIENT_ID }}
+                    APP_PRIVATE_KEY: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+                run: |
+                    set -euo pipefail
+                    b64url() { openssl base64 -A | tr '+/' '-_' | tr -d '='; }
+                    now=$(date +%s); iat=$((now - 60)); exp=$((now + 540))
+                    printf '%s' "$APP_PRIVATE_KEY" > "$RUNNER_TEMP/key.pem"
+                    header=$(printf '%s' '{"alg":"RS256","typ":"JWT"}' | b64url)
+                    payload=$(printf '{"iat":%d,"exp":%d,"iss":"%s"}' "$iat" "$exp" "$CLIENT_ID" | b64url)
+                    sig=$(printf '%s.%s' "$header" "$payload" \
+                        | openssl dgst -sha256 -sign "$RUNNER_TEMP/key.pem" -binary | b64url)
+                    rm -f "$RUNNER_TEMP/key.pem"
+                    jwt="$header.$payload.$sig"
+                    owners=$(curl -fsSL \
+                        -H "Authorization: Bearer $jwt" \
+                        -H "Accept: application/vnd.github+json" \
+                        -H "X-GitHub-Api-Version: 2022-11-28" \
+                        "https://api.github.com/app/installations?per_page=100" \
+                        | jq -c '[.[].account.login]')
+                    echo "owners=$owners" >> "$GITHUB_OUTPUT"
+
+    # ==========================================================================
+    # JOB: RENOVATE
+    # ==========================================================================
+    renovate:
+        name: Renovate / ${{ matrix.owner }}
+        needs: discover
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                owner: ${{ fromJSON(needs.discover.outputs.owners) }}
+
+        steps:
+
+            -   name: Mint an installation token
+                id: token
+                uses: actions/create-github-app-token@v3
+                with:
+                    app-id: ${{ secrets.RENOVATE_CLIENT_ID }}
+                    private-key: ${{ secrets.RENOVATE_APP_PRIVATE_KEY }}
+                    owner: ${{ matrix.owner }}
+
+            -   name: Run Renovate
+                uses: renovatebot/github-action@v46
+                env:
+                    RENOVATE_TOKEN: ${{ steps.token.outputs.token }}
+                    RENOVATE_PLATFORM: github
+                    RENOVATE_AUTODISCOVER: 'true'
+                    RENOVATE_AUTODISCOVER_FILTER: '${{ matrix.owner }}/*'
+                    RENOVATE_ONBOARDING: 'false'
+                    RENOVATE_REQUIRE_CONFIG: 'required'
+                    LOG_LEVEL: ${{ inputs.log_level || 'info' }}

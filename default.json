@@ -1,0 +1,36 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "enabledManagers": ["custom.regex", "composer", "npm"],
+    "semanticCommits": "enabled",
+    "semanticCommitType": "chore",
+    "semanticCommitScope": "deps",
+    "commitMessageTopic": "{{depName}}",
+    "customManagers": [
+        {
+            "customType": "regex",
+            "fileMatch": ["(^|/)\\.qlty/qlty\\.toml$"],
+            "matchStrings": [
+                "sinemacula/coding-standards\"[\\s\\S]*?tag\\s*=\\s*\"(?<currentValue>v[0-9.]+)\""
+            ],
+            "depNameTemplate": "sinemacula/coding-standards",
+            "datasourceTemplate": "github-tags"
+        }
+    ],
+    "packageRules": [
+        {
+            "description": "Manage only sinemacula/coding-standards itself; ignore everything else",
+            "matchPackageNames": ["!sinemacula/coding-standards", "!@sinemacula/coding-standards"],
+            "enabled": false
+        },
+        {
+            "description": "Group the qlty tag, composer and npm bumps into one PR",
+            "matchPackageNames": ["sinemacula/coding-standards", "@sinemacula/coding-standards"],
+            "groupName": "Sine Macula coding standards",
+            "rangeStrategy": "update-lockfile"
+        },
+        {
+            "matchUpdateTypes": ["major"],
+            "automerge": false
+        }
+    ]
+}
