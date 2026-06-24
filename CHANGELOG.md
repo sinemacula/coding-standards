@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/sinemacula/coding-standards/compare/v1.7.2...v1.8.0) (2026-06-24)
+
+
+### Features
+
+* **ci:** self-hosted Renovate to auto-bump consumers on release ([#73](https://github.com/sinemacula/coding-standards/issues/73)) ([11845e5](https://github.com/sinemacula/coding-standards/commit/11845e55a0070804fbada3dd67c10a216f1a193c))
+
 ## [1.7.2](https://github.com/sinemacula/coding-standards/compare/v1.7.1...v1.7.2) (2026-06-23)
 
 
