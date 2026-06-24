@@ -1,23 +1,11 @@
 {
   "schema_version": 1,
-  "session_id": "9a53099f-b58b-4687-996d-9f25e8e18acc",
-  "started_at": "2026-06-21T13:19:42.146Z",
+  "session_id": "6a2a1a09-131c-4525-bc1a-ebb7144dbd66",
+  "started_at": "2026-06-24T10:32:08.130Z",
   "files": [
     {
-      "path": "php/.php-cs-fixer.rules.php",
-      "first_touched": "2026-06-21T13:19:42.147Z"
-    },
-    {
-      "path": "SineMacula/Tests/Attributes/DisallowToolingAttribute.inc",
-      "first_touched": "2026-06-21T13:24:40.509Z"
-    },
-    {
-      "path": "SineMacula/Tests/Attributes/DisallowToolingAttributeSniffTest.php",
-      "first_touched": "2026-06-21T13:24:45.830Z"
-    },
-    {
-      "path": "SineMacula/Sniffs/Attributes/DisallowToolingAttributeSniff.php",
-      "first_touched": "2026-06-21T13:36:51.057Z"
+      "path": ".github/workflows/dependency-updates.yml",
+      "first_touched": "2026-06-24T10:32:08.131Z"
     }
   ],
   "drift": {

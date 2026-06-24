@@ -1,7 +1,7 @@
 # ==============================================================================
-# RENOVATE
+# DEPENDENCY UPDATES
 # ==============================================================================
-name: Renovate
+name: Dependency Updates
 
 # ==============================================================================
 # TRIGGERS
@@ -21,7 +21,7 @@ on:
 # CONCURRENCY
 # ==============================================================================
 concurrency:
-    group: renovate
+    group: dependency-updates
     cancel-in-progress: false
 
 # ==============================================================================
@@ -50,10 +50,7 @@ jobs:
 
         steps:
 
-            # The orgs the app is installed on are the source of truth for what
-            # gets updated. They are read at run time from the app's own
-            # installations, so no consuming org is ever named in this repo.
-            -   name: Discover the orgs the app is installed on
+            -   name: List installations
                 id: list
                 env:
                     CLIENT_ID: ${{ secrets.RENOVATE_CLIENT_ID }}
