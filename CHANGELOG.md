@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.3](https://github.com/sinemacula/coding-standards/compare/v1.8.2...v1.8.3) (2026-06-25)
+
+
+### Bug Fixes
+
+* **phpcs:** match the method-signature length threshold to the 180 line limit ([#81](https://github.com/sinemacula/coding-standards/issues/81)) ([7097436](https://github.com/sinemacula/coding-standards/commit/7097436c9eea617eb707a66c6bff9f3aa72871f9))
+
 ## [1.8.2](https://github.com/sinemacula/coding-standards/compare/v1.8.1...v1.8.2) (2026-06-24)
 
 
