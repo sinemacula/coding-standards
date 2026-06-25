@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.4](https://github.com/sinemacula/coding-standards/compare/v1.8.3...v1.8.4) (2026-06-25)
+
+
+### Bug Fixes
+
+* **phpcs:** honour docblock opt-out tags hidden behind attributes ([#85](https://github.com/sinemacula/coding-standards/issues/85)) ([5623663](https://github.com/sinemacula/coding-standards/commit/56236638a5cac998b50738c3c4183e0b07f8e2e8))
+
 ## [1.8.3](https://github.com/sinemacula/coding-standards/compare/v1.8.2...v1.8.3) (2026-06-25)
 
 
