@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
  * Enum case comment consistency sniff.
@@ -19,6 +20,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class ConsistentEnumCaseCommentsSniff implements Sniff
 {
+    use ResolvesDocComment;
+
     /**
      * Register the tokens this sniff listens for.
      *
@@ -98,9 +101,6 @@ final class ConsistentEnumCaseCommentsSniff implements Sniff
      */
     private function hasDocComment(File $phpcsFile, int $casePtr): bool
     {
-        $tokens = $phpcsFile->getTokens();
-        $before = $phpcsFile->findPrevious([T_WHITESPACE], $casePtr - 1, null, true);
-
-        return $before !== false && $tokens[$before]['code'] === T_DOC_COMMENT_CLOSE_TAG;
+        return $this->docCommentCloser($phpcsFile, $casePtr) !== null;
     }
 }

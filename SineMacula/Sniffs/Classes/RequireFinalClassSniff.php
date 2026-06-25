@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Classes;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
  * Final class sniff.
@@ -19,6 +20,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class RequireFinalClassSniff implements Sniff
 {
+    use ResolvesDocComment;
+
     /**
      * Register the tokens this sniff listens for.
      *
@@ -68,18 +71,13 @@ final class RequireFinalClassSniff implements Sniff
     private function isMarkedInheritable(File $phpcsFile, int $stackPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $before = $phpcsFile->findPrevious(
-            [T_WHITESPACE, T_ABSTRACT, T_FINAL, T_READONLY],
-            $stackPtr - 1,
-            null,
-            true,
-        );
+        $closer = $this->docCommentCloser($phpcsFile, $stackPtr, [T_ABSTRACT, T_FINAL, T_READONLY]);
 
-        if ($before === false || $tokens[$before]['code'] !== T_DOC_COMMENT_CLOSE_TAG) {
+        if ($closer === null) {
             return false;
         }
 
-        for ($i = $tokens[$before]['comment_opener']; $i < $before; $i++) {
+        for ($i = $tokens[$closer]['comment_opener']; $i < $closer; $i++) {
             if (
                 $tokens[$i]['code']                   === T_DOC_COMMENT_TAG
                 && strtolower($tokens[$i]['content']) === '@inheritable'

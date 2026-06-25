@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
  * Copyright tag sniff.
@@ -20,6 +21,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class RequireCopyrightTagSniff implements Sniff
 {
+    use ResolvesDocComment;
+
     /**
      * Register the tokens this sniff listens for.
      *
@@ -42,7 +45,7 @@ final class RequireCopyrightTagSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr): void
     {
         $tokens = $phpcsFile->getTokens();
-        $closer = $this->docComment($phpcsFile, $stackPtr);
+        $closer = $this->docCommentCloser($phpcsFile, $stackPtr, [T_ABSTRACT, T_FINAL, T_READONLY]);
 
         if ($closer === null || $this->hasCopyrightTag($tokens, $closer)) {
             return;
@@ -54,30 +57,6 @@ final class RequireCopyrightTagSniff implements Sniff
             'Missing',
             [$phpcsFile->getDeclarationName($stackPtr)],
         );
-    }
-
-    /**
-     * Resolve the docblock attached to the structure, if any.
-     *
-     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  int  $stackPtr
-     * @return int|null
-     */
-    private function docComment(File $phpcsFile, int $stackPtr): ?int
-    {
-        $tokens = $phpcsFile->getTokens();
-        $before = $phpcsFile->findPrevious(
-            [T_WHITESPACE, T_ABSTRACT, T_FINAL, T_READONLY],
-            $stackPtr - 1,
-            null,
-            true,
-        );
-
-        if ($before !== false && $tokens[$before]['code'] === T_DOC_COMMENT_CLOSE_TAG) {
-            return $before;
-        }
-
-        return null;
     }
 
     /**

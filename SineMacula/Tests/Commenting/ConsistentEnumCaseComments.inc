@@ -18,3 +18,12 @@ enum Status
     case ACTIVE;
     case INACTIVE;
 }
+
+enum Rank
+{
+    /** The ace rank. */
+    #[Internal]
+    case ACE;
+
+    case KING;
+}

@@ -33,3 +33,18 @@ final readonly class Value
 class Documented
 {
 }
+
+/**
+ * Designed for extension, behind an attribute.
+ *
+ * @inheritable
+ */
+#[\AllowDynamicProperties]
+class ExtendableWithAttribute
+{
+}
+
+#[\AllowDynamicProperties]
+class PlainWithAttribute
+{
+}
