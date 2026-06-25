@@ -23,10 +23,11 @@
             "enabled": false
         },
         {
-            "description": "Group the qlty tag, composer and npm bumps into one PR",
+            "description": "Group the qlty tag, composer and npm bumps into one PR; auto-merge minor and patch",
             "matchPackageNames": ["sinemacula/coding-standards", "@sinemacula/coding-standards"],
             "groupName": "Sine Macula coding standards",
-            "rangeStrategy": "update-lockfile"
+            "rangeStrategy": "update-lockfile",
+            "automerge": true
         },
         {
             "matchUpdateTypes": ["major"],
