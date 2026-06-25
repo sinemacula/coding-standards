@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
  * Class constant doc comment sniff.
@@ -19,6 +20,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class RequireConstantCommentSniff implements Sniff
 {
+    use ResolvesDocComment;
+
     /**
      * Register the tokens this sniff listens for.
      *
@@ -46,14 +49,7 @@ final class RequireConstantCommentSniff implements Sniff
             return;
         }
 
-        $before = $phpcsFile->findPrevious(
-            [T_WHITESPACE, T_PUBLIC, T_PROTECTED, T_PRIVATE, T_FINAL],
-            $stackPtr - 1,
-            null,
-            true,
-        );
-
-        if ($before !== false && $tokens[$before]['code'] === T_DOC_COMMENT_CLOSE_TAG) {
+        if ($this->docCommentCloser($phpcsFile, $stackPtr, [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_FINAL]) !== null) {
             return;
         }
 

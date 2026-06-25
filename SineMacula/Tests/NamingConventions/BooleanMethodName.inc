@@ -93,4 +93,46 @@ class Example
     {
         return true;
     }
+
+    /**
+     * @return bool
+     *
+     * @imperative
+     */
+    #[\Override]
+    public function close(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     *
+     * @imperative
+     */
+    #[\Override]
+    #[\ReturnTypeWillChange]
+    public function connect(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @return bool
+     *
+     * @imperative
+     */
+    #[\Override] public function subscribe(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Reports availability, but without the opt-out tag, behind an attribute.
+     */
+    #[\Override]
+    public function available(): bool
+    {
+        return true;
+    }
 }

@@ -21,12 +21,14 @@ final class RequireFinalClassSniffTest extends AbstractSniffTestCase
 {
     /**
      * Only concrete classes that are neither final nor marked @inheritable
-     * should be flagged.
+     * should be flagged. The @inheritable opt-out still holds when an attribute
+     * sits between the docblock and the class; a concrete class behind an
+     * attribute with no opt-out is still flagged.
      *
      * @return void
      */
     public function testFlagsNonFinalConcreteClasses(): void
     {
-        $this->assertErrorsOnLines('RequireFinalClass.inc', [13, 33]);
+        $this->assertErrorsOnLines('RequireFinalClass.inc', [13, 33, 48]);
     }
 }

@@ -21,12 +21,14 @@ final class RequireCopyrightTagSniffTest extends AbstractSniffTestCase
 {
     /**
      * A docblock without @copyright is flagged; one with it, and a structure
-     * with no docblock at all (left to the class-comment sniff), are not.
+     * with no docblock at all (left to the class-comment sniff), are not. The
+     * docblock is still found when an attribute sits between it and the class,
+     * so an attribute-tagged class missing @copyright is flagged.
      *
      * @return void
      */
     public function testFlagsDocblocksMissingCopyright(): void
     {
-        $this->assertErrorsOnLines('RequireCopyrightTag.inc', [20]);
+        $this->assertErrorsOnLines('RequireCopyrightTag.inc', [20, 45]);
     }
 }

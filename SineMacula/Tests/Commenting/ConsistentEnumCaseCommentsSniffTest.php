@@ -21,12 +21,14 @@ final class ConsistentEnumCaseCommentsSniffTest extends AbstractSniffTestCase
 {
     /**
      * When some but not all cases are documented, the undocumented ones are
-     * flagged; a fully undocumented enum is left alone.
+     * flagged; a fully undocumented enum is left alone. A case documented
+     * behind an attribute still counts as documented, so its plain undocumented
+     * sibling is flagged.
      *
      * @return void
      */
     public function testFlagsInconsistentlyDocumentedEnumCases(): void
     {
-        $this->assertErrorsOnLines('ConsistentEnumCaseComments.inc', [10]);
+        $this->assertErrorsOnLines('ConsistentEnumCaseComments.inc', [10, 28]);
     }
 }

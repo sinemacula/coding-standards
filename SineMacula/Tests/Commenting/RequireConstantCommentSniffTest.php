@@ -21,12 +21,14 @@ final class RequireConstantCommentSniffTest extends AbstractSniffTestCase
 {
     /**
      * Undocumented class constants are flagged; documented and global constants
-     * are not.
+     * are not. A doc comment is still found when an attribute sits between it
+     * and the constant, so an attribute-tagged undocumented constant is flagged
+     * while an attribute-tagged documented one is not.
      *
      * @return void
      */
     public function testFlagsUndocumentedClassConstants(): void
     {
-        $this->assertErrorsOnLines('RequireConstantComment.inc', [10, 12]);
+        $this->assertErrorsOnLines('RequireConstantComment.inc', [10, 12, 19]);
     }
 }

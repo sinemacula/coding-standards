@@ -10,6 +10,13 @@ class Config
     public const string NAME = 'config';
 
     private const UNDOCUMENTED = true;
+
+    /** A documented, attribute-tagged constant. */
+    #[Internal]
+    public const string LABEL = 'config';
+
+    #[Internal]
+    public const string SECRET = 'shh';
 }
 
 const GLOBAL_CONST = 'x';
