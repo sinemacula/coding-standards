@@ -274,14 +274,14 @@
     </rule>
 
     <!--
-        Method signatures: single line when they fit within 120 characters, multi-line (one
+        Method signatures: single line when they fit within 180 characters, multi-line (one
         parameter per line) when they exceed it. Constructors are excluded from the single-line rule
         so promoted-property constructors are always multi-line (withPromotedProperties). cs-fixer
         method_argument_space is on_multiline:ignore, so it leaves the single/multi decision to these.
     -->
     <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature">
         <properties>
-            <property name="maxLineLength" value="120"/>
+            <property name="maxLineLength" value="180"/>
             <property name="excludedMethodPatterns" type="array">
                 <element value="/^__construct$/"/>
             </property>
@@ -289,7 +289,7 @@
     </rule>
     <rule ref="SlevomatCodingStandard.Classes.RequireMultiLineMethodSignature">
         <properties>
-            <property name="minLineLength" value="121"/>
+            <property name="minLineLength" value="181"/>
             <property name="withPromotedProperties" value="true"/>
         </properties>
     </rule>
