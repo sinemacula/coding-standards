@@ -14,6 +14,15 @@
             ],
             "depNameTemplate": "sinemacula/coding-standards",
             "datasourceTemplate": "github-tags"
+        },
+        {
+            "customType": "regex",
+            "fileMatch": ["(^|/)\\.qlty/configs/biome\\.json$"],
+            "matchStrings": [
+                "coding-standards/(?<currentValue>v[0-9.]+)/js/biome\\.json"
+            ],
+            "depNameTemplate": "sinemacula/coding-standards",
+            "datasourceTemplate": "github-tags"
         }
     ],
     "packageRules": [
