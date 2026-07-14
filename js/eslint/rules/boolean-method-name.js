@@ -25,12 +25,7 @@ const COMMAND_VERBS = new Set([
 /** Matches @imperative only at a docblock tag position, never inside prose. */
 const IMPERATIVE_TAG = /^[ \t*]*@imperative(?![-\w])/im;
 
-/**
- * The leading camelCase word of a method name.
- *
- * @param {string} name
- * @returns {string}
- */
+/** The leading camelCase word of a method name. */
 function firstWord(name) {
     const match = /^[a-z]+/.exec(name);
 
@@ -40,11 +35,6 @@ function firstWord(name) {
 /**
  * Whether the name reads as a predicate: a copular/modal prefix, an idiomatic
  * predicate, or a verb ending in `s` (third-person) or `ed` (past tense).
- *
- * @param {string} name
- * @param {Set<string>} prefixes
- * @param {Set<string>} predicates
- * @returns {boolean}
  */
 function isPredicate(name, prefixes, predicates) {
     const first = firstWord(name);
@@ -55,13 +45,7 @@ function isPredicate(name, prefixes, predicates) {
         || first.endsWith('ed');
 }
 
-/**
- * Whether the name is an imperative command verb, not a predicate.
- *
- * @param {string} name
- * @param {Set<string>} verbs
- * @returns {boolean}
- */
+/** Whether the name is an imperative command verb, not a predicate. */
 function isCommandVerb(name, verbs) {
     return verbs.has(firstWord(name));
 }
@@ -70,9 +54,6 @@ function isCommandVerb(name, verbs) {
  * Whether a return type resolves to boolean, ignoring a nullable `?bool`-style
  * null/undefined/void tail so an optional boolean still counts. Promise wrappers
  * are unwrapped before this is called, so an awaited boolean counts too.
- *
- * @param {import('typescript').Type} type
- * @returns {boolean}
  */
 function returnsBoolean(type) {
     if (type.flags & (ts.TypeFlags.Boolean | ts.TypeFlags.BooleanLiteral)) {
@@ -90,23 +71,13 @@ function returnsBoolean(type) {
     return false;
 }
 
-/**
- * Whether the node is a function expression carrying an inspectable signature.
- *
- * @param {import('@typescript-eslint/utils').TSESTree.Node} node
- * @returns {boolean}
- */
+/** Whether the node is a function expression carrying an inspectable signature. */
 function isFunctionExpression(node) {
     return node != null
         && (node.type === 'ArrowFunctionExpression' || node.type === 'FunctionExpression');
 }
 
-/**
- * The static name of a member key, or null when it is not statically named.
- *
- * @param {import('@typescript-eslint/utils').TSESTree.Node} keyNode
- * @returns {string | null}
- */
+/** The static name of a member key, or null when it is not statically named. */
 function keyName(keyNode) {
     if (keyNode.type === 'Identifier' || keyNode.type === 'PrivateIdentifier') {
         return keyNode.name;
@@ -119,12 +90,7 @@ function keyName(keyNode) {
     return null;
 }
 
-/**
- * Peel `as`/`satisfies`/non-null wrappers off an expression to reach the value.
- *
- * @param {import('@typescript-eslint/utils').TSESTree.Node} node
- * @returns {import('@typescript-eslint/utils').TSESTree.Node}
- */
+/** Peel `as`/`satisfies`/non-null wrappers off an expression to reach the value. */
 function unwrapExpression(node) {
     let current = node;
 
@@ -229,6 +195,61 @@ function inspectMember(state, node, allowEmptyBody) {
 }
 
 /**
+ * The visitor: inspect each named function, method, signature and function-valued
+ * member for a boolean return that does not read as a predicate.
+ */
+function buildListeners(state) {
+    return {
+        FunctionDeclaration(node) {
+            if (node.id) {
+                inspect(state, node.id, node.id.name, node, node);
+            }
+        },
+        TSDeclareFunction(node) {
+            if (node.id && isAmbient(node, state.context.filename)) {
+                inspect(state, node.id, node.id.name, node, node);
+            }
+        },
+        MethodDefinition(node) {
+            inspectMember(state, node, false);
+        },
+        TSAbstractMethodDefinition(node) {
+            inspectMember(state, node, true);
+        },
+        TSMethodSignature(node) {
+            if (!node.computed && node.kind === 'method') {
+                const name = keyName(node.key);
+
+                if (name !== null) {
+                    inspect(state, node.key, name, node, node);
+                }
+            }
+        },
+        PropertyDefinition(node) {
+            const value = unwrapExpression(node.value);
+
+            if (!node.computed && isFunctionExpression(value)) {
+                inspectFunctionValue(state, node.key, value, node);
+            }
+        },
+        Property(node) {
+            const value = unwrapExpression(node.value);
+
+            if (!node.computed && node.kind === 'init' && isFunctionExpression(value)) {
+                inspectFunctionValue(state, node.key, value, node);
+            }
+        },
+        VariableDeclarator(node) {
+            const init = unwrapExpression(node.init);
+
+            if (isFunctionExpression(init)) {
+                inspectFunctionValue(state, node.id, init, node.parent);
+            }
+        },
+    };
+}
+
+/**
  * Boolean method name rule.
  *
  * A function, method, arrow-bound class field, object method or interface/type
@@ -243,6 +264,9 @@ function inspectMember(state, node, allowEmptyBody) {
  * from type information - inferred booleans and awaited Promise<boolean> included -
  * so the rule degrades to a no-op when no type information is available. The
  * accepted vocabulary can be widened per consumer through the rule options.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'boolean-method-name',
@@ -286,53 +310,6 @@ export default createRule({
             commandVerbs: new Set([...COMMAND_VERBS, ...options.additionalCommandVerbs]),
         };
 
-        return {
-            FunctionDeclaration(node) {
-                if (node.id) {
-                    inspect(state, node.id, node.id.name, node, node);
-                }
-            },
-            TSDeclareFunction(node) {
-                if (node.id && isAmbient(node, context.filename)) {
-                    inspect(state, node.id, node.id.name, node, node);
-                }
-            },
-            MethodDefinition(node) {
-                inspectMember(state, node, false);
-            },
-            TSAbstractMethodDefinition(node) {
-                inspectMember(state, node, true);
-            },
-            TSMethodSignature(node) {
-                if (!node.computed && node.kind === 'method') {
-                    const name = keyName(node.key);
-
-                    if (name !== null) {
-                        inspect(state, node.key, name, node, node);
-                    }
-                }
-            },
-            PropertyDefinition(node) {
-                const value = unwrapExpression(node.value);
-
-                if (!node.computed && isFunctionExpression(value)) {
-                    inspectFunctionValue(state, node.key, value, node);
-                }
-            },
-            Property(node) {
-                const value = unwrapExpression(node.value);
-
-                if (!node.computed && node.kind === 'init' && isFunctionExpression(value)) {
-                    inspectFunctionValue(state, node.key, value, node);
-                }
-            },
-            VariableDeclarator(node) {
-                const init = unwrapExpression(node.init);
-
-                if (isFunctionExpression(init)) {
-                    inspectFunctionValue(state, node.id, init, node.parent);
-                }
-            },
-        };
+        return buildListeners(state);
     },
 });

@@ -1,3 +1,10 @@
+/**
+ * RuleTester instances bridged onto vitest's lifecycle.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import path from 'node:path';
 import { RuleTester } from '@typescript-eslint/rule-tester';
 import { afterAll, describe, it } from 'vitest';

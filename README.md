@@ -118,7 +118,7 @@ type-aware rules (the curated typescript-eslint set plus the type-driven custom 
 typescript-eslint tooling, and this package to your dev dependencies:
 
 ```bash
-npm install --save-dev eslint typescript typescript-eslint @sinemacula/coding-standards
+npm install --save-dev eslint typescript typescript-eslint eslint-plugin-jsdoc @sinemacula/coding-standards
 ```
 
 The package exposes two flat-config entry points:
@@ -153,7 +153,7 @@ override, but source-exported plugin definitions do not reliably propagate, so m
 
 ```toml
 [plugins.definitions.eslint]
-package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint"]
+package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc"]
 ```
 
 ### Knip (JavaScript / TypeScript)
@@ -246,9 +246,19 @@ type-checked layer.
 | `@sinemacula/valid-enum-member-name` | Enum members must be declared in `SCREAMING_SNAKE_CASE`. |
 | `@sinemacula/boolean-method-name` | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt. |
 | `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
+| `@sinemacula/max-methods-per-class` | A single class may declare at most 20 methods; test code exempt. |
+| `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`. |
+| `@sinemacula/require-copyright` | Every file must open with a header comment carrying `@copyright` and `@author`. |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
-to widen the accepted vocabulary from a consumer config.
+to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
+`allow`, and `require-copyright` takes `tags` to adjust their defaults.
+
+The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `max-lines-per-function`
+(50 lines, test code exempt) and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment
+on every declared function, method and class and forbid types in `@param`/`@returns` (types belong in the signature).
+The type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
+`@typescript-eslint/only-throw-error`.
 
 ## Requirements
 

@@ -1,3 +1,4 @@
+import jsdoc from 'eslint-plugin-jsdoc';
 import tseslint from 'typescript-eslint';
 import plugin from './plugin.js';
 
@@ -12,12 +13,16 @@ const TS_AND_JS_FILES = [...TS_FILES, '**/*.js', '**/*.jsx', '**/*.mjs', '**/*.c
  * TypeScript-only constructs; no-mutable-static also applies to plain JavaScript
  * (exported let/var, mutable static fields), so it runs across both. The opt-in
  * type-aware layer lives in ./type-checked.js.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default [
     {
         files: TS_FILES,
         plugins: {
             '@sinemacula': plugin,
+            '@typescript-eslint': tseslint.plugin,
         },
         languageOptions: {
             parser: tseslint.parser,
@@ -26,18 +31,56 @@ export default [
             '@sinemacula/no-interface-prefix': 'error',
             '@sinemacula/require-readonly-public-property': 'error',
             '@sinemacula/valid-enum-member-name': 'error',
+
+            '@typescript-eslint/no-explicit-any': 'error',
         },
     },
     {
         files: TS_AND_JS_FILES,
         plugins: {
             '@sinemacula': plugin,
+            jsdoc,
         },
         languageOptions: {
             parser: tseslint.parser,
         },
         rules: {
             '@sinemacula/no-mutable-static': 'error',
+            '@sinemacula/max-methods-per-class': 'error',
+            '@sinemacula/no-base-error': 'error',
+            '@sinemacula/require-copyright': 'error',
+
+            'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
+            'max-depth': ['error', 4],
+
+            // Every declared function, method, class and assigned arrow carries a
+            // documentation comment describing intent; types live in the signature,
+            // never in the comment (no @param/@returns type tags).
+            'jsdoc/require-jsdoc': ['error', {
+                require: {
+                    ClassDeclaration: true,
+                    ClassExpression: true,
+                    FunctionDeclaration: true,
+                    MethodDefinition: true,
+                },
+                contexts: [
+                    'VariableDeclarator > ArrowFunctionExpression',
+                    'VariableDeclarator > FunctionExpression',
+                ],
+                checkConstructors: false,
+            }],
+            'jsdoc/require-description': 'error',
+            'jsdoc/no-types': 'error',
+            'jsdoc/require-param-description': 'error',
+            'jsdoc/require-returns-description': 'error',
+        },
+    },
+    {
+        files: ['**/*.{test,spec}.{ts,tsx,mts,cts,js,jsx,mjs,cjs}', '**/__tests__/**', '**/tests/**'],
+        rules: {
+            'max-lines-per-function': 'off',
+            'max-depth': 'off',
+            'jsdoc/require-jsdoc': 'off',
         },
     },
 ];

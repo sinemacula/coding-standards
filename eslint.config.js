@@ -1,13 +1,22 @@
 import base from './js/eslint/index.js';
 
 /**
- * Dogfood config: run this package's own ESLint rules over its own rule source.
- * The base config targets TypeScript, so its file scope is remapped to the
- * JavaScript rule implementations under js/eslint. The type-aware layer is
- * exercised by the per-rule RuleTester specs, not by scanning this plain-JS
- * source.
+ * Dogfood config: lint this package's own rule source with its own rules. The
+ * base config's file scoping already covers the JavaScript implementations under
+ * js/eslint and exempts the test specs from the metric rules; run it with
+ * `eslint js/eslint` to bound it to the rule source.
  */
 export default [
-    { ignores: ['**/__tests__/fixtures/**', 'vendor/**', '.qlty/**', '.sinemacula/**', '.idea/**'] },
-    ...base.map(config => ({ ...config, files: ['js/eslint/**/*.js'] })),
+    {
+        ignores: [
+            '**/__tests__/fixtures/**',
+            'eslint.config.js',
+            'vitest.config.js',
+            'vendor/**',
+            '.qlty/**',
+            '.sinemacula/**',
+            '.idea/**',
+        ],
+    },
+    ...base,
 ];

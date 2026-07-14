@@ -8,6 +8,9 @@ import plugin from './plugin.js';
  * type-aware custom rules and the curated typescript-eslint rules can resolve.
  * Layered on only where a consumer tsconfig exists, keeping the base config the
  * cheap fast path.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default [
     ...base,
@@ -28,8 +31,10 @@ export default [
 
             '@typescript-eslint/await-thenable': 'error',
             '@typescript-eslint/consistent-type-imports': 'error',
+            '@typescript-eslint/explicit-module-boundary-types': 'error',
             '@typescript-eslint/no-floating-promises': 'error',
             '@typescript-eslint/no-misused-promises': 'error',
+            '@typescript-eslint/only-throw-error': 'error',
             // '@typescript-eslint/strict-boolean-expressions': 'error',
         },
     },

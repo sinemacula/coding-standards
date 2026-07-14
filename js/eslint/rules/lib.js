@@ -1,3 +1,10 @@
+/**
+ * Shared helpers for the @sinemacula ESLint rules.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 /** Shared rule factory linking each rule to its documentation anchor. */

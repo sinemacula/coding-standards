@@ -1,3 +1,10 @@
+/**
+ * Tests for the boolean-method-name rule.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import rule from '../boolean-method-name.js';
 import { ruleTester, typedRuleTester } from './tester.js';
 

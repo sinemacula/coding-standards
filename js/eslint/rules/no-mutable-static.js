@@ -149,6 +149,9 @@ function reportSpecifierExports(node, context) {
  * the field or its declaring class, and test classes are exempt. Module scope is
  * limited to exported bindings; an unexported module `let` stays local and is left
  * alone.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'no-mutable-static',

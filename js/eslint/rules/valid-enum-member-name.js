@@ -1,8 +1,4 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
-
-const createRule = ESLintUtils.RuleCreator(
-    name => `https://github.com/sinemacula/coding-standards#${name}`,
-);
+import { createRule } from './lib.js';
 
 /** The pattern a valid enum member name must match. */
 const NAME_PATTERN = /^[A-Z][A-Z0-9_]*$/;
@@ -13,6 +9,9 @@ const NAME_PATTERN = /^[A-Z][A-Z0-9_]*$/;
  * Ensures every enum member is declared in SCREAMING_SNAKE_CASE, matching the
  * Sine Macula house convention for enum members. Only real `enum` declarations
  * are checked; object-literal "as const" pseudo-enums are out of scope.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'valid-enum-member-name',

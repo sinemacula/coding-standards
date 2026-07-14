@@ -1,3 +1,10 @@
+/**
+ * Tests for the no-mutable-static rule.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import rule from '../no-mutable-static.js';
 import { ruleTester } from './tester.js';
 

@@ -26,7 +26,7 @@ exported_config_paths = ["js/knip.json"]
 # Widen the install filter to carry them. The eslint config itself is the
 # consumer's own eslint.config.js.
 [plugins.definitions.eslint]
-package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint"]
+package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc"]
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]

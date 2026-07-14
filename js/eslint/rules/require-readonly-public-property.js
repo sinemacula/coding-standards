@@ -19,6 +19,9 @@ import {
  * non-public properties are unaffected, and ambient declarations plus test
  * fixtures are exempt. TypeScript has no whole-class readonly modifier, so
  * there is no class-level exemption.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'require-readonly-public-property',

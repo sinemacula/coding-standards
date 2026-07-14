@@ -1,3 +1,10 @@
+/**
+ * Tests for the no-interface-prefix rule.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import rule from '../no-interface-prefix.js';
 import { ruleTester } from './tester.js';
 
