@@ -1,3 +1,8 @@
+/**
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import * as ts from 'typescript';
 import { ESLintUtils } from '@typescript-eslint/utils';
 import { createRule, isAmbient } from './lib.js';
@@ -229,6 +234,61 @@ function inspectMember(state, node, allowEmptyBody) {
 }
 
 /**
+ * The visitor: inspect each named function, method, signature and function-valued
+ * member for a boolean return that does not read as a predicate.
+ */
+function buildListeners(state) {
+    return {
+        FunctionDeclaration(node) {
+            if (node.id) {
+                inspect(state, node.id, node.id.name, node, node);
+            }
+        },
+        TSDeclareFunction(node) {
+            if (node.id && isAmbient(node, state.context.filename)) {
+                inspect(state, node.id, node.id.name, node, node);
+            }
+        },
+        MethodDefinition(node) {
+            inspectMember(state, node, false);
+        },
+        TSAbstractMethodDefinition(node) {
+            inspectMember(state, node, true);
+        },
+        TSMethodSignature(node) {
+            if (!node.computed && node.kind === 'method') {
+                const name = keyName(node.key);
+
+                if (name !== null) {
+                    inspect(state, node.key, name, node, node);
+                }
+            }
+        },
+        PropertyDefinition(node) {
+            const value = unwrapExpression(node.value);
+
+            if (!node.computed && isFunctionExpression(value)) {
+                inspectFunctionValue(state, node.key, value, node);
+            }
+        },
+        Property(node) {
+            const value = unwrapExpression(node.value);
+
+            if (!node.computed && node.kind === 'init' && isFunctionExpression(value)) {
+                inspectFunctionValue(state, node.key, value, node);
+            }
+        },
+        VariableDeclarator(node) {
+            const init = unwrapExpression(node.init);
+
+            if (isFunctionExpression(init)) {
+                inspectFunctionValue(state, node.id, init, node.parent);
+            }
+        },
+    };
+}
+
+/**
  * Boolean method name rule.
  *
  * A function, method, arrow-bound class field, object method or interface/type
@@ -286,53 +346,6 @@ export default createRule({
             commandVerbs: new Set([...COMMAND_VERBS, ...options.additionalCommandVerbs]),
         };
 
-        return {
-            FunctionDeclaration(node) {
-                if (node.id) {
-                    inspect(state, node.id, node.id.name, node, node);
-                }
-            },
-            TSDeclareFunction(node) {
-                if (node.id && isAmbient(node, context.filename)) {
-                    inspect(state, node.id, node.id.name, node, node);
-                }
-            },
-            MethodDefinition(node) {
-                inspectMember(state, node, false);
-            },
-            TSAbstractMethodDefinition(node) {
-                inspectMember(state, node, true);
-            },
-            TSMethodSignature(node) {
-                if (!node.computed && node.kind === 'method') {
-                    const name = keyName(node.key);
-
-                    if (name !== null) {
-                        inspect(state, node.key, name, node, node);
-                    }
-                }
-            },
-            PropertyDefinition(node) {
-                const value = unwrapExpression(node.value);
-
-                if (!node.computed && isFunctionExpression(value)) {
-                    inspectFunctionValue(state, node.key, value, node);
-                }
-            },
-            Property(node) {
-                const value = unwrapExpression(node.value);
-
-                if (!node.computed && node.kind === 'init' && isFunctionExpression(value)) {
-                    inspectFunctionValue(state, node.key, value, node);
-                }
-            },
-            VariableDeclarator(node) {
-                const init = unwrapExpression(node.init);
-
-                if (isFunctionExpression(init)) {
-                    inspectFunctionValue(state, node.id, init, node.parent);
-                }
-            },
-        };
+        return buildListeners(state);
     },
 });

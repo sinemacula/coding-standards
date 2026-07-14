@@ -1,3 +1,8 @@
+/**
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import { ASTUtils } from '@typescript-eslint/utils';
 import { createRule, isAmbient, isDeclarationFile, isTestClass, isTestPath, nearestClass } from './lib.js';
 

@@ -1,3 +1,8 @@
+/**
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import tseslint from 'typescript-eslint';
 import plugin from './plugin.js';
 
@@ -18,6 +23,7 @@ export default [
         files: TS_FILES,
         plugins: {
             '@sinemacula': plugin,
+            '@typescript-eslint': tseslint.plugin,
         },
         languageOptions: {
             parser: tseslint.parser,
@@ -26,6 +32,8 @@ export default [
             '@sinemacula/no-interface-prefix': 'error',
             '@sinemacula/require-readonly-public-property': 'error',
             '@sinemacula/valid-enum-member-name': 'error',
+
+            '@typescript-eslint/no-explicit-any': 'error',
         },
     },
     {
@@ -38,6 +46,19 @@ export default [
         },
         rules: {
             '@sinemacula/no-mutable-static': 'error',
+            '@sinemacula/max-methods-per-class': 'error',
+            '@sinemacula/no-base-error': 'error',
+            '@sinemacula/require-copyright': 'error',
+
+            'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
+            'max-depth': ['error', 4],
+        },
+    },
+    {
+        files: ['**/*.{test,spec}.{ts,tsx,mts,cts,js,jsx,mjs,cjs}', '**/__tests__/**', '**/tests/**'],
+        rules: {
+            'max-lines-per-function': 'off',
+            'max-depth': 'off',
         },
     },
 ];

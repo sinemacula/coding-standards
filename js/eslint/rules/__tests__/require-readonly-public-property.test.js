@@ -1,3 +1,8 @@
+/**
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import rule from '../require-readonly-public-property.js';
 import { ruleTester } from './tester.js';
 

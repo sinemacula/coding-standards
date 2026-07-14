@@ -39,7 +39,7 @@
     },
     "scripts": {
         "test:js": "vitest run",
-        "lint:js": "eslint --config js/eslint/index.js js/eslint"
+        "lint:js": "eslint js/eslint"
     },
     "devDependencies": {
         "@typescript-eslint/rule-tester": "^8.0.0",

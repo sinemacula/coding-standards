@@ -1,3 +1,8 @@
+/**
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+
 import { ESLintUtils } from '@typescript-eslint/utils';
 
 const createRule = ESLintUtils.RuleCreator(

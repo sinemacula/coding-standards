@@ -246,9 +246,17 @@ type-checked layer.
 | `@sinemacula/valid-enum-member-name` | Enum members must be declared in `SCREAMING_SNAKE_CASE`. |
 | `@sinemacula/boolean-method-name` | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt. |
 | `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
+| `@sinemacula/max-methods-per-class` | A single class may declare at most 20 methods; test code exempt. |
+| `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`. |
+| `@sinemacula/require-copyright` | Every file must open with a header comment carrying `@copyright` and `@author`. |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
-to widen the accepted vocabulary from a consumer config.
+to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
+`allow`, and `require-copyright` takes `tags` to adjust their defaults.
+
+The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `max-lines-per-function`
+(50 lines, test code exempt) and `max-depth` (4). The type-checked layer adds
+`@typescript-eslint/explicit-module-boundary-types` and `@typescript-eslint/only-throw-error`.
 
 ## Requirements
 
