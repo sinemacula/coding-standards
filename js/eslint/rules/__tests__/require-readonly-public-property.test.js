@@ -48,6 +48,8 @@ ruleTester.run('require-readonly-public-property', rule, {
         'declare global { class C { public x: number; } }',
         'class C { declare public x: number; }',
         { code: 'class C { x: number; }', filename: 'globals.d.ts' },
+        { code: 'class C { x: number; }', filename: 'globals.d.mts' },
+        { code: 'class C { x: number; }', filename: 'globals.d.cts' },
         { code: 'declare class C { public x: number; }', filename: 'types.d.ts' },
         // Configured parent classes exempt their subclasses.
         {

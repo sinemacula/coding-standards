@@ -45,13 +45,15 @@ function firstWord(name) {
  * predicate, or a verb ending in `s` (third-person) or `ed` (past tense).
  *
  * @param {string} name
+ * @param {Set<string>} prefixes
+ * @param {Set<string>} predicates
  * @returns {boolean}
  */
-function isPredicate(name) {
+function isPredicate(name, prefixes, predicates) {
     const first = firstWord(name);
 
-    return ALLOWED_PREFIXES.has(first)
-        || ALLOWED_PREDICATES.has(first)
+    return prefixes.has(first)
+        || predicates.has(first)
         || first.endsWith('s')
         || first.endsWith('ed');
 }
@@ -60,10 +62,11 @@ function isPredicate(name) {
  * Whether the name is an imperative command verb, not a predicate.
  *
  * @param {string} name
+ * @param {Set<string>} verbs
  * @returns {boolean}
  */
-function isCommandVerb(name) {
-    return COMMAND_VERBS.has(firstWord(name));
+function isCommandVerb(name, verbs) {
+    return verbs.has(firstWord(name));
 }
 
 /**
@@ -99,6 +102,45 @@ function returnsBoolean(type) {
 function isFunctionExpression(node) {
     return node != null
         && (node.type === 'ArrowFunctionExpression' || node.type === 'FunctionExpression');
+}
+
+/**
+ * The static name of a member key, or null when it is not statically named.
+ *
+ * @param {import('@typescript-eslint/utils').TSESTree.Node} keyNode
+ * @returns {string | null}
+ */
+function keyName(keyNode) {
+    if (keyNode.type === 'Identifier' || keyNode.type === 'PrivateIdentifier') {
+        return keyNode.name;
+    }
+
+    if (keyNode.type === 'Literal' && typeof keyNode.value === 'string') {
+        return keyNode.value;
+    }
+
+    return null;
+}
+
+/**
+ * Peel `as`/`satisfies`/non-null wrappers off an expression to reach the value.
+ *
+ * @param {import('@typescript-eslint/utils').TSESTree.Node} node
+ * @returns {import('@typescript-eslint/utils').TSESTree.Node}
+ */
+function unwrapExpression(node) {
+    let current = node;
+
+    while (
+        current
+        && (current.type === 'TSAsExpression'
+            || current.type === 'TSSatisfiesExpression'
+            || current.type === 'TSNonNullExpression')
+    ) {
+        current = current.expression;
+    }
+
+    return current;
 }
 
 /**
@@ -145,14 +187,28 @@ export default createRule({
         docs: {
             description: 'Require an interrogative prefix on methods and functions that return boolean.',
         },
-        schema: [],
+        schema: [{
+            type: 'object',
+            properties: {
+                additionalPrefixes: { type: 'array', items: { type: 'string' } },
+                additionalPredicates: { type: 'array', items: { type: 'string' } },
+                additionalCommandVerbs: { type: 'array', items: { type: 'string' } },
+            },
+            additionalProperties: false,
+        }],
         messages: {
             notPredicate: 'Boolean method "{{ name }}" should read as a predicate (is/has/can/...).',
         },
     },
-    defaultOptions: [],
-    create(context) {
+    defaultOptions: [{ additionalPrefixes: [], additionalPredicates: [], additionalCommandVerbs: [] }],
+    create(context, [options]) {
         const services = ESLintUtils.getParserServices(context, true);
+
+        // Merge consumer additions onto the defaults so a downstream ruleset can
+        // widen the accepted vocabulary without losing the built-in words.
+        const prefixes = new Set([...ALLOWED_PREFIXES, ...options.additionalPrefixes]);
+        const predicates = new Set([...ALLOWED_PREDICATES, ...options.additionalPredicates]);
+        const commandVerbs = new Set([...COMMAND_VERBS, ...options.additionalCommandVerbs]);
 
         // Without a type-checker program the return type can't be resolved, so
         // the rule cannot decide anything; degrade to a no-op rather than throw.
@@ -200,8 +256,8 @@ export default createRule({
         function inspect(nameNode, name, fnNode, docHost) {
             if (
                 name.startsWith('__')
-                || isPredicate(name)
-                || isCommandVerb(name)
+                || isPredicate(name, prefixes, predicates)
+                || isCommandVerb(name, commandVerbs)
                 || hasImperativeTag(docHost, nameNode)
             ) {
                 return;
@@ -232,11 +288,13 @@ export default createRule({
          * @returns {void}
          */
         function inspectFunctionValue(keyNode, valueNode, docHost) {
-            if (keyNode.type !== 'Identifier' && keyNode.type !== 'PrivateIdentifier') {
+            const name = keyName(keyNode);
+
+            if (name === null) {
                 return;
             }
 
-            inspect(keyNode, keyNode.name, valueNode, docHost);
+            inspect(keyNode, name, valueNode, docHost);
         }
 
         /**
@@ -255,7 +313,9 @@ export default createRule({
                 return;
             }
 
-            if (node.key.type !== 'Identifier' && node.key.type !== 'PrivateIdentifier') {
+            const name = keyName(node.key);
+
+            if (name === null) {
                 return;
             }
 
@@ -263,7 +323,7 @@ export default createRule({
                 return;
             }
 
-            inspect(node.key, node.key.name, node, node);
+            inspect(node.key, name, node, node);
         }
 
         return {
@@ -284,25 +344,37 @@ export default createRule({
                 inspectMember(node, true);
             },
             TSMethodSignature(node) {
-                if (node.computed || node.kind !== 'method' || node.key.type !== 'Identifier') {
+                if (node.computed || node.kind !== 'method') {
                     return;
                 }
 
-                inspect(node.key, node.key.name, node, node);
+                const name = keyName(node.key);
+
+                if (name === null) {
+                    return;
+                }
+
+                inspect(node.key, name, node, node);
             },
             PropertyDefinition(node) {
-                if (!node.computed && isFunctionExpression(node.value)) {
-                    inspectFunctionValue(node.key, node.value, node);
+                const value = unwrapExpression(node.value);
+
+                if (!node.computed && isFunctionExpression(value)) {
+                    inspectFunctionValue(node.key, value, node);
                 }
             },
             Property(node) {
-                if (!node.computed && node.kind === 'init' && isFunctionExpression(node.value)) {
-                    inspectFunctionValue(node.key, node.value, node);
+                const value = unwrapExpression(node.value);
+
+                if (!node.computed && node.kind === 'init' && isFunctionExpression(value)) {
+                    inspectFunctionValue(node.key, value, node);
                 }
             },
             VariableDeclarator(node) {
-                if (isFunctionExpression(node.init)) {
-                    inspectFunctionValue(node.id, node.init, node.parent);
+                const init = unwrapExpression(node.init);
+
+                if (isFunctionExpression(init)) {
+                    inspectFunctionValue(node.id, init, node.parent);
                 }
             },
         };

@@ -4,12 +4,17 @@ const createRule = ESLintUtils.RuleCreator(
     name => `https://github.com/sinemacula/coding-standards#${name}`,
 );
 
+/** Whether the file is a TypeScript declaration file (.d.ts, .d.mts, .d.cts). */
+function isDeclarationFile(filename) {
+    return /\.d\.[cm]?ts$/.test(filename);
+}
+
 /**
- * Whether a node sits in an ambient context (a `declare` block or a .d.ts file),
- * where a declaration describes existing shape rather than creating runtime state.
+ * Whether a node sits in an ambient context (a `declare` block or a declaration
+ * file), where a declaration describes existing shape rather than runtime state.
  */
 function isAmbient(node, filename) {
-    if (filename.endsWith('.d.ts')) {
+    if (isDeclarationFile(filename)) {
         return true;
     }
 
@@ -65,7 +70,7 @@ function boundIdentifiers(pattern, out) {
  * function, import or an ambient declaration), and so publishes live module state.
  */
 function bindsMutableVariable(variable, filename) {
-    if (filename.endsWith('.d.ts')) {
+    if (isDeclarationFile(filename)) {
         return false;
     }
 
@@ -108,14 +113,30 @@ function isTestClass(klass) {
     return false;
 }
 
+/** Matches @managed-static only at a docblock tag position, never inside prose. */
+const MANAGED_TAG = /(?:^|[\s*])@managed-static(?![-\w])/i;
+
 /**
- * Whether the docblock immediately preceding a node carries the @managed-static
- * opt-out tag, marking a deliberately mutated static as allowed.
+ * Whether a @managed-static opt-out docblock precedes the node, including one
+ * tucked between a decorator and the member name.
  */
 function hasManagedTag(node, sourceCode) {
-    const doc = sourceCode.getCommentsBefore(node).at(-1);
+    const before = sourceCode.getCommentsBefore(node).at(-1);
 
-    return doc?.type === 'Block' && /(?:^|[\s*])@managed-static(?![-\w])/i.test(doc.value);
+    if (before?.type === 'Block' && MANAGED_TAG.test(before.value)) {
+        return true;
+    }
+
+    // A docblock tucked between the decorators and the declaration sits before the
+    // first token after the last decorator, not before the whole member.
+    if (node.decorators?.length) {
+        const afterDecorators = sourceCode.getTokenAfter(node.decorators.at(-1));
+        const inner = afterDecorators && sourceCode.getCommentsBefore(afterDecorators).at(-1);
+
+        return inner?.type === 'Block' && MANAGED_TAG.test(inner.value);
+    }
+
+    return false;
 }
 
 /**

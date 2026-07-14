@@ -33,6 +33,8 @@ ruleTester.run('no-mutable-static', rule, {
         // Deliberately mutated statics opt out with a doc tag on the field or class.
         'class C { /** @managed-static */ static cache: Record<string, number> = {}; }',
         '/** @managed-static */ class C { static cache = {}; static hits = 0; }',
+        // The opt-out tag is honoured even when tucked behind a decorator.
+        'declare const track: any; class C { @track /** @managed-static */ static cache = {}; }',
         // Test classes are exempt, by their own name, their parent's, or the file path.
         'class WidgetTest { static shared = 0; }',
         'class TestCase {} class C extends TestCase { static shared = 0; }',
@@ -43,6 +45,11 @@ ruleTester.run('no-mutable-static', rule, {
         'declare class C { static count: number; }',
         'declare namespace N { export let x: number; }',
         'class C { declare static count: number; }',
+        // Declaration files are ambient across all module extensions.
+        { code: 'export let external: number;', filename: 'shape.d.ts' },
+        { code: 'export let external: number;', filename: 'shape.d.mts' },
+        { code: 'export let external: number;', filename: 'shape.d.cts' },
+        { code: 'class C { static count: number; }', filename: 'shape.d.mts' },
         { code: 'const el = <div />; export const view = el;', filename: 'react.tsx' },
     ],
     invalid: [

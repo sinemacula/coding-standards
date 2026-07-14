@@ -78,6 +78,16 @@ typedRuleTester.run('boolean-method-name', rule, {
         'const dec = (_v: any, _c: any) => {};\nclass C {\n  @dec\n'
         + '  /** @imperative */\n  frobnicate(): boolean { return true; }\n}',
 
+        // Consumer-supplied vocabulary widens the accepted names.
+        {
+            code:    'function frobnicate(): boolean { return true; }',
+            options: [{ additionalCommandVerbs: ['frobnicate'] }],
+        },
+        {
+            code:    'function wibble(): boolean { return true; }',
+            options: [{ additionalPrefixes: ['wibble'] }],
+        },
+
         // A component in a TSX file returns markup, not boolean.
         { code: 'function panel() { return <div />; }', filename: 'react.tsx' },
     ],
@@ -140,6 +150,28 @@ typedRuleTester.run('boolean-method-name', rule, {
         },
         {
             code:   'type Foo = { valid(): boolean };',
+            errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
+        },
+        {
+            // String-literal method keys are inspected like identifier keys.
+            code:   'class C { "valid"(): boolean { return true; } }',
+            errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
+        },
+        {
+            code:   'const o = { "valid"(): boolean { return true; } };',
+            errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
+        },
+        {
+            code:   'interface Foo { "valid"(): boolean; }',
+            errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
+        },
+        {
+            // as/satisfies-wrapped arrow values are unwrapped before inspection.
+            code:   'const valid = ((): boolean => true) satisfies () => boolean;',
+            errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
+        },
+        {
+            code:   'const valid = (() => true) as () => boolean;',
             errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
         },
         {

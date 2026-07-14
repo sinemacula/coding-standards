@@ -236,7 +236,8 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 
 ### ESLint rules
 
-The base layer runs the syntax-only rules; the type-aware rules require the opt-in type-checked layer.
+All rules run in the base layer except `boolean-method-name`, which resolves return types and so requires the opt-in
+type-checked layer.
 
 | Rule | Enforces |
 |------|----------|
@@ -245,6 +246,9 @@ The base layer runs the syntax-only rules; the type-aware rules require the opt-
 | `@sinemacula/valid-enum-member-name` | Enum members must be declared in `SCREAMING_SNAKE_CASE`. |
 | `@sinemacula/boolean-method-name` | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt. |
 | `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
+
+`boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
+to widen the accepted vocabulary from a consumer config.
 
 ## Requirements
 

@@ -25,7 +25,6 @@ export default [
         },
         rules: {
             '@sinemacula/boolean-method-name': 'error',
-            '@sinemacula/no-mutable-static': 'error',
 
             '@typescript-eslint/await-thenable': 'error',
             '@typescript-eslint/consistent-type-imports': 'error',
