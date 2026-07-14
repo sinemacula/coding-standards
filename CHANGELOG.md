@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/sinemacula/coding-standards/compare/v1.8.4...v1.9.0) (2026-07-14)
+
+
+### Features
+
+* **eslint:** add distributable ESLint custom-rule tier ([#87](https://github.com/sinemacula/coding-standards/issues/87)) ([695000e](https://github.com/sinemacula/coding-standards/commit/695000e244a8881c6b42cb7eeaa89df859c528ab))
+* **eslint:** port a second batch of PHP rules to the ESLint tier ([#89](https://github.com/sinemacula/coding-standards/issues/89)) ([de9a0d5](https://github.com/sinemacula/coding-standards/commit/de9a0d52221ec58a9c56210ca5910de268b80439))
+
 ## [1.8.4](https://github.com/sinemacula/coding-standards/compare/v1.8.3...v1.8.4) (2026-06-25)
 
 
