@@ -31,6 +31,7 @@ export default createRule({
     create(context) {
         const { sourceCode } = context;
 
+        /** Report a declaration whose name carries the disallowed "I" prefix. */
         const check = (node, kind) => {
             const name = node.id.name;
 

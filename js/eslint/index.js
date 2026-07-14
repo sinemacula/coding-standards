@@ -1,3 +1,4 @@
+import jsdoc from 'eslint-plugin-jsdoc';
 import tseslint from 'typescript-eslint';
 import plugin from './plugin.js';
 
@@ -38,6 +39,7 @@ export default [
         files: TS_AND_JS_FILES,
         plugins: {
             '@sinemacula': plugin,
+            jsdoc,
         },
         languageOptions: {
             parser: tseslint.parser,
@@ -50,6 +52,27 @@ export default [
 
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],
+
+            // Every declared function, method, class and assigned arrow carries a
+            // documentation comment describing intent; types live in the signature,
+            // never in the comment (no @param/@returns type tags).
+            'jsdoc/require-jsdoc': ['error', {
+                require: {
+                    ClassDeclaration: true,
+                    ClassExpression: true,
+                    FunctionDeclaration: true,
+                    MethodDefinition: true,
+                },
+                contexts: [
+                    'VariableDeclarator > ArrowFunctionExpression',
+                    'VariableDeclarator > FunctionExpression',
+                ],
+                checkConstructors: false,
+            }],
+            'jsdoc/require-description': 'error',
+            'jsdoc/no-types': 'error',
+            'jsdoc/require-param-description': 'error',
+            'jsdoc/require-returns-description': 'error',
         },
     },
     {
@@ -57,6 +80,7 @@ export default [
         rules: {
             'max-lines-per-function': 'off',
             'max-depth': 'off',
+            'jsdoc/require-jsdoc': 'off',
         },
     },
 ];
