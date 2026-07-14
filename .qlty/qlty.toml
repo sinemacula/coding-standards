@@ -116,13 +116,6 @@ package_file = "composer.json"
 # phpstan is NOT wired here: it needs the project vendor (composer install) that
 # qlty Cloud lacks. Run it locally with `composer analyse` (phpstan.neon.dist).
 
-# ESLint is deliberately NOT wired into qlty here. This repo's rules live in the
-# tree rather than an installed package, so a qlty run cannot resolve their
-# typescript-eslint imports without a node install qlty Cloud does not perform.
-# The rules are dogfooded in CI instead (the RuleTester suite plus an eslint pass
-# over the rule source, both after `npm ci`). The eslint plugin is still exported
-# to consumers through source.toml, where it resolves from their node_modules.
-
 # php/ and .qlty/configs hold tool configs, not source, so the PHP plugins skip
 # them; php/ stays so the cs-fixer config can require its rules file.
 [[exclude]]
