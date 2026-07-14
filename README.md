@@ -248,7 +248,7 @@ type-checked layer.
 | `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
 | `@sinemacula/max-methods-per-class` | A single class may declare at most 20 methods; test code exempt. |
 | `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`. |
-| `@sinemacula/require-copyright` | Every file must open with a header comment carrying `@copyright` and `@author`. |
+| `@sinemacula/require-copyright` | Every file must carry a documentation comment with `@copyright` and `@author`. |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
 to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
