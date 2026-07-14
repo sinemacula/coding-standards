@@ -90,3 +90,28 @@ jobs:
                 with:
                     oidc: true
                     files: clover.xml
+
+    # ==========================================================================
+    # JOB: JS RULE TESTS
+    # ==========================================================================
+    js-tests:
+        name: Test / ESLint rules
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Setup Node.js
+                uses: actions/setup-node@v4
+                with:
+                    node-version: '26'
+                    cache: npm
+
+            -   name: Install dependencies
+                run: npm ci
+
+            -   name: Vitest
+                run: npm run test:js

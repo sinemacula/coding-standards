@@ -1,4 +1,4 @@
-# Defensive backstop — `files` in package.json is the primary allowlist, but
+# Defensive backstop - `files` in package.json is the primary allowlist, but
 # npm still walks the working tree and applies .gitignore-like rules first.
 # Anything below is excluded even if it matches a `files` entry.
 
@@ -18,3 +18,7 @@ vendor/
 .qodo/
 .editorconfig
 source.toml
+
+# Rule test specs and fixtures - kept in git and CI, never shipped to consumers.
+js/eslint/rules/__tests__/
+vitest.config.js

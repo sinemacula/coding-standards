@@ -110,6 +110,52 @@ After installing the npm package, extend the shared Biome config from your proje
 math against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer
 config.
 
+### ESLint (JavaScript / TypeScript)
+
+ESLint runs *alongside* Biome, not in place of it. Biome keeps owning formatting and the fast syntactic lint; ESLint
+adds only the two things Biome structurally cannot express: this package's custom structural rules and the opt-in
+type-aware rules (the curated typescript-eslint set plus the type-driven custom rules). Add the linter, the
+typescript-eslint tooling, and this package to your dev dependencies:
+
+```bash
+npm install --save-dev eslint typescript typescript-eslint @sinemacula/coding-standards
+```
+
+The package exposes two flat-config entry points:
+
+- `@sinemacula/coding-standards/js/eslint` - the base layer of syntax-only custom rules; needs no `tsconfig`, so it
+  stays cheap and runs anywhere Biome runs.
+- `@sinemacula/coding-standards/js/eslint/type-checked` - the opt-in type-aware layer. It includes the base layer and
+  adds the cross-file / type-driven rules, so it needs a consumer `tsconfig`; use it in place of the base layer where
+  one exists.
+
+Create an `eslint.config.js` (or `.qlty/configs/eslint.config.js` when wired through Qlty) that spreads the layer you
+want. Without a `tsconfig`, use the base layer:
+
+```js
+import sm from '@sinemacula/coding-standards/js/eslint';
+
+export default [...sm];
+```
+
+Where a `tsconfig` exists, use the type-aware layer instead (it already carries the base rules):
+
+```js
+import typeChecked from '@sinemacula/coding-standards/js/eslint/type-checked';
+
+export default [...typeChecked];
+```
+
+When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
+default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install
+filter in your `.qlty/qlty.toml` so the sandbox carries them (this repository's `source.toml` exports the same
+override, but source-exported plugin definitions do not reliably propagate, so mirror it consumer-side):
+
+```toml
+[plugins.definitions.eslint]
+package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint"]
+```
+
 ### Knip (JavaScript / TypeScript)
 
 ```json
@@ -141,6 +187,7 @@ tag = "<version>"
 | `php/phpstan-base.neon`       | PHPStan      | Base config (org-wide ignored errors + settings)       |
 | `js/biome.json`               | Biome        | JavaScript / TypeScript formatter + linter rules       |
 | `js/knip.json`                | Knip         | Unused-export detection rules                          |
+| `js/eslint/`                  | ESLint       | Custom structural + type-aware rules; runs with Biome  |
 | `markdown/.markdownlint.json` | markdownlint | Markdown linting rules                                 |
 | `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
 | `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
@@ -150,7 +197,8 @@ tag = "<version>"
 ## Rules
 
 These are the custom rules this package enforces on top of PSR-12. A deliberate exception can be bypassed with the
-native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <identifier>` for a rule.
+native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <identifier>` for a rule,
+`// eslint-disable-next-line <rule>` for an ESLint rule.
 
 ### PHPCS sniffs
 
@@ -185,6 +233,18 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | Identifier | Enforces |
 |------------|----------|
 | `sineMacula.mutableStaticProperty` | Static properties written at runtime; `@managed-static` opts out. |
+
+### ESLint rules
+
+The base layer runs the syntax-only rules; the type-aware rules require the opt-in type-checked layer.
+
+| Rule | Enforces |
+|------|----------|
+| `@sinemacula/no-interface-prefix` | Interface and type-alias names must not use the Hungarian `I` prefix. |
+| `@sinemacula/require-readonly-public-property` | Public class properties (declared or promoted) must be `readonly`. |
+| `@sinemacula/valid-enum-member-name` | Enum members must be declared in `SCREAMING_SNAKE_CASE`. |
+| `@sinemacula/boolean-method-name` | Methods/functions returning `boolean` need an interrogative prefix; command verbs / `@imperative` exempt. |
+| `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
 
 ## Requirements
 
