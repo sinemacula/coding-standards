@@ -115,3 +115,9 @@ jobs:
 
             -   name: Vitest
                 run: npm run test:js
+
+            # Dogfood the rules on this package's own rule source. qlty cannot run
+            # this (the in-tree rules' imports resolve only after an npm install),
+            # so it runs here where the dependencies are present.
+            -   name: ESLint dogfood
+                run: npx eslint

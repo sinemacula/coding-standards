@@ -116,24 +116,12 @@ package_file = "composer.json"
 # phpstan is NOT wired here: it needs the project vendor (composer install) that
 # qlty Cloud lacks. Run it locally with `composer analyse` (phpstan.neon.dist).
 
-# Dogfood this repo's own ESLint rules on its own rule source: the root
-# eslint.config.js imports the in-tree js/eslint config and scopes it to
-# js/eslint/**/*.js. package_file installs from package.json; the sandbox
-# otherwise carries only eslint/jest/prettier, so the package_filters override
-# is mirrored here (source-exported plugin definitions do not reliably
-# propagate, the same reason the phpcs success_codes override is duplicated).
-[[plugin]]
-name = "eslint"
-mode = "comment"
-package_file = "package.json"
-package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint"]
-
-# The RuleTester fixtures are TypeScript scaffolding the dogfood config does not
-# lint (it targets js/eslint/**/*.js); excluding them keeps eslint from warning
-# that it was handed an ignored file.
-[[exclude]]
-plugins = ["eslint"]
-file_patterns = ["js/eslint/rules/__tests__/fixtures/**"]
+# ESLint is deliberately NOT wired into qlty here. This repo's rules live in the
+# tree rather than an installed package, so a qlty run cannot resolve their
+# typescript-eslint imports without a node install qlty Cloud does not perform.
+# The rules are dogfooded in CI instead (the RuleTester suite plus an eslint pass
+# over the rule source, both after `npm ci`). The eslint plugin is still exported
+# to consumers through source.toml, where it resolves from their node_modules.
 
 # php/ and .qlty/configs hold tool configs, not source, so the PHP plugins skip
 # them; php/ stays so the cs-fixer config can require its rules file.
