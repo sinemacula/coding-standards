@@ -1,67 +1,36 @@
-import { ASTUtils, ESLintUtils } from '@typescript-eslint/utils';
+import { ASTUtils } from '@typescript-eslint/utils';
+import { createRule, isAmbient, isDeclarationFile, isTestClass, isTestPath, nearestClass } from './lib.js';
 
-const createRule = ESLintUtils.RuleCreator(
-    name => `https://github.com/sinemacula/coding-standards#${name}`,
-);
-
-/** Whether the file is a TypeScript declaration file (.d.ts, .d.mts, .d.cts). */
-function isDeclarationFile(filename) {
-    return /\.d\.[cm]?ts$/.test(filename);
+/** Unwrap a rest element to its bound target, else return the node unchanged. */
+function restTarget(node) {
+    return node.type === 'RestElement' ? node.argument : node;
 }
 
-/**
- * Whether a node sits in an ambient context (a `declare` block or a declaration
- * file), where a declaration describes existing shape rather than runtime state.
- */
-function isAmbient(node, filename) {
-    if (isDeclarationFile(filename)) {
-        return true;
-    }
-
-    for (let current = node; current; current = current.parent) {
-        if (current.declare === true) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-/**
- * Whether the file path marks it as test code, where mutable statics track state
- * across assertions rather than introduce production global state.
- */
-function isTestPath(filename) {
-    const path = filename.replace(/\\/g, '/');
-
-    return path.includes('/tests/')
-        || path.includes('/__tests__/')
-        || /\.(test|spec)\.[cm]?[jt]sx?$/.test(path);
-}
-
-/**
- * Collect the bound identifiers of a declarator target, unwrapping destructuring.
- */
-function boundIdentifiers(pattern, out) {
+/** The destructuring children of a pattern that may bind further identifiers. */
+function patternChildren(pattern) {
     switch (pattern.type) {
-        case 'Identifier':
-            out.push(pattern);
-            break;
         case 'ArrayPattern':
-            for (const element of pattern.elements) {
-                if (element) {
-                    boundIdentifiers(element.type === 'RestElement' ? element.argument : element, out);
-                }
-            }
-            break;
+            return pattern.elements.filter(Boolean).map(restTarget);
         case 'ObjectPattern':
-            for (const property of pattern.properties) {
-                boundIdentifiers(property.type === 'RestElement' ? property.argument : property.value, out);
-            }
-            break;
+            return pattern.properties.map(
+                property => (property.type === 'RestElement' ? property.argument : property.value),
+            );
         case 'AssignmentPattern':
-            boundIdentifiers(pattern.left, out);
-            break;
+            return [pattern.left];
+        default:
+            return [];
+    }
+}
+
+/** Collect the bound identifiers of a declarator target, unwrapping destructuring. */
+function boundIdentifiers(pattern, out) {
+    if (pattern.type === 'Identifier') {
+        out.push(pattern);
+        return;
+    }
+
+    for (const child of patternChildren(pattern)) {
+        boundIdentifiers(child, out);
     }
 }
 
@@ -77,40 +46,6 @@ function bindsMutableVariable(variable, filename) {
     return variable.defs.some(
         def => def.type === 'Variable' && def.parent.declare !== true && def.parent.kind !== 'const',
     );
-}
-
-/**
- * The nearest enclosing class of a node, or null when it sits outside one.
- */
-function nearestClass(ancestors) {
-    for (let i = ancestors.length - 1; i >= 0; i--) {
-        if (ancestors[i].type === 'ClassDeclaration' || ancestors[i].type === 'ClassExpression') {
-            return ancestors[i];
-        }
-    }
-
-    return null;
-}
-
-/**
- * Whether the class reads as a test class (by its own or its parent's name).
- */
-function isTestClass(klass) {
-    if (klass.id?.name?.endsWith('Test')) {
-        return true;
-    }
-
-    const parent = klass.superClass;
-
-    if (parent?.type === 'Identifier') {
-        return parent.name.endsWith('TestCase');
-    }
-
-    if (parent?.type === 'MemberExpression' && parent.property.type === 'Identifier') {
-        return parent.property.name.endsWith('TestCase');
-    }
-
-    return false;
 }
 
 /** Matches @managed-static only at a docblock tag position, never inside prose. */
@@ -139,9 +74,7 @@ function hasManagedTag(node, sourceCode) {
     return false;
 }
 
-/**
- * A readable name for a class member key, including private and computed forms.
- */
+/** A readable name for a class member key, including private and computed forms. */
 function describeKey(node, sourceCode) {
     if (node.computed) {
         return `[${sourceCode.getText(node.key)}]`;
@@ -156,6 +89,51 @@ function describeKey(node, sourceCode) {
     }
 
     return node.key.name;
+}
+
+/** Report each identifier bound by an inline `export let`/`export var` declaration. */
+function reportInlineExports(node, context) {
+    const declaration = node.declaration;
+
+    if (declaration.type !== 'VariableDeclaration' || declaration.kind === 'const') {
+        return;
+    }
+
+    if (isAmbient(declaration, context.filename)) {
+        return;
+    }
+
+    const identifiers = [];
+
+    for (const declarator of declaration.declarations) {
+        boundIdentifiers(declarator.id, identifiers);
+    }
+
+    for (const identifier of identifiers) {
+        context.report({ node: identifier, messageId: 'mutableExport', data: { name: identifier.name } });
+    }
+}
+
+/** Report `export { x }` specifiers that publish a mutable local binding. */
+function reportSpecifierExports(node, context) {
+    // A re-export carries no local binding; a type-only export carries no runtime one.
+    if (node.source || node.exportKind === 'type') {
+        return;
+    }
+
+    const scope = context.sourceCode.getScope(node);
+
+    for (const specifier of node.specifiers) {
+        if (specifier.exportKind === 'type' || specifier.local.type !== 'Identifier') {
+            continue;
+        }
+
+        const variable = ASTUtils.findVariable(scope, specifier.local);
+
+        if (variable && bindsMutableVariable(variable, context.filename)) {
+            context.report({ node: specifier.local, messageId: 'mutableExport', data: { name: specifier.local.name } });
+        }
+    }
 }
 
 /**
@@ -220,59 +198,9 @@ export default createRule({
         return {
             ExportNamedDeclaration(node) {
                 if (node.declaration) {
-                    const declaration = node.declaration;
-
-                    if (declaration.type !== 'VariableDeclaration' || declaration.kind === 'const') {
-                        return;
-                    }
-
-                    if (isAmbient(declaration, context.filename)) {
-                        return;
-                    }
-
-                    const identifiers = [];
-
-                    for (const declarator of declaration.declarations) {
-                        boundIdentifiers(declarator.id, identifiers);
-                    }
-
-                    for (const identifier of identifiers) {
-                        context.report({
-                            node: identifier,
-                            messageId: 'mutableExport',
-                            data: { name: identifier.name },
-                        });
-                    }
-
-                    return;
-                }
-
-                // An `export { x }` specifier publishes a live binding, so a mutable
-                // local let/var becomes observable module state. A re-export from
-                // another module carries no local binding and type-only exports carry
-                // no runtime binding.
-                if (node.source || node.exportKind === 'type') {
-                    return;
-                }
-
-                const scope = sourceCode.getScope(node);
-
-                for (const specifier of node.specifiers) {
-                    if (specifier.exportKind === 'type' || specifier.local.type !== 'Identifier') {
-                        continue;
-                    }
-
-                    const variable = ASTUtils.findVariable(scope, specifier.local);
-
-                    if (!variable || !bindsMutableVariable(variable, context.filename)) {
-                        continue;
-                    }
-
-                    context.report({
-                        node: specifier.local,
-                        messageId: 'mutableExport',
-                        data: { name: specifier.local.name },
-                    });
+                    reportInlineExports(node, context);
+                } else {
+                    reportSpecifierExports(node, context);
                 }
             },
             PropertyDefinition: inspectStatic,

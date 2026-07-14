@@ -1,8 +1,12 @@
-import { ESLintUtils } from '@typescript-eslint/utils';
-
-const createRule = ESLintUtils.RuleCreator(
-    name => `https://github.com/sinemacula/coding-standards#${name}`,
-);
+import {
+    createRule,
+    isAmbient,
+    isDeclarationFile,
+    isTestClass,
+    isTestPath,
+    nearestClass,
+    superClassName,
+} from './lib.js';
 
 /**
  * Require the `readonly` modifier on public class properties.
@@ -52,13 +56,11 @@ export default createRule({
 
         /** Whether the node's enclosing class is exempt from the mandate. */
         const isExempt = node => {
-            const ancestors = sourceCode.getAncestors(node);
-
-            if (isAmbient(ancestors)) {
+            if (isAmbient(node, context.filename)) {
                 return true;
             }
 
-            const klass = nearestClass(ancestors);
+            const klass = nearestClass(sourceCode.getAncestors(node));
 
             return klass !== null
                 && (isTestClass(klass) || isIgnoredParent(klass, ignoredParents));
@@ -66,15 +68,7 @@ export default createRule({
 
         return {
             'PropertyDefinition, TSAbstractPropertyDefinition'(node) {
-                if (
-                    node.static
-                    || node.readonly
-                    || node.declare
-                    || node.key.type === 'PrivateIdentifier'
-                    || node.accessibility === 'private'
-                    || node.accessibility === 'protected'
-                    || isExempt(node)
-                ) {
+                if (isOutOfScope(node) || node.readonly || isExempt(node)) {
                     return;
                 }
 
@@ -86,14 +80,7 @@ export default createRule({
             },
             'AccessorProperty, TSAbstractAccessorProperty'(node) {
                 // An auto-accessor cannot be readonly, so a public one is always mutable.
-                if (
-                    node.static
-                    || node.declare
-                    || node.key.type === 'PrivateIdentifier'
-                    || node.accessibility === 'private'
-                    || node.accessibility === 'protected'
-                    || isExempt(node)
-                ) {
+                if (isOutOfScope(node) || isExempt(node)) {
                     return;
                 }
 
@@ -104,11 +91,7 @@ export default createRule({
                 });
             },
             TSParameterProperty(node) {
-                if (
-                    node.readonly
-                    || node.accessibility !== 'public'
-                    || isExempt(node)
-                ) {
+                if (node.readonly || node.accessibility !== 'public' || isExempt(node)) {
                     return;
                 }
 
@@ -122,79 +105,16 @@ export default createRule({
     },
 });
 
-/** Whether the file is a TypeScript declaration file. */
-function isDeclarationFile(filename) {
-    return /\.d\.[cm]?ts$/.test(filename);
+/** Whether the property's accessibility marks it non-public. */
+function isNonPublic(node) {
+    return node.key.type === 'PrivateIdentifier'
+        || node.accessibility === 'private'
+        || node.accessibility === 'protected';
 }
 
-/**
- * Whether the file path marks it as test code. The `.test`/`.spec` suffixes and
- * `__tests__` directory deliberately widen the sniff's `tests/`-only detection
- * to the established JS test-file conventions.
- */
-function isTestPath(filename) {
-    const path = filename.replace(/\\/g, '/');
-
-    return path.includes('/tests/')
-        || path.includes('/__tests__/')
-        || /\.(test|spec)\.[cm]?[jt]sx?$/.test(path);
-}
-
-/** Whether any ancestor puts the node in an ambient (declared) context. */
-function isAmbient(ancestors) {
-    return ancestors.some(
-        node =>
-            (node.type === 'ClassDeclaration'
-                || node.type === 'ClassExpression'
-                || node.type === 'TSModuleDeclaration')
-            && node.declare === true,
-    );
-}
-
-/** The nearest enclosing class, or null when the node sits outside one. */
-function nearestClass(ancestors) {
-    for (let i = ancestors.length - 1; i >= 0; i--) {
-        if (ancestors[i].type === 'ClassDeclaration' || ancestors[i].type === 'ClassExpression') {
-            return ancestors[i];
-        }
-    }
-
-    return null;
-}
-
-/**
- * The simple name of a class's parent, or null when it has none or comes from a
- * computed expression. A qualified parent (`ns.Model`) reduces to its final
- * segment; a mixin-produced base (`mixin(Base)`) has no name and so is never
- * matched, leaving it enforced.
- */
-function superClassName(klass) {
-    const parent = klass.superClass;
-
-    if (parent === null) {
-        return null;
-    }
-
-    if (parent.type === 'Identifier') {
-        return parent.name;
-    }
-
-    if (parent.type === 'MemberExpression' && parent.property.type === 'Identifier') {
-        return parent.property.name;
-    }
-
-    return null;
-}
-
-/** Whether the class reads as a test class (by its own or its parent's name). */
-function isTestClass(klass) {
-    if (klass.id?.name?.endsWith('Test')) {
-        return true;
-    }
-
-    const parent = superClassName(klass);
-
-    return parent !== null && parent.endsWith('TestCase');
+/** Whether a class property is outside the public-mutable scope: static, ambient, or non-public. */
+function isOutOfScope(node) {
+    return node.static || node.declare || isNonPublic(node);
 }
 
 /** Whether the class extends one of the configured exempt parents. */

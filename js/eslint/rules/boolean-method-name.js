@@ -1,9 +1,6 @@
 import * as ts from 'typescript';
 import { ESLintUtils } from '@typescript-eslint/utils';
-
-const createRule = ESLintUtils.RuleCreator(
-    name => `https://github.com/sinemacula/coding-standards#${name}`,
-);
+import { createRule, isAmbient } from './lib.js';
 
 /** Copular and modal prefixes that read as predicates. */
 const ALLOWED_PREFIXES = new Set([
@@ -144,25 +141,91 @@ function unwrapExpression(node) {
 }
 
 /**
- * Whether a node sits in an ambient context (a `declare` block or a .d.ts file),
- * where a bodiless declaration is the real thing to check, not an overload.
- *
- * @param {import('@typescript-eslint/utils').TSESTree.Node} node
- * @param {string} filename
- * @returns {boolean}
+ * Whether an @imperative opt-out tag precedes the member, including a docblock
+ * tucked between a decorator and the member name.
  */
-function isAmbient(node, filename) {
-    if (/\.d\.[cm]?ts$/.test(filename)) {
+function hasImperativeTag(sourceCode, docHost, nameNode) {
+    const before = sourceCode.getCommentsBefore(docHost).at(-1);
+
+    if (before?.type === 'Block' && IMPERATIVE_TAG.test(before.value)) {
         return true;
     }
 
-    for (let current = node; current; current = current.parent) {
-        if (current.declare === true) {
-            return true;
-        }
+    if (docHost.decorators?.length) {
+        const inner = sourceCode.getCommentsBefore(nameNode).at(-1);
+
+        return inner?.type === 'Block' && IMPERATIVE_TAG.test(inner.value);
     }
 
     return false;
+}
+
+/**
+ * Report the name when it neither reads as a predicate nor is exempt and the
+ * resolved (awaited) return type is boolean. Type-predicate guards are predicates
+ * by structure and left alone.
+ */
+function inspect(state, nameNode, name, fnNode, docHost) {
+    const { checker, services, context, sourceCode } = state;
+
+    if (
+        name.startsWith('__')
+        || isPredicate(name, state.prefixes, state.predicates)
+        || isCommandVerb(name, state.commandVerbs)
+        || hasImperativeTag(sourceCode, docHost, nameNode)
+    ) {
+        return;
+    }
+
+    const signature = checker.getSignatureFromDeclaration(services.esTreeNodeToTSNodeMap.get(fnNode));
+
+    if (!signature || checker.getTypePredicateOfSignature(signature)) {
+        return;
+    }
+
+    const returnType = checker.getReturnTypeOfSignature(signature);
+
+    if (!returnsBoolean(checker.getAwaitedType(returnType) ?? returnType)) {
+        return;
+    }
+
+    context.report({ node: nameNode, messageId: 'notPredicate', data: { name } });
+}
+
+/**
+ * Guard a statically named function value (arrow field, object method or const
+ * binding) down to a named key, then inspect it.
+ */
+function inspectFunctionValue(state, keyNode, valueNode, docHost) {
+    const name = keyName(keyNode);
+
+    if (name !== null) {
+        inspect(state, keyNode, name, valueNode, docHost);
+    }
+}
+
+/**
+ * Guard a class member down to a statically named, non-accessor method, then
+ * inspect it. A bodiless member is dropped as an overload signature so the
+ * implementation reports once, unless it is abstract or ambient, where the
+ * bodiless declaration is the real thing to check.
+ */
+function inspectMember(state, node, allowEmptyBody) {
+    if (node.computed || node.kind !== 'method') {
+        return;
+    }
+
+    const name = keyName(node.key);
+
+    if (name === null) {
+        return;
+    }
+
+    if (!allowEmptyBody && node.value.body === null && !isAmbient(node, state.context.filename)) {
+        return;
+    }
+
+    inspect(state, node.key, name, node, node);
 }
 
 /**
@@ -178,7 +241,8 @@ function isAmbient(node, filename) {
  * @imperative docblock tag. Accessors, the constructor, computed names, magic
  * names and type-predicate guards (x is T) are exempt. The return type is resolved
  * from type information - inferred booleans and awaited Promise<boolean> included -
- * so the rule degrades to a no-op when no type information is available.
+ * so the rule degrades to a no-op when no type information is available. The
+ * accepted vocabulary can be widened per consumer through the rule options.
  */
 export default createRule({
     name: 'boolean-method-name',
@@ -204,177 +268,69 @@ export default createRule({
     create(context, [options]) {
         const services = ESLintUtils.getParserServices(context, true);
 
-        // Merge consumer additions onto the defaults so a downstream ruleset can
-        // widen the accepted vocabulary without losing the built-in words.
-        const prefixes = new Set([...ALLOWED_PREFIXES, ...options.additionalPrefixes]);
-        const predicates = new Set([...ALLOWED_PREDICATES, ...options.additionalPredicates]);
-        const commandVerbs = new Set([...COMMAND_VERBS, ...options.additionalCommandVerbs]);
-
         // Without a type-checker program the return type can't be resolved, so
         // the rule cannot decide anything; degrade to a no-op rather than throw.
         if (!services.program) {
             return {};
         }
 
-        const checker = services.program.getTypeChecker();
-
-        /**
-         * Whether an @imperative opt-out tag precedes the member, including a
-         * docblock tucked between a decorator and the member name.
-         *
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} docHost
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} nameNode
-         * @returns {boolean}
-         */
-        function hasImperativeTag(docHost, nameNode) {
-            const before = context.sourceCode.getCommentsBefore(docHost).at(-1);
-
-            if (before?.type === 'Block' && IMPERATIVE_TAG.test(before.value)) {
-                return true;
-            }
-
-            if (docHost.decorators?.length) {
-                const inner = context.sourceCode.getCommentsBefore(nameNode).at(-1);
-
-                return inner?.type === 'Block' && IMPERATIVE_TAG.test(inner.value);
-            }
-
-            return false;
-        }
-
-        /**
-         * Report the name when it neither reads as a predicate nor is exempt and
-         * the resolved (awaited) return type is boolean. Type-predicate guards are
-         * predicates by structure and left alone.
-         *
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} nameNode
-         * @param {string} name
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} fnNode
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} docHost
-         * @returns {void}
-         */
-        function inspect(nameNode, name, fnNode, docHost) {
-            if (
-                name.startsWith('__')
-                || isPredicate(name, prefixes, predicates)
-                || isCommandVerb(name, commandVerbs)
-                || hasImperativeTag(docHost, nameNode)
-            ) {
-                return;
-            }
-
-            const signature = checker.getSignatureFromDeclaration(services.esTreeNodeToTSNodeMap.get(fnNode));
-
-            if (!signature || checker.getTypePredicateOfSignature(signature)) {
-                return;
-            }
-
-            const returnType = checker.getReturnTypeOfSignature(signature);
-
-            if (!returnsBoolean(checker.getAwaitedType(returnType) ?? returnType)) {
-                return;
-            }
-
-            context.report({ node: nameNode, messageId: 'notPredicate', data: { name } });
-        }
-
-        /**
-         * Guard a statically named function value (arrow field, object method or
-         * const binding) down to an identifier key, then inspect it.
-         *
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} keyNode
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} valueNode
-         * @param {import('@typescript-eslint/utils').TSESTree.Node} docHost
-         * @returns {void}
-         */
-        function inspectFunctionValue(keyNode, valueNode, docHost) {
-            const name = keyName(keyNode);
-
-            if (name === null) {
-                return;
-            }
-
-            inspect(keyNode, name, valueNode, docHost);
-        }
-
-        /**
-         * Guard a class member down to a statically named, non-accessor method,
-         * then inspect it. A bodiless member is dropped as an overload signature
-         * so the implementation reports once, unless it is abstract or ambient,
-         * where the bodiless declaration is the real thing to check.
-         *
-         * @param {import('@typescript-eslint/utils').TSESTree.MethodDefinition
-         *   | import('@typescript-eslint/utils').TSESTree.TSAbstractMethodDefinition} node
-         * @param {boolean} allowEmptyBody
-         * @returns {void}
-         */
-        function inspectMember(node, allowEmptyBody) {
-            if (node.computed || node.kind !== 'method') {
-                return;
-            }
-
-            const name = keyName(node.key);
-
-            if (name === null) {
-                return;
-            }
-
-            if (!allowEmptyBody && node.value.body === null && !isAmbient(node, context.filename)) {
-                return;
-            }
-
-            inspect(node.key, name, node, node);
-        }
+        // Merge consumer additions onto the defaults so a downstream ruleset can
+        // widen the accepted vocabulary without losing the built-in words.
+        const state = {
+            context,
+            services,
+            sourceCode: context.sourceCode,
+            checker: services.program.getTypeChecker(),
+            prefixes: new Set([...ALLOWED_PREFIXES, ...options.additionalPrefixes]),
+            predicates: new Set([...ALLOWED_PREDICATES, ...options.additionalPredicates]),
+            commandVerbs: new Set([...COMMAND_VERBS, ...options.additionalCommandVerbs]),
+        };
 
         return {
             FunctionDeclaration(node) {
                 if (node.id) {
-                    inspect(node.id, node.id.name, node, node);
+                    inspect(state, node.id, node.id.name, node, node);
                 }
             },
             TSDeclareFunction(node) {
                 if (node.id && isAmbient(node, context.filename)) {
-                    inspect(node.id, node.id.name, node, node);
+                    inspect(state, node.id, node.id.name, node, node);
                 }
             },
             MethodDefinition(node) {
-                inspectMember(node, false);
+                inspectMember(state, node, false);
             },
             TSAbstractMethodDefinition(node) {
-                inspectMember(node, true);
+                inspectMember(state, node, true);
             },
             TSMethodSignature(node) {
-                if (node.computed || node.kind !== 'method') {
-                    return;
+                if (!node.computed && node.kind === 'method') {
+                    const name = keyName(node.key);
+
+                    if (name !== null) {
+                        inspect(state, node.key, name, node, node);
+                    }
                 }
-
-                const name = keyName(node.key);
-
-                if (name === null) {
-                    return;
-                }
-
-                inspect(node.key, name, node, node);
             },
             PropertyDefinition(node) {
                 const value = unwrapExpression(node.value);
 
                 if (!node.computed && isFunctionExpression(value)) {
-                    inspectFunctionValue(node.key, value, node);
+                    inspectFunctionValue(state, node.key, value, node);
                 }
             },
             Property(node) {
                 const value = unwrapExpression(node.value);
 
                 if (!node.computed && node.kind === 'init' && isFunctionExpression(value)) {
-                    inspectFunctionValue(node.key, value, node);
+                    inspectFunctionValue(state, node.key, value, node);
                 }
             },
             VariableDeclarator(node) {
                 const init = unwrapExpression(node.init);
 
                 if (isFunctionExpression(init)) {
-                    inspectFunctionValue(node.id, init, node.parent);
+                    inspectFunctionValue(state, node.id, init, node.parent);
                 }
             },
         };
