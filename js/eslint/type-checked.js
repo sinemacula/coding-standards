@@ -1,8 +1,3 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
 import tseslint from 'typescript-eslint';
 import base from './index.js';
 import plugin from './plugin.js';
@@ -13,6 +8,9 @@ import plugin from './plugin.js';
  * type-aware custom rules and the curated typescript-eslint rules can resolve.
  * Layered on only where a consumer tsconfig exists, keeping the base config the
  * cheap fast path.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default [
     ...base,

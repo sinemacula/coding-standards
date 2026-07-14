@@ -1,13 +1,4 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
-import { ESLintUtils } from '@typescript-eslint/utils';
-
-const createRule = ESLintUtils.RuleCreator(
-    name => `https://github.com/sinemacula/coding-standards#${name}`,
-);
+import { createRule } from './lib.js';
 
 /** Disallowed "I" prefix: a capital I directly followed by another uppercase letter. */
 const PREFIX_PATTERN = /^I[A-Z]/;
@@ -20,6 +11,9 @@ const isExternalAugmentation = node =>
 /**
  * Forbids the Hungarian "I" prefix on interface and type-alias names
  * (IUserRepository), which adds nothing over the language's own type system.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'no-interface-prefix',

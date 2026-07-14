@@ -1,8 +1,3 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
 import tseslint from 'typescript-eslint';
 import plugin from './plugin.js';
 
@@ -17,6 +12,9 @@ const TS_AND_JS_FILES = [...TS_FILES, '**/*.js', '**/*.jsx', '**/*.mjs', '**/*.c
  * TypeScript-only constructs; no-mutable-static also applies to plain JavaScript
  * (exported let/var, mutable static fields), so it runs across both. The opt-in
  * type-aware layer lives in ./type-checked.js.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default [
     {

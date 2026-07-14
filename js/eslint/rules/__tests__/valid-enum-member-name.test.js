@@ -1,4 +1,6 @@
 /**
+ * Tests for the valid-enum-member-name rule.
+ *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */

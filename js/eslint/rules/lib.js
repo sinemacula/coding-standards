@@ -1,4 +1,6 @@
 /**
+ * Shared helpers for the @sinemacula ESLint rules.
+ *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */

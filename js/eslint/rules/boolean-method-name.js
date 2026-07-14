@@ -1,8 +1,3 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
 import * as ts from 'typescript';
 import { ESLintUtils } from '@typescript-eslint/utils';
 import { createRule, isAmbient } from './lib.js';
@@ -303,6 +298,9 @@ function buildListeners(state) {
  * from type information - inferred booleans and awaited Promise<boolean> included -
  * so the rule degrades to a no-op when no type information is available. The
  * accepted vocabulary can be widened per consumer through the rule options.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'boolean-method-name',

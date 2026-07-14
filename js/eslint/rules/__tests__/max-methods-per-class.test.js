@@ -1,4 +1,6 @@
 /**
+ * Tests for the max-methods-per-class rule.
+ *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */

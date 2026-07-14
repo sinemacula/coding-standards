@@ -1,8 +1,3 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
 import { createRule, isTestClass, isTestPath } from './lib.js';
 
 /** Whether a class member counts towards the method total. */
@@ -35,6 +30,9 @@ function countMethods(node) {
  * signatures counts once, through its implementation. Methods on a nested class
  * belong to that class, not the one enclosing it. Test code legitimately gathers
  * many methods on one fixture, so a test file or test class is exempt.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'max-methods-per-class',

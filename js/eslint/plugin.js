@@ -1,8 +1,3 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
 import booleanMethodName from './rules/boolean-method-name.js';
 import maxMethodsPerClass from './rules/max-methods-per-class.js';
 import noBaseError from './rules/no-base-error.js';
@@ -18,6 +13,9 @@ import validEnumMemberName from './rules/valid-enum-member-name.js';
  * Bundles this package's custom structural rules. Each rule is registered in
  * the map below; the flat configs in index.js and type-checked.js are what
  * switch them on.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default {
     meta: {

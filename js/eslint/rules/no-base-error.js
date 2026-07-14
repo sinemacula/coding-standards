@@ -1,8 +1,3 @@
-/**
- * @author      Ben Carey <bdmc@sinemacula.co.uk>
- * @copyright   2026 Sine Macula Limited
- */
-
 import { createRule } from './lib.js';
 
 /** Global objects whose `Error` member resolves to the base `Error`. */
@@ -68,6 +63,9 @@ function isBaseError(callee) {
  * (`const e = new Error()`) fall outside the pattern. Only the base `Error` is
  * ever a candidate, so listing `Error` in the `allow` option is the one way to
  * permit it; any other name has nothing to match and stays inert.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
  */
 export default createRule({
     name: 'no-base-error',
