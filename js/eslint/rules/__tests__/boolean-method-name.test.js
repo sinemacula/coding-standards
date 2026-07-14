@@ -48,7 +48,8 @@ typedRuleTester.run('boolean-method-name', rule, {
 
         // Well-named methods, overloads and abstract members.
         'class C { isValid(): boolean { return true; } }',
-        'class C { hasItems(x: string): boolean; hasItems(x: number): boolean; hasItems(x: any): boolean { return true; } }',
+        'class C { hasItems(x: string): boolean; hasItems(x: number): boolean; '
+        + 'hasItems(x: any): boolean { return true; } }',
         'abstract class A { abstract isValid(): boolean; }',
 
         // Arrow-bound class fields, object methods and const-bound functions.
@@ -72,8 +73,10 @@ typedRuleTester.run('boolean-method-name', rule, {
         // a const binding.
         '/** @imperative */\nfunction frobnicate(): boolean { return true; }',
         '/** @imperative */\nconst frobnicate = (): boolean => true;',
-        'const dec = (_v: any, _c: any) => {};\nclass C {\n  /** @imperative */\n  @dec\n  frobnicate(): boolean { return true; }\n}',
-        'const dec = (_v: any, _c: any) => {};\nclass C {\n  @dec\n  /** @imperative */\n  frobnicate(): boolean { return true; }\n}',
+        'const dec = (_v: any, _c: any) => {};\nclass C {\n  /** @imperative */\n'
+        + '  @dec\n  frobnicate(): boolean { return true; }\n}',
+        'const dec = (_v: any, _c: any) => {};\nclass C {\n  @dec\n'
+        + '  /** @imperative */\n  frobnicate(): boolean { return true; }\n}',
 
         // A component in a TSX file returns markup, not boolean.
         { code: 'function panel() { return <div />; }', filename: 'react.tsx' },
@@ -168,7 +171,9 @@ typedRuleTester.run('boolean-method-name', rule, {
         },
         {
             // Function overloads report once, on the implementation.
-            code:   'function widget(x: string): boolean;\nfunction widget(x: number): boolean;\nfunction widget(x: any): boolean { return true; }',
+            code:   'function widget(x: string): boolean;\n'
+                + 'function widget(x: number): boolean;\n'
+                + 'function widget(x: any): boolean { return true; }',
             errors: [{ messageId: 'notPredicate', data: { name: 'widget' } }],
         },
         {

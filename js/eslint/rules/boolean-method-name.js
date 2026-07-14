@@ -245,7 +245,8 @@ export default createRule({
          * so the implementation reports once, unless it is abstract or ambient,
          * where the bodiless declaration is the real thing to check.
          *
-         * @param {import('@typescript-eslint/utils').TSESTree.MethodDefinition | import('@typescript-eslint/utils').TSESTree.TSAbstractMethodDefinition} node
+         * @param {import('@typescript-eslint/utils').TSESTree.MethodDefinition
+         *   | import('@typescript-eslint/utils').TSESTree.TSAbstractMethodDefinition} node
          * @param {boolean} allowEmptyBody
          * @returns {void}
          */

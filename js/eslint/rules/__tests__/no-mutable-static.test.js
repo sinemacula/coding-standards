@@ -122,7 +122,8 @@ ruleTester.run('no-mutable-static', rule, {
         },
         // A static that is only read is still flagged; the check is write-insensitive.
         {
-            code: 'const defaults = { a: 1 }; class C { static settings = defaults; static read() { return C.settings; } }',
+            code: 'const defaults = { a: 1 }; class C { static settings = defaults; '
+                + 'static read() { return C.settings; } }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'settings' } }],
         },
         {

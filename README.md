@@ -243,7 +243,7 @@ The base layer runs the syntax-only rules; the type-aware rules require the opt-
 | `@sinemacula/no-interface-prefix` | Interface and type-alias names must not use the Hungarian `I` prefix. |
 | `@sinemacula/require-readonly-public-property` | Public class properties (declared or promoted) must be `readonly`. |
 | `@sinemacula/valid-enum-member-name` | Enum members must be declared in `SCREAMING_SNAKE_CASE`. |
-| `@sinemacula/boolean-method-name` | Methods/functions returning `boolean` need an interrogative prefix; command verbs / `@imperative` exempt. |
+| `@sinemacula/boolean-method-name` | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt. |
 | `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
 
 ## Requirements

@@ -35,7 +35,9 @@ ruleTester.run('valid-enum-member-name', rule, {
         'abstract class Shape { abstract area(): number; }',
         'function identity<T>(value: T): T { return value; }',
         'class Container<T> { value?: T; }',
-        'function overloaded(x: number): number;\nfunction overloaded(x: string): string;\nfunction overloaded(x: unknown) { return x; }',
+        'function overloaded(x: number): number;\n'
+        + 'function overloaded(x: string): string;\n'
+        + 'function overloaded(x: unknown) { return x; }',
         'const key = "x";\nconst dynamic = { [key]: 1 };',
         '@sealed\nclass Decorated { private handler = () => {}; }',
     ],

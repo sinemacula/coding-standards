@@ -37,7 +37,7 @@ export default createRule({
         ],
         messages: {
             mutable: 'Public property "{{ name }}" must be readonly; mutable public state breaks encapsulation.',
-            accessor: 'Public auto-accessor "{{ name }}" exposes mutable public state; make it non-public or use a readonly property.',
+            accessor: 'Public auto-accessor "{{ name }}" is mutable; make it non-public or a readonly property.',
         },
     },
     defaultOptions: [{ ignoredParentClasses: [] }],

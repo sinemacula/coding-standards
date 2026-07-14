@@ -161,7 +161,7 @@ export default createRule({
         schema: [],
         messages: {
             mutableExport: 'Exported binding "{{ name }}" introduces mutable module state; declare it with const.',
-            mutableStatic: 'Static field "{{ name }}" introduces mutable static state; mark it readonly or use a constant.',
+            mutableStatic: 'Static field "{{ name }}" is mutable static state; mark it readonly or use a constant.',
         },
     },
     defaultOptions: [],

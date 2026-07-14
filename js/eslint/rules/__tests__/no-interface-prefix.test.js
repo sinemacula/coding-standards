@@ -52,7 +52,9 @@ ruleTester.run('no-interface-prefix', rule, {
     invalid: [
         {
             code: 'interface IUserRepository {}',
-            errors: [{ messageId: 'prefixed', data: { kind: 'Interface', name: 'IUserRepository' }, line: 1, column: 11 }],
+            errors: [
+                { messageId: 'prefixed', data: { kind: 'Interface', name: 'IUserRepository' }, line: 1, column: 11 },
+            ],
         },
         {
             code: 'type IFoo = string;',
