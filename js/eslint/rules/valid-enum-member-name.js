@@ -32,9 +32,9 @@ export default createRule({
         return {
             TSEnumMember(node) {
                 const id = node.id;
-                // A member name is either a bare identifier or a string literal;
-                // a string literal is checked by its resolved value, not the raw
-                // source text.
+                // A member name is either a bare identifier or a string
+                // literal; a string literal is checked by its resolved value,
+                // not the raw source text.
                 const name = id.type === 'Identifier' ? id.name : String(id.value);
 
                 if (!NAME_PATTERN.test(name)) {

@@ -1,12 +1,16 @@
 import { ASTUtils } from '@typescript-eslint/utils';
 import { createRule, isAmbient, isDeclarationFile, isTestClass, isTestPath, nearestClass } from './lib.js';
 
-/** Unwrap a rest element to its bound target, else return the node unchanged. */
+/**
+ * Unwrap a rest element to its bound target, else return the node unchanged.
+ */
 function restTarget(node) {
     return node.type === 'RestElement' ? node.argument : node;
 }
 
-/** The destructuring children of a pattern that may bind further identifiers. */
+/**
+ * The destructuring children of a pattern that may bind further identifiers.
+ */
 function patternChildren(pattern) {
     switch (pattern.type) {
         case 'ArrayPattern':
@@ -22,7 +26,10 @@ function patternChildren(pattern) {
     }
 }
 
-/** Collect the bound identifiers of a declarator target, unwrapping destructuring. */
+/**
+ * Collect the bound identifiers of a declarator target, unwrapping
+ * destructuring.
+ */
 function boundIdentifiers(pattern, out) {
     if (pattern.type === 'Identifier') {
         out.push(pattern);
@@ -36,7 +43,8 @@ function boundIdentifiers(pattern, out) {
 
 /**
  * Whether a resolved binding is a mutable local `let`/`var` (not const, class,
- * function, import or an ambient declaration), and so publishes live module state.
+ * function, import or an ambient declaration), and so publishes live module
+ * state.
  */
 function bindsMutableVariable(variable, filename) {
     if (isDeclarationFile(filename)) {
@@ -48,7 +56,9 @@ function bindsMutableVariable(variable, filename) {
     );
 }
 
-/** Matches @managed-static only at a docblock tag position, never inside prose. */
+/**
+ * Matches @managed-static only at a docblock tag position, never inside prose.
+ */
 const MANAGED_TAG = /(?:^|[\s*])@managed-static(?![-\w])/i;
 
 /**
@@ -62,8 +72,8 @@ function hasManagedTag(node, sourceCode) {
         return true;
     }
 
-    // A docblock tucked between the decorators and the declaration sits before the
-    // first token after the last decorator, not before the whole member.
+    // A docblock tucked between the decorators and the declaration sits before
+    // the first token after the last decorator, not before the whole member.
     if (node.decorators?.length) {
         const afterDecorators = sourceCode.getTokenAfter(node.decorators.at(-1));
         const inner = afterDecorators && sourceCode.getCommentsBefore(afterDecorators).at(-1);
@@ -74,7 +84,9 @@ function hasManagedTag(node, sourceCode) {
     return false;
 }
 
-/** A readable name for a class member key, including private and computed forms. */
+/**
+ * A readable name for a class member key, including private and computed forms.
+ */
 function describeKey(node, sourceCode) {
     if (node.computed) {
         return `[${sourceCode.getText(node.key)}]`;
@@ -91,7 +103,10 @@ function describeKey(node, sourceCode) {
     return node.key.name;
 }
 
-/** Report each identifier bound by an inline `export let`/`export var` declaration. */
+/**
+ * Report each identifier bound by an inline `export let`/`export var`
+ * declaration.
+ */
 function reportInlineExports(node, context) {
     const declaration = node.declaration;
 
@@ -116,7 +131,8 @@ function reportInlineExports(node, context) {
 
 /** Report `export { x }` specifiers that publish a mutable local binding. */
 function reportSpecifierExports(node, context) {
-    // A re-export carries no local binding; a type-only export carries no runtime one.
+    // A re-export carries no local binding; a type-only export carries no
+    // runtime one.
     if (node.source || node.exportKind === 'type') {
         return;
     }
@@ -137,18 +153,18 @@ function reportSpecifierExports(node, context) {
 }
 
 /**
- * Forbids mutable module-level and class-level static state: exported `let`/`var`
- * bindings (declared inline or published through an `export { ... }` specifier)
- * and non-readonly `static` class fields, including `static accessor`
- * auto-accessors. All are global mutable state; `const` and `readonly` express the
- * read-only configuration this allows.
+ * Forbids mutable module-level and class-level static state: exported
+ * `let`/`var` bindings (declared inline or published through an
+ * `export { ... }` specifier) and non-readonly `static` class fields, including
+ * `static accessor` auto-accessors. All are global mutable state; `const` and
+ * `readonly` express the read-only configuration this allows.
  *
- * The check is syntactic, not write-sensitive: a static is flagged whether or not
- * a reassignment is visible, since cross-file writes are out of a per-file rule's
- * reach. Deliberately mutated statics opt out with a `@managed-static` doc tag on
- * the field or its declaring class, and test classes are exempt. Module scope is
- * limited to exported bindings; an unexported module `let` stays local and is left
- * alone.
+ * The check is syntactic, not write-sensitive: a static is flagged whether or
+ * not a reassignment is visible, since cross-file writes are out of a per-file
+ * rule's reach. Deliberately mutated statics opt out with a `@managed-static`
+ * doc tag on the field or its declaring class, and test classes are exempt.
+ * Module scope is limited to exported bindings; an unexported module `let`
+ * stays local and is left alone.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -170,7 +186,10 @@ export default createRule({
     create(context) {
         const { sourceCode } = context;
 
-        /** Whether a static member is exempt: test code or an opted-out declaration. */
+        /**
+         * Whether a static member is exempt: test code or an opted-out
+         * declaration.
+         */
         const isStaticExempt = node => {
             if (isTestPath(context.filename)) {
                 return true;
@@ -185,7 +204,10 @@ export default createRule({
             return hasManagedTag(node, sourceCode) || (klass !== null && hasManagedTag(klass, sourceCode));
         };
 
-        /** Flag a non-readonly static field or auto-accessor as mutable static state. */
+        /**
+         * Flag a non-readonly static field or auto-accessor as mutable static
+         * state.
+         */
         const inspectStatic = node => {
             if (!node.static || node.readonly || isAmbient(node, context.filename) || isStaticExempt(node)) {
                 return;

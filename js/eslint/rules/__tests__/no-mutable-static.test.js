@@ -8,8 +8,8 @@
 import rule from '../no-mutable-static.js';
 import { ruleTester } from './tester.js';
 
-// The rule is syntactic and needs no parser services, so the type-free tester also
-// stands in for the "no type information available" case.
+// The rule is syntactic and needs no parser services, so the type-free tester
+// also stands in for the "no type information available" case.
 ruleTester.run('no-mutable-static', rule, {
     valid: [
         'export const MAX = 10;',
@@ -18,7 +18,8 @@ ruleTester.run('no-mutable-static', rule, {
         'class Widget {} export { Widget };',
         "export { anything } from './other';",
         'type T = number; export type { T };',
-        // Only exported bindings are in scope; an unexported module let/var stays local.
+        // Only exported bindings are in scope; an unexported module let/var
+        // stays local.
         'let counter = 0;',
         'var scratch = 0;',
         'namespace N { export const x = 0; }',
@@ -37,12 +38,14 @@ ruleTester.run('no-mutable-static', rule, {
         'class Box<T> { static readonly EMPTY = 0; }',
         'class C { static of<T>(value: T): T { return value; } }',
         'abstract class C { abstract run(): void; abstract value: number; }',
-        // Deliberately mutated statics opt out with a doc tag on the field or class.
+        // Deliberately mutated statics opt out with a doc tag on the field or
+        // class.
         'class C { /** @managed-static */ static cache: Record<string, number> = {}; }',
         '/** @managed-static */ class C { static cache = {}; static hits = 0; }',
         // The opt-out tag is honoured even when tucked behind a decorator.
         'declare const track: any; class C { @track /** @managed-static */ static cache = {}; }',
-        // Test classes are exempt, by their own name, their parent's, or the file path.
+        // Test classes are exempt, by their own name, their parent's, or the
+        // file path.
         'class WidgetTest { static shared = 0; }',
         'class TestCase {} class C extends TestCase { static shared = 0; }',
         { code: 'class C { static shared = 0; }', filename: 'widget.test.ts' },
@@ -82,7 +85,8 @@ ruleTester.run('no-mutable-static', rule, {
                 { messageId: 'mutableExport', data: { name: 'second' } },
             ],
         },
-        // Indirect specifier exports of a mutable local publish live module state.
+        // Indirect specifier exports of a mutable local publish live module
+        // state.
         {
             code: 'let counter = 0; export { counter };',
             errors: [{ messageId: 'mutableExport', data: { name: 'counter' } }],
@@ -111,9 +115,10 @@ ruleTester.run('no-mutable-static', rule, {
             code: 'class C { static config: Record<string, number> = {}; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'config' } }],
         },
-        // A static callable slot is still reassignable state, so it is flagged like
-        // any other mutable static rather than exempted as behaviour. Function-typed,
-        // union-callable and any-typed slots are all treated the same way.
+        // A static callable slot is still reassignable state, so it is flagged
+        // like any other mutable static rather than exempted as behaviour.
+        // Function-typed, union-callable and any-typed slots are all treated
+        // the same way.
         {
             code: 'class C { static make = () => 1; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'make' } }],
@@ -134,7 +139,8 @@ ruleTester.run('no-mutable-static', rule, {
             code: 'class C { static data: any = 1; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'data' } }],
         },
-        // A static that is only read is still flagged; the check is write-insensitive.
+        // A static that is only read is still flagged; the check is
+        // write-insensitive.
         {
             code: 'const defaults = { a: 1 }; class C { static settings = defaults; '
                 + 'static read() { return C.settings; } }',

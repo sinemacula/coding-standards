@@ -9,9 +9,9 @@ use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
 /**
  * Enums namespace sniff.
  *
- * Requires every enum to be declared under an `Enums` namespace segment (at
- * any depth, e.g. `App\Enums` or `App\Billing\Enums`), keeping enumerations
- * grouped and discoverable, mirroring the Contracts rule for interfaces.
+ * Requires every enum to be declared under an `Enums` namespace segment (at any
+ * depth, e.g. `App\Enums` or `App\Billing\Enums`), keeping enumerations grouped
+ * and discoverable, mirroring the Contracts rule for interfaces.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

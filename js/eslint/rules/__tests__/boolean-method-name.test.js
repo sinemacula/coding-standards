@@ -41,8 +41,8 @@ typedRuleTester.run('boolean-method-name', rule, {
         'async function isReady(): Promise<boolean> { return true; }',
         'async function validate(): Promise<boolean> { return true; }',
 
-        // Type-predicate guards are predicates by structure; the descriptive name
-        // need not start with is/has.
+        // Type-predicate guards are predicates by structure; the descriptive
+        // name need not start with is/has.
         'function nonNullable<T>(x: T): x is NonNullable<T> { return x != null; }',
         'function present<T>(x: T | null): x is T { return x !== null; }',
 
@@ -71,13 +71,14 @@ typedRuleTester.run('boolean-method-name', rule, {
         'interface Foo { isValid(): boolean; }',
         'type Foo = { isValid(): boolean };',
 
-        // Ambient declarations, including nested and class members, with predicate names.
+        // Ambient declarations, including nested and class members, with
+        // predicate names.
         'declare function isReady(): boolean;',
         'declare namespace N { function isReady(): boolean; }',
         'declare class C { isValid(): boolean; }',
 
-        // Opt-out via an @imperative docblock, including through a decorator and on
-        // a const binding.
+        // Opt-out via an @imperative docblock, including through a decorator
+        // and on a const binding.
         '/** @imperative */\nfunction frobnicate(): boolean { return true; }',
         '/** @imperative */\nconst frobnicate = (): boolean => true;',
         'const dec = (_v: any, _c: any) => {};\nclass C {\n  /** @imperative */\n'
@@ -173,7 +174,8 @@ typedRuleTester.run('boolean-method-name', rule, {
             errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
         },
         {
-            // as/satisfies-wrapped arrow values are unwrapped before inspection.
+            // as/satisfies-wrapped arrow values are unwrapped before
+            // inspection.
             code:   'const valid = ((): boolean => true) satisfies () => boolean;',
             errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
         },

@@ -8,11 +8,11 @@ const TS_AND_JS_FILES = [...TS_FILES, '**/*.js', '**/*.jsx', '**/*.mjs', '**/*.c
 /**
  * Base flat config: the AST-only custom rules that need no type information.
  *
- * Requires no tsconfig, so it stays cheap. The typescript-eslint parser resolves
- * TypeScript syntax. The interface, readonly-property and enum rules target
- * TypeScript-only constructs; no-mutable-static also applies to plain JavaScript
- * (exported let/var, mutable static fields), so it runs across both. The opt-in
- * type-aware layer lives in ./type-checked.js.
+ * Requires no tsconfig, so it stays cheap. The typescript-eslint parser
+ * resolves TypeScript syntax. The interface, readonly-property and enum rules
+ * target TypeScript-only constructs; no-mutable-static also applies to plain
+ * JavaScript (exported let/var, mutable static fields), so it runs across both.
+ * The opt-in type-aware layer lives in ./type-checked.js.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -53,9 +53,9 @@ export default [
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],
 
-            // Every declared function, method, class and assigned arrow carries a
-            // documentation comment describing intent; types live in the signature,
-            // never in the comment (no @param/@returns type tags).
+            // Every declared function, method, class and assigned arrow carries
+            // a documentation comment describing intent; types live in the
+            // signature, never in the comment (no @param/@returns type tags).
             'jsdoc/require-jsdoc': ['error', {
                 require: {
                     ClassDeclaration: true,

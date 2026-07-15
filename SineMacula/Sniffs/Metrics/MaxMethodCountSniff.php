@@ -37,8 +37,8 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
     }
 
     /**
-     * Skip test classes, which legitimately declare many methods, then defer
-     * to the base metric check.
+     * Skip test classes, which legitimately declare many methods, then defer to
+     * the base metric check.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

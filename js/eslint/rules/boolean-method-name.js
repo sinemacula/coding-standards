@@ -52,8 +52,9 @@ function isCommandVerb(name, verbs) {
 
 /**
  * Whether a return type resolves to boolean, ignoring a nullable `?bool`-style
- * null/undefined/void tail so an optional boolean still counts. Promise wrappers
- * are unwrapped before this is called, so an awaited boolean counts too.
+ * null/undefined/void tail so an optional boolean still counts. Promise
+ * wrappers are unwrapped before this is called, so an awaited boolean counts
+ * too.
  */
 function returnsBoolean(type) {
     if (type.flags & (ts.TypeFlags.Boolean | ts.TypeFlags.BooleanLiteral)) {
@@ -71,7 +72,9 @@ function returnsBoolean(type) {
     return false;
 }
 
-/** Whether the node is a function expression carrying an inspectable signature. */
+/**
+ * Whether the node is a function expression carrying an inspectable signature.
+ */
 function isFunctionExpression(node) {
     return node != null
         && (node.type === 'ArrowFunctionExpression' || node.type === 'FunctionExpression');
@@ -90,7 +93,9 @@ function keyName(keyNode) {
     return null;
 }
 
-/** Peel `as`/`satisfies`/non-null wrappers off an expression to reach the value. */
+/**
+ * Peel `as`/`satisfies`/non-null wrappers off an expression to reach the value.
+ */
 function unwrapExpression(node) {
     let current = node;
 
@@ -128,8 +133,8 @@ function hasImperativeTag(sourceCode, docHost, nameNode) {
 
 /**
  * Report the name when it neither reads as a predicate nor is exempt and the
- * resolved (awaited) return type is boolean. Type-predicate guards are predicates
- * by structure and left alone.
+ * resolved (awaited) return type is boolean. Type-predicate guards are
+ * predicates by structure and left alone.
  */
 function inspect(state, nameNode, name, fnNode, docHost) {
     const { checker, services, context, sourceCode } = state;
@@ -195,8 +200,9 @@ function inspectMember(state, node, allowEmptyBody) {
 }
 
 /**
- * The visitor: inspect each named function, method, signature and function-valued
- * member for a boolean return that does not read as a predicate.
+ * The visitor: inspect each named function, method, signature and
+ * function-valued member for a boolean return that does not read as a
+ * predicate.
  */
 function buildListeners(state) {
     return {
@@ -253,17 +259,19 @@ function buildListeners(state) {
  * Boolean method name rule.
  *
  * A function, method, arrow-bound class field, object method or interface/type
- * signature returning boolean should read as a predicate. A name is accepted when
- * its first camelCase word is a copular or modal prefix (is, has, can, ...), an
- * idiomatic predicate from ALLOWED_PREDICATES (e.g. successful), or a verb ending
- * in `s` (third-person: permits, passes) or `ed` (past tense: succeeded, failed,
- * expired). An imperative command verb (execute, persist, guard, ...) that returns
- * a result bool is exempt via COMMAND_VERBS. A member may also opt out with an
+ * signature returning boolean should read as a predicate. A name is accepted
+ * when its first camelCase word is a copular or modal prefix (is, has, can,
+ * ...), an idiomatic predicate from ALLOWED_PREDICATES (e.g. successful), or a
+ * verb ending in `s` (third-person: permits, passes) or `ed` (past tense:
+ * succeeded, failed, expired). An imperative command verb (execute, persist,
+ * guard, ...) that returns a result bool is exempt via COMMAND_VERBS. A member
+ * may also opt out with an
  * @imperative docblock tag. Accessors, the constructor, computed names, magic
- * names and type-predicate guards (x is T) are exempt. The return type is resolved
- * from type information - inferred booleans and awaited Promise<boolean> included -
- * so the rule degrades to a no-op when no type information is available. The
- * accepted vocabulary can be widened per consumer through the rule options.
+ * names and type-predicate guards (x is T) are exempt. The return type is
+ * resolved from type information - inferred booleans and awaited
+ * Promise<boolean> included - so the rule degrades to a no-op when no type
+ * information is available. The accepted vocabulary can be widened per consumer
+ * through the rule options.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -293,13 +301,14 @@ export default createRule({
         const services = ESLintUtils.getParserServices(context, true);
 
         // Without a type-checker program the return type can't be resolved, so
-        // the rule cannot decide anything; degrade to a no-op rather than throw.
+        // the rule cannot decide anything; degrade to a no-op rather than
+        // throw.
         if (!services.program) {
             return {};
         }
 
-        // Merge consumer additions onto the defaults so a downstream ruleset can
-        // widen the accepted vocabulary without losing the built-in words.
+        // Merge consumer additions onto the defaults so a downstream ruleset
+        // can widen the accepted vocabulary without losing the built-in words.
         const state = {
             context,
             services,
