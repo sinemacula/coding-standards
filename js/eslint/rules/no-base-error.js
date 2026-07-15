@@ -1,4 +1,4 @@
-import { createRule } from './lib.js';
+import { createRule, isTestPath } from './lib.js';
 
 /** Global objects whose `Error` member resolves to the base `Error`. */
 const GLOBAL_OBJECTS = new Set(['globalThis', 'window', 'global', 'self']);
@@ -64,6 +64,9 @@ function isBaseError(callee) {
  * ever a candidate, so listing `Error` in the `allow` option is the one way to
  * permit it; any other name has nothing to match and stays inert.
  *
+ * Test files are exempt: stubs and fakes legitimately throw the base `Error`
+ * (`throw new Error('not implemented')`), where a domain subclass adds nothing.
+ *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
@@ -92,6 +95,10 @@ export default createRule({
     },
     defaultOptions: [{ allow: [] }],
     create(context, [options]) {
+        if (isTestPath(context.filename)) {
+            return {};
+        }
+
         const allow = options.allow ?? [];
 
         return {

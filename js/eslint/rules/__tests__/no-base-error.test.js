@@ -40,6 +40,9 @@ ruleTester.run('no-base-error', rule, {
         { code: 'throw new Error("x");', options: [{ allow: ['Error'] }] },
         { code: 'throw new globalThis.Error("x");', options: [{ allow: ['Error'] }] },
         { code: 'throw new Error("x") as CustomError;', options: [{ allow: ['Error'] }] },
+        // Test files are exempt: stubs and fakes legitimately throw the base Error.
+        { code: 'throw new Error("not implemented");', filename: 'client.test.ts' },
+        { code: 'throw new Error("boom");', filename: '/repo/__tests__/client.ts' },
     ],
     invalid: [
         {

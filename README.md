@@ -247,7 +247,7 @@ type-checked layer.
 | `@sinemacula/boolean-method-name` | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt. |
 | `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
 | `@sinemacula/max-methods-per-class` | A single class may declare at most 20 methods; test code exempt. |
-| `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`. |
+| `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`; test code exempt. |
 | `@sinemacula/require-copyright` | Every file must carry a documentation comment with `@copyright` and `@author`. |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
