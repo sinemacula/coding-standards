@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/sinemacula/coding-standards/compare/v1.9.0...v1.9.1) (2026-07-15)
+
+
+### Bug Fixes
+
+* make naming enforcement wire-friendly and exempt test throws ([#91](https://github.com/sinemacula/coding-standards/issues/91)) ([6b86663](https://github.com/sinemacula/coding-standards/commit/6b8666377fd6665e783c09dde6002dcef1d75191))
+
 ## [1.9.0](https://github.com/sinemacula/coding-standards/compare/v1.8.4...v1.9.0) (2026-07-14)
 
 
