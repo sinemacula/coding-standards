@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/sinemacula/coding-standards/compare/v1.9.1...v1.9.2) (2026-07-15)
+
+
+### Bug Fixes
+
+* keep the source manifest to exported config paths ([#93](https://github.com/sinemacula/coding-standards/issues/93)) ([6af585b](https://github.com/sinemacula/coding-standards/commit/6af585b97f55f3ae0e9dc03b706cc23333e4ad91))
+
 ## [1.9.1](https://github.com/sinemacula/coding-standards/compare/v1.9.0...v1.9.1) (2026-07-15)
 
 
