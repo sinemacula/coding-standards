@@ -1,8 +1,9 @@
-# Defensive backstop - `files` in package.json is the primary allowlist, but
-# npm still walks the working tree and applies .gitignore-like rules first.
-# Anything below is excluded even if it matches a `files` entry.
+# Defensive backstop - `files` in package.json is the primary allowlist, but npm
+# still walks the working tree and applies .gitignore-like rules first. Anything
+# below is excluded even if it matches a `files` entry.
 
-# PHP-only distribution (Composer ships this separately as sinemacula/coding-standards).
+# PHP-only distribution (Composer ships this separately as
+# sinemacula/coding-standards).
 src/
 SineMacula/
 php/

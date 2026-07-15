@@ -82,7 +82,8 @@ export default createRule({
                 });
             },
             'AccessorProperty, TSAbstractAccessorProperty'(node) {
-                // An auto-accessor cannot be readonly, so a public one is always mutable.
+                // An auto-accessor cannot be readonly, so a public one is
+                // always mutable.
                 if (isOutOfScope(node) || isExempt(node)) {
                     return;
                 }
@@ -115,7 +116,10 @@ function isNonPublic(node) {
         || node.accessibility === 'protected';
 }
 
-/** Whether a class property is outside the public-mutable scope: static, ambient, or non-public. */
+/**
+ * Whether a class property is outside the public-mutable scope: static,
+ * ambient, or non-public.
+ */
 function isOutOfScope(node) {
     return node.static || node.declare || isNonPublic(node);
 }

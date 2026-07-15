@@ -4,10 +4,11 @@ use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
-// qlty's pre-commit `qlty fmt` runs against a sparse worktree of only the staged
-// files, so the shared rules file may be absent there. Fall back to an empty rule
-// set (a no-op) rather than failing on the require; the full `qlty check` and qlty
-// Cloud run against the complete tree and apply the real rules.
+// qlty's pre-commit `qlty fmt` runs against a sparse worktree of only the
+// staged files, so the shared rules file may be absent there. Fall back to an
+// empty rule set (a no-op) rather than failing on the require; the full
+// `qlty check` and qlty Cloud run against the complete tree and apply the real
+// rules.
 $rulesFile = dirname(__DIR__, 2) . '/php/.php-cs-fixer.rules.php';
 $rules     = is_file($rulesFile) ? require $rulesFile : []; // NOSONAR
 
@@ -19,8 +20,9 @@ if ($rules !== []) {
     $rules['phpdoc_to_param_type'] = false;
 }
 
-// Filter to the directories that exist; in qlty's sparse pre-commit worktree the
-// source trees may be absent, and Finder::in() throws on a missing directory.
+// Filter to the directories that exist; in qlty's sparse pre-commit worktree
+// the source trees may be absent, and Finder::in() throws on a missing
+// directory.
 $dirs = array_values(array_filter([
     dirname(__DIR__, 2) . '/src',
     dirname(__DIR__, 2) . '/SineMacula/Sniffs',

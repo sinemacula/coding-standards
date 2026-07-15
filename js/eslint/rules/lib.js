@@ -12,7 +12,9 @@ export const createRule = ESLintUtils.RuleCreator(
     name => `https://github.com/sinemacula/coding-standards#${name}`,
 );
 
-/** Whether the file is a TypeScript declaration file (.d.ts, .d.mts, .d.cts). */
+/**
+ * Whether the file is a TypeScript declaration file (.d.ts, .d.mts, .d.cts).
+ */
 export function isDeclarationFile(filename) {
     return /\.d\.[cm]?ts$/.test(filename);
 }
@@ -78,7 +80,9 @@ export function superClassName(klass) {
     return null;
 }
 
-/** Whether the class reads as a test class (by its own or its parent's name). */
+/**
+ * Whether the class reads as a test class (by its own or its parent's name).
+ */
 export function isTestClass(klass) {
     if (klass.id?.name?.endsWith('Test')) {
         return true;

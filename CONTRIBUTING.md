@@ -46,7 +46,8 @@ chore: update qlty configuration
 All code must pass static analysis before submission:
 
 ```bash
-composer check    # Static analysis and lint checks via qlty (PHPStan, PHP-CS-Fixer, CodeSniffer)
+composer check    # Static analysis and lint checks via qlty (PHPStan,
+                  # PHP-CS-Fixer, CodeSniffer)
 composer format   # Format the codebase via qlty
 composer smells   # Advisory code smells (duplication, complexity)
 ```

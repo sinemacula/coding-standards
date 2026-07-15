@@ -26,7 +26,8 @@ ruleTester.run('no-interface-prefix', rule, {
         'type Container<TValue> = TValue[];',
         'interface Registry<IItem> { value: IItem; }',
 
-        // Overload signatures and "I"-prefixed members are not declaration names.
+        // Overload signatures and "I"-prefixed members are not declaration
+        // names.
         'interface Repository { find(id: number): void; find(id: string): void; ILoad(): void; ICount: number; }',
 
         // The rule targets interfaces and type aliases only, never other kinds.
@@ -47,7 +48,8 @@ ruleTester.run('no-interface-prefix', rule, {
         'type Wrapped = IFoo;',
         'interface Repository extends IFoo {}',
 
-        // Augmenting a string-named external module patches a type we cannot rename.
+        // Augmenting a string-named external module patches a type we cannot
+        // rename.
         'declare module "pkg" { interface INested {} }',
         'declare module "some-lib" { interface IConfig { extra: string; } }',
         'declare module "m" { type IBaz = number; }',

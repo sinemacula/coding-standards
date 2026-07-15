@@ -227,9 +227,10 @@ return [
         'keep_multiple_spaces_after_comma' => false,
         'on_multiline'                     => 'ignore',
     ],
-    // Pairs with the SineMacula.WhiteSpace.PromotedConstructorSpacing sniff, which requires a
-    // blank line above each promoted-constructor parameter; keep_blank_lines must stay true so
-    // cs-fixer preserves those blanks (default false strips them, which would fight the sniff).
+    // Pairs with the SineMacula.WhiteSpace.PromotedConstructorSpacing sniff,
+    // which requires a blank line above each promoted-constructor parameter;
+    // keep_blank_lines must stay true so cs-fixer preserves those blanks
+    // (default false strips them, which would fight the sniff).
     'multiline_promoted_properties' => [
         'minimum_number_of_parameters' => 1,
         'keep_blank_lines'             => true,

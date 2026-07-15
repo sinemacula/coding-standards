@@ -170,7 +170,8 @@ ruleTester.run('require-readonly-public-property', rule, {
             errors: [{ messageId: 'mutable', data: { name: 'Symbol.iterator' } }],
         },
         {
-            // A mixin-produced base cannot be name-matched, so it stays enforced.
+            // A mixin-produced base cannot be name-matched, so it stays
+            // enforced.
             code: 'class C extends mixin(Base) { public x = 1; }',
             options: [{ ignoredParentClasses: ['Base'] }],
             errors: [{ messageId: 'mutable', data: { name: 'x' } }],

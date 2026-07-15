@@ -24,8 +24,8 @@ export const ruleTester = new RuleTester();
 
 /**
  * Type-aware tester. Use for rules that call getTypeAtLocation and friends;
- * types resolve against fixtures/tsconfig.json. RuleTester writes each test case
- * into file.ts (or react.tsx for JSX), which the tsconfig includes.
+ * types resolve against fixtures/tsconfig.json. RuleTester writes each test
+ * case into file.ts (or react.tsx for JSX), which the tsconfig includes.
  */
 export const typedRuleTester = new RuleTester({
     languageOptions: {

@@ -86,8 +86,8 @@ name = "editorconfig-checker"
 
 # Dogfood this repo's own standards on its own code: phpcs and php-cs-fixer use
 # the in-tree configs under .qlty/configs, not a released tag. slevomat comes
-# from composer.json; the base class loads via .qlty/configs/autoload.php
-# (qlty Cloud has no project vendor/autoload.php).
+# from composer.json; the base class loads via .qlty/configs/autoload.php (qlty
+# Cloud has no project vendor/autoload.php).
 [[plugin]]
 name = "php-codesniffer"
 # Pinned to 4.0.1, the major consumers run via qlty; the suite is tested on both

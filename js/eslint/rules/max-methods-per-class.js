@@ -2,8 +2,8 @@ import { createRule, isTestClass, isTestPath } from './lib.js';
 
 /** Whether a class member counts towards the method total. */
 function isCountedMethod(member) {
-    // An overload signature shares its name with the implementation below it, so it
-    // carries no body and is not counted a second time.
+    // An overload signature shares its name with the implementation below it,
+    // so it carries no body and is not counted a second time.
     return member.type === 'MethodDefinition'
         && member.value.type !== 'TSEmptyBodyFunctionExpression';
 }
@@ -28,8 +28,8 @@ function countMethods(node) {
  * Every method declared on the class body counts, including the constructor,
  * static methods and get/set accessors; a method spread across overload
  * signatures counts once, through its implementation. Methods on a nested class
- * belong to that class, not the one enclosing it. Test code legitimately gathers
- * many methods on one fixture, so a test file or test class is exempt.
+ * belong to that class, not the one enclosing it. Test code legitimately
+ * gathers many methods on one fixture, so a test file or test class is exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

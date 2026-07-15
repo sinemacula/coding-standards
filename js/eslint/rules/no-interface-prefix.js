@@ -1,6 +1,9 @@
 import { createRule } from './lib.js';
 
-/** Disallowed "I" prefix: a capital I directly followed by another uppercase letter. */
+/**
+ * Disallowed "I" prefix: a capital I directly followed by another uppercase
+ * letter.
+ */
 const PREFIX_PATTERN = /^I[A-Z]/;
 
 /** A global or string-named module block augments types we do not own. */
@@ -31,7 +34,9 @@ export default createRule({
     create(context) {
         const { sourceCode } = context;
 
-        /** Report a declaration whose name carries the disallowed "I" prefix. */
+        /**
+         * Report a declaration whose name carries the disallowed "I" prefix.
+         */
         const check = (node, kind) => {
             const name = node.id.name;
 
@@ -39,7 +44,8 @@ export default createRule({
                 return;
             }
 
-            // Augmenting an external module or the global scope cannot rename it.
+            // Augmenting an external module or the global scope cannot rename
+            // it.
             if (sourceCode.getAncestors(node).some(isExternalAugmentation)) {
                 return;
             }

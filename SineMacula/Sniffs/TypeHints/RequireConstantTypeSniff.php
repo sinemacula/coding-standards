@@ -10,8 +10,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 /**
  * Typed class constant sniff.
  *
- * Requires a native type on every class, interface, enum or trait constant
- * (PHP 8.3+): `const string FOO = '...'` rather than `const FOO = '...'`.
+ * Requires a native type on every class, interface, enum or trait constant (PHP
+ * 8.3+): `const string FOO = '...'` rather than `const FOO = '...'`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

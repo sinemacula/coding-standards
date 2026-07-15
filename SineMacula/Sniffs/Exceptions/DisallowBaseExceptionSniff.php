@@ -11,10 +11,10 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 /**
  * Base exception throw sniff.
  *
- * Forbids throwing a base engine exception directly (`throw new
- * \Exception(...)`) so a domain or typed exception is used instead. The
- * forbidden class names are configurable via $forbiddenExceptions. Re-throws
- * of a variable are not checked.
+ * Forbids throwing a base engine exception directly
+ * (`throw new \Exception(...)`) so a domain or typed exception is used instead.
+ * The forbidden class names are configurable via $forbiddenExceptions.
+ * Re-throws of a variable are not checked.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

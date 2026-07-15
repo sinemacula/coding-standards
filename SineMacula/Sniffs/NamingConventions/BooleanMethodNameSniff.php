@@ -120,8 +120,8 @@ final class BooleanMethodNameSniff implements Sniff
 
     /**
      * Whether the name reads as a predicate: a copular/modal prefix, an
-     * idiomatic predicate, or a verb ending in `s` (third-person) or `ed`
-     * (past tense).
+     * idiomatic predicate, or a verb ending in `s` (third-person) or `ed` (past
+     * tense).
      *
      * @param  string  $name
      * @return bool

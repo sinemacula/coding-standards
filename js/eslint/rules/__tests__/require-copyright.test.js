@@ -31,7 +31,8 @@ ruleTester.run('require-copyright', rule, {
             errors: [{ messageId: 'missing' }],
         },
         {
-            // Line comments carrying the tags do not count; a block comment is required.
+            // Line comments carrying the tags do not count; a block comment is
+            // required.
             code: '// @copyright 2026 X\n// @author Y\nexport const a = 1;',
             errors: [{ messageId: 'missing' }],
         },
@@ -46,7 +47,8 @@ ruleTester.run('require-copyright', rule, {
             errors: [{ messageId: 'missing' }],
         },
         {
-            // The tags are split across two blocks; a single block must carry both.
+            // The tags are split across two blocks; a single block must carry
+            // both.
             code: '/**\n * @copyright 2026 X\n */\n/**\n * @author Y\n */\nexport const a = 1;',
             errors: [{ messageId: 'missing' }],
         },

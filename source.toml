@@ -21,11 +21,11 @@ exported_config_paths = ["js/biome.json"]
 [plugins.definitions.knip]
 exported_config_paths = ["js/knip.json"]
 
-# The eslint sandbox package filters live in each consumer's own qlty.toml:
-# a definitions block here that carries anything other than
-# exported_config_paths makes consumers silently drop every exported config
-# from this source, reverting markdownlint, yamllint, biome, knip, and
-# gitleaks to their built-in defaults.
+# The eslint sandbox package filters live in each consumer's own qlty.toml: a
+# definitions block here that carries anything other than exported_config_paths
+# makes consumers silently drop every exported config from this source,
+# reverting markdownlint, yamllint, biome, knip, and gitleaks to their built-in
+# defaults.
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]

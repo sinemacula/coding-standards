@@ -22,8 +22,8 @@ ruleTester.run('valid-enum-member-name', rule, {
         // String-literal member names that resolve to SCREAMING_SNAKE_CASE.
         'enum Weird { "RED" = 1, "GREEN_LIGHT" = 2 }',
         // A string literal is checked by its resolved value, so an escaped name
-        // that decodes to SCREAMING_SNAKE_CASE passes even though the raw source
-        // text does not match the pattern.
+        // that decodes to SCREAMING_SNAKE_CASE passes even though the raw
+        // source text does not match the pattern.
         'enum Escaped { "R\\u0045D" = 1 }',
         // const enums and ambient declarations are still checked.
         'const enum Mode { ON, OFF }',
@@ -32,8 +32,8 @@ ruleTester.run('valid-enum-member-name', rule, {
         { code: 'enum Ambient { YES, NO }', filename: 'types.d.ts' },
         // Enum inside a TSX file.
         { code: 'enum Theme { LIGHT, DARK }', filename: 'react.tsx' },
-        // The selector must not fire on non-enum constructs.
-        // Object-literal "as const" pseudo-enum members are a documented gap.
+        // The selector must not fire on non-enum constructs. Object-literal "as
+        // const" pseudo-enum members are a documented gap.
         'const config = { red: 1, greenLight: 2 };',
         // A switch `case` is a SwitchCase node, never an enum member.
         'function grade(n: number) { switch (n) { case 1: return "a"; default: return "b"; } }',
@@ -86,12 +86,14 @@ ruleTester.run('valid-enum-member-name', rule, {
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: '' } }],
         },
         {
-            // A string-literal name that is a valid identifier in the wrong case.
+            // A string-literal name that is a valid identifier in the wrong
+            // case.
             code: 'enum Weird { "redValue" = 1 }',
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: 'redValue' } }],
         },
         {
-            // The pattern is ASCII-only, so a unicode uppercase letter is flagged.
+            // The pattern is ASCII-only, so a unicode uppercase letter is
+            // flagged.
             code: 'enum Accent { Ä }',
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: 'Ä' } }],
         },

@@ -76,9 +76,10 @@
     <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedClassNameInAnnotation"/>
 
     <!--
-        Require declare(strict_types=1). Properties are aligned to the exact output
-        produced by php-cs-fixer (declare_strict_types + declare_equal_normalize:single +
-        blank_line_after_opening_tag) so the autofixer and this checker never disagree:
+        Require declare(strict_types=1). Properties are aligned to the exact
+        output produced by php-cs-fixer (declare_strict_types +
+        declare_equal_normalize:single + blank_line_after_opening_tag) so the
+        autofixer and this checker never disagree:
         <?php / blank line / declare(strict_types = 1); / blank line.
     -->
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
@@ -91,15 +92,17 @@
     </rule>
 
     <!--
-        Naming: enforce camelCase on methods, reserving the double-underscore prefix for PHP
-        magic methods. Class/interface/trait/enum PascalCase and UPPER_CASE constant names
-        already come from PSR1 (via the PSR12 base), so they are not repeated.
-        PrivateNoUnderscore is excluded so the legacy `private function _name()` convention is
-        not forced; PublicUnderscore is kept so public and protected methods cannot carry a
-        leading underscore, mirroring the variable-name rule below.
-        NotCamelCaps is excluded so camelCase is not forced on global (non-member) functions,
-        which are snake_case under the SineMacula.NamingConventions.ValidGlobalFunctionName
-        sniff; methods keep camelCase via ScopeNotCamelCaps, since their visibility is explicit.
+        Naming: enforce camelCase on methods, reserving the double-underscore
+        prefix for PHP magic methods. Class/interface/trait/enum PascalCase and
+        UPPER_CASE constant names already come from PSR1 (via the PSR12 base),
+        so they are not repeated. PrivateNoUnderscore is excluded so the legacy
+        `private function _name()` convention is not forced; PublicUnderscore is
+        kept so public and protected methods cannot carry a leading underscore,
+        mirroring the variable-name rule below. NotCamelCaps is excluded so
+        camelCase is not forced on global (non-member) functions, which are
+        snake_case under the
+        SineMacula.NamingConventions.ValidGlobalFunctionName sniff; methods keep
+        camelCase via ScopeNotCamelCaps, since their visibility is explicit.
     -->
     <rule ref="Squiz.NamingConventions.ValidFunctionName">
         <exclude name="Squiz.NamingConventions.ValidFunctionName.PrivateNoUnderscore"/>
@@ -107,13 +110,15 @@
     </rule>
 
     <!--
-        Variables, properties and parameters: camelCase. PrivateNoUnderscore is excluded so the
-        legacy `private $_name` convention is not forced; PublicHasUnderscore is kept so public and
-        protected members cannot carry a leading underscore. MemberNotCamelCaps is excluded because
-        snake_case data-object access ($model->created_at, $row->first_name for DB columns / JSON
-        fields) is idiomatic and cannot be renamed; NotCamelCaps still holds, so local variables
-        must stay camelCase. NB this also checks parameter names, so a parameter whose name is fixed
-        by an overridden dependency method (named-argument BC) needs an inline
+        Variables, properties and parameters: camelCase. PrivateNoUnderscore is
+        excluded so the legacy `private $_name` convention is not forced;
+        PublicHasUnderscore is kept so public and protected members cannot carry
+        a leading underscore. MemberNotCamelCaps is excluded because snake_case
+        data-object access ($model->created_at, $row->first_name for DB columns
+        / JSON fields) is idiomatic and cannot be renamed; NotCamelCaps still
+        holds, so local variables must stay camelCase. NB this also checks
+        parameter names, so a parameter whose name is fixed by an overridden
+        dependency method (named-argument BC) needs an inline
         `// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps`.
     -->
     <rule ref="Squiz.NamingConventions.ValidVariableName">
@@ -122,9 +127,9 @@
     </rule>
 
     <!--
-        Explicit visibility: PSR12 already enables Squiz.Scope.MethodScope for methods; add the
-        property side so member-variable visibility is hard-failed too, mirroring the cs-fixer
-        visibility_required autofixer.
+        Explicit visibility: PSR12 already enables Squiz.Scope.MethodScope for
+        methods; add the property side so member-variable visibility is
+        hard-failed too, mirroring the cs-fixer visibility_required autofixer.
     -->
     <rule ref="Squiz.Scope.MemberVarScope"/>
 
@@ -132,9 +137,10 @@
     <rule ref="Generic.Files.OneObjectStructurePerFile"/>
 
     <!--
-        Class/interface/trait/enum docblock with @author. PEAR covers all four type kinds. The
-        PEAR-specific tags we do not use are excluded. NB PEAR treats @copyright as optional, so its
-        presence is not hard-enforced here; @author and @copyright formats are still validated.
+        Class/interface/trait/enum docblock with @author. PEAR covers all four
+        type kinds. The PEAR-specific tags we do not use are excluded. NB PEAR
+        treats @copyright as optional, so its presence is not hard-enforced
+        here; @author and @copyright formats are still validated.
     -->
     <rule ref="PEAR.Commenting.ClassComment">
         <exclude name="PEAR.Commenting.ClassComment.MissingCategoryTag"/>
@@ -143,16 +149,18 @@
         <exclude name="PEAR.Commenting.ClassComment.MissingLinkTag"/>
     </rule>
 
-    <!-- Require an @throws tag for every exception thrown in a function body -->
+    <!--
+        Require an @throws tag for every exception thrown in a function body
+    -->
     <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
 
     <!--
-        Inline comments: enforce // style and spacing, with three sub-rules excluded.
-        InvalidEndChar: short notes need no terminal full stop. NotCapital: tool-directive
-        comments like // qlty-ignore: and // phpstan: start lowercase. DocBlock: only
-        false-positives here - it fights the PHPStan inline type-assertion idiom
-        (/** @var Type $x */ before a statement) and the house enum/constant rules that
-        require /** */ blocks.
+        Inline comments: enforce // style and spacing, with three sub-rules
+        excluded. InvalidEndChar: short notes need no terminal full stop.
+        NotCapital: tool-directive comments like // qlty-ignore: and // phpstan:
+        start lowercase. DocBlock: only false-positives here - it fights the
+        PHPStan inline type-assertion idiom (/** @var Type $x */ before a
+        statement) and the house enum/constant rules that require /** */ blocks.
     -->
     <rule ref="Squiz.Commenting.InlineComment">
         <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
@@ -164,8 +172,9 @@
     <rule ref="Squiz.PHP.CommentedOutCode"/>
 
     <!--
-        Nesting depth: 3 is the maximum allowed. The sniff fires when nesting exceeds the threshold,
-        so nestingLevel=3 warns at depth 4 and absoluteNestingLevel=4 errors at depth 5 or deeper.
+        Nesting depth: 3 is the maximum allowed. The sniff fires when nesting
+        exceeds the threshold, so nestingLevel=3 warns at depth 4 and
+        absoluteNestingLevel=4 errors at depth 5 or deeper.
     -->
     <rule ref="Generic.Metrics.NestingLevel">
         <properties>
@@ -183,8 +192,9 @@
     </rule>
 
     <!--
-        No empty or comment-only bodies for if, loops, try/finally, switch and match. Catch is
-        excluded and replaced by SineMacula.Exceptions.RequireEmptyCatchComment, which allows a
+        No empty or comment-only bodies for if, loops, try/finally, switch and
+        match. Catch is excluded and replaced by
+        SineMacula.Exceptions.RequireEmptyCatchComment, which allows a
         documented swallow (a comment) but still flags a bare catch (E $e) {}.
     -->
     <rule ref="Generic.CodeAnalysis.EmptyStatement">
@@ -192,9 +202,11 @@
     </rule>
 
     <!--
-        Type hints: require native parameter, return and property type hints, and require the
-        contained type for traversables (e.g. @param array<int, Foo>). UselessAnnotation is excluded
-        on each so redundant @param/@return/@var docblocks are kept - house style documents everything.
+        Type hints: require native parameter, return and property type hints,
+        and require the contained type for traversables (e.g.
+        @param array<int, Foo>). UselessAnnotation is excluded on each so
+        redundant @param/@return/@var docblocks are kept - house style documents
+        everything.
     -->
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint">
         <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.UselessAnnotation"/>
@@ -207,21 +219,30 @@
     </rule>
 
     <!--
-        Disallow the `mixed` type hint (all-or-nothing; there is no "except at boundaries"
-        option). Suppress with `// phpcs:ignore SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`
-        at genuine boundaries (external input, JSON) or where an overridden signature forces it.
+        Disallow the `mixed` type hint (all-or-nothing; there is no "except at
+        boundaries" option). Suppress with
+        `// phpcs:ignore SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`
+        at genuine boundaries (external input, JSON) or where an overridden
+        signature forces it.
     -->
     <rule ref="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint"/>
 
-    <!-- Require constructor property promotion when a parameter is directly assigned to a property -->
+    <!--
+        Require constructor property promotion when a parameter is directly
+        assigned to a property
+    -->
     <rule ref="SlevomatCodingStandard.Classes.RequireConstructorPropertyPromotion"/>
 
-    <!-- Require explicit visibility on class constants (hard-fail mirror of cs-fixer visibility_required) -->
+    <!--
+        Require explicit visibility on class constants (hard-fail mirror of
+        cs-fixer visibility_required)
+    -->
     <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
 
     <!--
-        Attributes: doc comment before the attribute, and one attribute per line. Attribute ordering
-        is intentionally left to cs-fixer (ordered_attributes) so two tools never fight over order.
+        Attributes: doc comment before the attribute, and one attribute per
+        line. Attribute ordering is intentionally left to cs-fixer
+        (ordered_attributes) so two tools never fight over order.
     -->
     <rule ref="SlevomatCodingStandard.Attributes.RequireAttributeAfterDocComment"/>
     <rule ref="SlevomatCodingStandard.Attributes.DisallowMultipleAttributesPerLine"/>
@@ -230,9 +251,9 @@
     <rule ref="SlevomatCodingStandard.ControlStructures.EarlyExit"/>
 
     <!--
-        Cognitive complexity (Sonar-style): allow up to 10, hard-error at 15. NB Slevomat reports
-        warningThreshold minus 1, so warningThreshold 11 means a method may reach 10 (maxComplexity
-        is deprecated).
+        Cognitive complexity (Sonar-style): allow up to 10, hard-error at 15. NB
+        Slevomat reports warningThreshold minus 1, so warningThreshold 11 means
+        a method may reach 10 (maxComplexity is deprecated).
     -->
     <rule ref="SlevomatCodingStandard.Complexity.Cognitive">
         <properties>
@@ -242,12 +263,13 @@
     </rule>
 
     <!--
-        Unused-code checkers (the pieces cs-fixer can't do). UnusedUses is a hard-fail mirror of the
-        cs-fixer no_unused_imports autofixer. UnusedParameter is intentionally NOT enabled: it is
-        near-total false-positives here - parameters mandated by interface contracts, #[\Override]
-        parent signatures, and framework callback signatures (e.g. fn($app, $config) with a
-        positional-but-unused $app) cannot be removed, and IDEs / PHPStan still catch genuinely-dead
-        parameters.
+        Unused-code checkers (the pieces cs-fixer can't do). UnusedUses is a
+        hard-fail mirror of the cs-fixer no_unused_imports autofixer.
+        UnusedParameter is intentionally NOT enabled: it is near-total
+        false-positives here - parameters mandated by interface contracts,
+        #[\Override] parent signatures, and framework callback signatures
+        (e.g. fn($app, $config) with a positional-but-unused $app) cannot be
+        removed, and IDEs / PHPStan still catch genuinely-dead parameters.
     -->
     <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
     <rule ref="SlevomatCodingStandard.Variables.UnusedVariable">
@@ -257,11 +279,13 @@
     </rule>
 
     <!--
-        Reference imported names, not inline FQCN, in code bodies. Inline FQCN stays allowed for
-        global classes/functions/constants (e.g. \DateTime, \strlen); project namespaces must be
-        imported with a use statement. FQCNs are also allowed where importing would collide with an
-        already-imported name (allowFullyQualifiedNameForColliding*), e.g. referencing
-        \Illuminate\Support\Facades\Request alongside an imported Illuminate\Http\Request.
+        Reference imported names, not inline FQCN, in code bodies. Inline FQCN
+        stays allowed for global classes/functions/constants
+        (e.g. \DateTime, \strlen); project namespaces must be imported with a
+        use statement. FQCNs are also allowed where importing would collide with
+        an already-imported name (allowFullyQualifiedNameForColliding*), e.g.
+        referencing \Illuminate\Support\Facades\Request alongside an imported
+        Illuminate\Http\Request.
     -->
     <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
         <properties>
@@ -274,10 +298,12 @@
     </rule>
 
     <!--
-        Method signatures: single line when they fit within 180 characters, multi-line (one
-        parameter per line) when they exceed it. Constructors are excluded from the single-line rule
-        so promoted-property constructors are always multi-line (withPromotedProperties). cs-fixer
-        method_argument_space is on_multiline:ignore, so it leaves the single/multi decision to these.
+        Method signatures: single line when they fit within 180 characters,
+        multi-line (one parameter per line) when they exceed it. Constructors
+        are excluded from the single-line rule so promoted-property constructors
+        are always multi-line (withPromotedProperties). cs-fixer
+        method_argument_space is on_multiline:ignore, so it leaves the
+        single/multi decision to these.
     -->
     <rule ref="SlevomatCodingStandard.Classes.RequireSingleLineMethodSignature">
         <properties>
