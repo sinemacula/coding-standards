@@ -21,12 +21,11 @@ exported_config_paths = ["js/biome.json"]
 [plugins.definitions.knip]
 exported_config_paths = ["js/knip.json"]
 
-# Qlty's eslint sandbox installs only eslint/jest/prettier by default, so the
-# flat config's imports of this package and typescript-eslint fail to resolve.
-# Widen the install filter to carry them. The eslint config itself is the
-# consumer's own eslint.config.js.
-[plugins.definitions.eslint]
-package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc"]
+# The eslint sandbox package filters live in each consumer's own qlty.toml:
+# a definitions block here that carries anything other than
+# exported_config_paths makes consumers silently drop every exported config
+# from this source, reverting markdownlint, yamllint, biome, knip, and
+# gitleaks to their built-in defaults.
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]
