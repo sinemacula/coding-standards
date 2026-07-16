@@ -121,13 +121,16 @@ typescript-eslint tooling, and this package to your dev dependencies:
 npm install --save-dev eslint typescript typescript-eslint eslint-plugin-jsdoc @sinemacula/coding-standards
 ```
 
-The package exposes two flat-config entry points:
+The package exposes three flat-config entry points:
 
 - `@sinemacula/coding-standards/js/eslint` - the base layer of syntax-only custom rules; needs no `tsconfig`, so it
   stays cheap and runs anywhere Biome runs.
 - `@sinemacula/coding-standards/js/eslint/type-checked` - the opt-in type-aware layer. It includes the base layer and
   adds the cross-file / type-driven rules, so it needs a consumer `tsconfig`; use it in place of the base layer where
   one exists.
+- `@sinemacula/coding-standards/js/eslint/vue` - the opt-in Vue layer for single-file components. Unlike the
+  type-aware layer it carries no base rules of its own, so spread it *alongside* whichever layer the repository
+  already uses rather than in place of one.
 
 Create an `eslint.config.js` (or `.qlty/configs/eslint.config.js` when wired through Qlty) that spreads the layer you
 want. Without a `tsconfig`, use the base layer:
@@ -146,6 +149,25 @@ import typeChecked from '@sinemacula/coding-standards/js/eslint/type-checked';
 export default [...typeChecked];
 ```
 
+Vue repositories add the Vue toolchain and spread the Vue layer after the layer they already use:
+
+```bash
+npm install --save-dev eslint-plugin-vue vue-eslint-parser eslint-plugin-check-file
+```
+
+```js
+import typeChecked from '@sinemacula/coding-standards/js/eslint/type-checked';
+import vue from '@sinemacula/coding-standards/js/eslint/vue';
+
+export default [...typeChecked, ...vue];
+```
+
+The Vue layer registers the single-file-component parser (without it `.vue` files are not linted at all), resolves
+`<script lang="ts">` blocks through the TypeScript parser, and holds component filenames to kebab-case. It also
+carries the template layout rules, which is the one place ESLint takes on formatting: Biome does not understand
+single-file components, so `.vue` markup would otherwise go unformatted entirely. Those rules are aligned to the
+shared four-space indent.
+
 When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
 default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install
 filter in your `.qlty/qlty.toml` so the sandbox carries them (this repository's `source.toml` exports the same
@@ -154,6 +176,17 @@ override, but source-exported plugin definitions do not reliably propagate, so m
 ```toml
 [plugins.definitions.eslint]
 package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc"]
+```
+
+Repositories enabling the Vue layer widen the same filter further, since its plugins have to resolve inside that
+sandbox too:
+
+```toml
+[plugins.definitions.eslint]
+package_filters = [
+    "@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc",
+    "eslint-plugin-vue", "vue-eslint-parser", "eslint-plugin-check-file",
+]
 ```
 
 ### Knip (JavaScript / TypeScript)
@@ -187,7 +220,7 @@ tag = "<version>"
 | `php/phpstan-base.neon`       | PHPStan      | Base config (org-wide ignored errors + settings)       |
 | `js/biome.json`               | Biome        | JavaScript / TypeScript formatter + linter rules       |
 | `js/knip.json`                | Knip         | Unused-export detection rules                          |
-| `js/eslint/`                  | ESLint       | Custom structural + type-aware rules; runs with Biome  |
+| `js/eslint/`                  | ESLint       | Structural, type-aware + Vue rules; runs with Biome    |
 | `markdown/.markdownlint.json` | markdownlint | Markdown linting rules                                 |
 | `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
 | `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |

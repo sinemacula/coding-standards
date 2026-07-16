@@ -60,6 +60,12 @@
                 "useConst": "warn",
                 "useDefaultParameterLast": "warn",
                 "useExponentiationOperator": "warn",
+                "useFilenamingConvention": {
+                    "level": "warn",
+                    "options": {
+                        "filenameCases": ["kebab-case"]
+                    }
+                },
                 "useNamingConvention": {
                     "level": "warn",
                     "options": {
@@ -98,7 +104,16 @@
         "enabled": true,
         "actions": {
             "source": {
-                "organizeImports": "on"
+                "organizeImports": {
+                    "level": "on",
+                    "options": {
+                        "groups": [
+                            [":BUN:", ":NODE:", ":PACKAGE_WITH_PROTOCOL:", ":URL:", ":PACKAGE:"],
+                            ":BLANK_LINE:",
+                            [":ALIAS:", ":PATH:"]
+                        ]
+                    }
+                }
             }
         }
     },
