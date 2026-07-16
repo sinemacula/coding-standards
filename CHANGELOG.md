@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/sinemacula/coding-standards/compare/v1.9.2...v1.10.0) (2026-07-16)
+
+
+### Features
+
+* enforce filename casing and import grouping, add a vue preset ([#96](https://github.com/sinemacula/coding-standards/issues/96)) ([c02617e](https://github.com/sinemacula/coding-standards/commit/c02617ebcf449ccc52458dfce1bc02b26b312521))
+
 ## [1.9.2](https://github.com/sinemacula/coding-standards/compare/v1.9.1...v1.9.2) (2026-07-15)
 
 
