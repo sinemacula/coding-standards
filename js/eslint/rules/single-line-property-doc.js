@@ -4,11 +4,11 @@ import { createRule } from './lib.js';
 const FUNCTION_VALUES = new Set(['ArrowFunctionExpression', 'FunctionExpression']);
 
 /**
- * Whether the node is a data property: an interface property signature, or a
- * class field that does not hold a function.
+ * Whether the node is a data member: an interface property signature, an enum
+ * member, or a class field that does not hold a function.
  */
 function isDataProperty(node) {
-    if (node.type === 'TSPropertySignature') {
+    if (node.type === 'TSPropertySignature' || node.type === 'TSEnumMember') {
         return true;
     }
 
@@ -28,14 +28,16 @@ function contentLines(value) {
 }
 
 /**
- * Require a data property's documentation comment to sit on a single line.
+ * Require a data member's documentation comment to sit on a single line.
  *
  * A field's description is a single phrase, so it belongs on one line however
  * long it runs; nothing wraps a comment to a width, and breaking it by hand
- * only scatters the phrase down the file. Interface property signatures and
- * class fields that hold data are governed; a class field holding a function
- * reads as behaviour, may document parameters and is left to span as many
- * lines as it needs, as are methods and every free function.
+ * only scatters the phrase down the file. Interface property signatures, enum
+ * members and class fields that hold data are governed; a class field holding a
+ * function reads as behaviour, may document parameters and is left to span as
+ * many lines as it needs, as are methods and every free function. A comment is
+ * never required here, only held to one line where it is present, so enum
+ * members stay documented at the author's discretion.
  *
  * A block already on one line passes. A multi-line block collapses to one, its
  * lines joined by single spaces, provided it carries prose alone: a block
@@ -51,11 +53,11 @@ export default createRule({
         type: 'layout',
         fixable: 'whitespace',
         docs: {
-            description: 'Require a data property documentation comment to sit on a single line.',
+            description: 'Require a data member documentation comment to sit on a single line.',
         },
         schema: [],
         messages: {
-            multiline: 'A property documentation comment must sit on a single line.',
+            multiline: 'A data member documentation comment must sit on a single line.',
         },
     },
     defaultOptions: [],
@@ -80,19 +82,25 @@ export default createRule({
             }
 
             const lines = contentLines(doc.value);
+
+            // An empty block is the description rule's to report; there is no
+            // prose to fold onto one line.
+            if (lines.length === 0) {
+                return;
+            }
+
             const hasTag = lines.some(line => line.startsWith('@'));
 
             context.report({
                 node: doc,
                 messageId: 'multiline',
-                fix: hasTag || lines.length === 0
-                    ? null
-                    : fixer => fixer.replaceText(doc, `/** ${lines.join(' ')} */`),
+                fix: hasTag ? null : fixer => fixer.replaceText(doc, `/** ${lines.join(' ')} */`),
             });
         }
 
         return {
             TSPropertySignature: inspect,
+            TSEnumMember: inspect,
             PropertyDefinition: inspect,
         };
     },

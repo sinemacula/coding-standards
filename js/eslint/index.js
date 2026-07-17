@@ -31,8 +31,6 @@ export default [
             '@sinemacula/no-interface-prefix': 'error',
             '@sinemacula/require-readonly-public-property': 'error',
             '@sinemacula/valid-enum-member-name': 'error',
-            '@sinemacula/pad-block-start': 'error',
-            '@sinemacula/single-line-property-doc': 'error',
 
             '@typescript-eslint/no-explicit-any': 'error',
         },
@@ -52,6 +50,9 @@ export default [
             '@sinemacula/no-base-error': 'error',
             '@sinemacula/require-copyright': 'error',
             '@sinemacula/align-doc-tags': 'error',
+            '@sinemacula/pad-block-start': 'error',
+            '@sinemacula/single-line-property-doc': 'error',
+            '@sinemacula/multiline-function-doc': 'error',
 
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],

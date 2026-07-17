@@ -27,6 +27,10 @@ ruleTester.run('single-line-property-doc', rule, {
             + '    search(term: string): void;\n}',
         // A leading line comment is not a documentation block.
         'interface I {\n    // a value\n    a: number;\n}',
+        // An enum member documented on one line passes.
+        'enum E {\n    /** The active state. */\n    ACTIVE,\n}',
+        // An enum member is never required to carry a comment.
+        'enum E {\n    ACTIVE,\n}',
     ],
     invalid: [
         {
@@ -60,6 +64,12 @@ ruleTester.run('single-line-property-doc', rule, {
             code: 'interface I {\n    /**\n     * A value.\n     *\n     * @deprecated use b\n     */\n'
                 + '    a: number;\n}',
             output: null,
+            errors: [{ messageId: 'multiline' }],
+        },
+        {
+            // A multi-line enum-member block folds to one line.
+            code: 'enum E {\n    /**\n     * The active state.\n     */\n    ACTIVE,\n}',
+            output: 'enum E {\n    /** The active state. */\n    ACTIVE,\n}',
             errors: [{ messageId: 'multiline' }],
         },
     ],

@@ -1,6 +1,7 @@
 import alignDocTags from './rules/align-doc-tags.js';
 import booleanMethodName from './rules/boolean-method-name.js';
 import maxMethodsPerClass from './rules/max-methods-per-class.js';
+import multilineFunctionDoc from './rules/multiline-function-doc.js';
 import noBaseError from './rules/no-base-error.js';
 import noInterfacePrefix from './rules/no-interface-prefix.js';
 import noMutableStatic from './rules/no-mutable-static.js';
@@ -36,5 +37,6 @@ export default {
         'align-doc-tags': alignDocTags,
         'pad-block-start': padBlockStart,
         'single-line-property-doc': singleLinePropertyDoc,
+        'multiline-function-doc': multilineFunctionDoc,
     },
 };
