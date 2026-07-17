@@ -50,16 +50,21 @@ export default [
             '@sinemacula/no-base-error': 'error',
             '@sinemacula/require-copyright': 'error',
             '@sinemacula/align-doc-tags': 'error',
+            '@sinemacula/pad-block-start': 'error',
+            '@sinemacula/single-line-property-doc': 'error',
+            '@sinemacula/multiline-function-doc': 'error',
 
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],
 
-            // Every declared function, method, class and assigned arrow carries
-            // a documentation comment describing intent. Types live in the
-            // signature, so a tag never annotates one: the @param and @returns
-            // tags themselves are welcome, only their type forms are not. Each
-            // block stands off from the code above it, single-line blocks
-            // included.
+            // Every declared function, method, class, assigned arrow and
+            // property carries a documentation comment describing intent, so a
+            // reader meets each member's purpose before its type. Interface
+            // members and class fields are held to the same bar as methods.
+            // Types live in the signature, so a tag never annotates one: the
+            // @param and @returns tags themselves are welcome, only their type
+            // forms are not. Each block stands off from the code above it,
+            // single-line blocks included.
             'jsdoc/require-jsdoc': ['error', {
                 require: {
                     ClassDeclaration: true,
@@ -70,8 +75,15 @@ export default [
                 contexts: [
                     'VariableDeclarator > ArrowFunctionExpression',
                     'VariableDeclarator > FunctionExpression',
+                    'TSPropertySignature',
+                    'TSMethodSignature',
+                    'PropertyDefinition',
                 ],
                 checkConstructors: false,
+                // Report only; the autofix inserts an empty stub that then
+                // fails require-description, so a blind fix would scatter
+                // hollow comments rather than resolve the finding.
+                enableFixer: false,
             }],
             'jsdoc/require-description': 'error',
             'jsdoc/no-types': 'error',
