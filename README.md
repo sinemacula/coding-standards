@@ -1,10 +1,19 @@
 # Coding Standards
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
-[![npm Version](https://img.shields.io/npm/v/@sinemacula/coding-standards.svg)](https://www.npmjs.com/package/@sinemacula/coding-standards)
-[![Maintainability](https://qlty.sh/gh/sinemacula/projects/coding-standards/maintainability.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
-[![Code Coverage](https://qlty.sh/gh/sinemacula/projects/coding-standards/coverage.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
-[![Total Downloads](https://img.shields.io/packagist/dt/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
+[![Latest Stable Version][badge-version]][packagist]
+[![npm Version][badge-npm]][npm]
+[![Maintainability][badge-maintainability]][qlty]
+[![Code Coverage][badge-coverage]][qlty]
+[![Total Downloads][badge-downloads]][packagist]
+
+[badge-version]: https://img.shields.io/packagist/v/sinemacula/coding-standards.svg
+[badge-npm]: https://img.shields.io/npm/v/@sinemacula/coding-standards.svg
+[badge-maintainability]: https://qlty.sh/gh/sinemacula/projects/coding-standards/maintainability.svg
+[badge-coverage]: https://qlty.sh/gh/sinemacula/projects/coding-standards/coverage.svg
+[badge-downloads]: https://img.shields.io/packagist/dt/sinemacula/coding-standards.svg
+[packagist]: https://packagist.org/packages/sinemacula/coding-standards
+[npm]: https://www.npmjs.com/package/@sinemacula/coding-standards
+[qlty]: https://qlty.sh/gh/sinemacula/projects/coding-standards
 
 Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.
 
