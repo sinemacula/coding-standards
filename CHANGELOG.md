@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/sinemacula/coding-standards/compare/v1.10.0...v1.11.0) (2026-07-17)
+
+
+### Features
+
+* align header doc tags and space every doc block ([#98](https://github.com/sinemacula/coding-standards/issues/98)) ([b6e5ce3](https://github.com/sinemacula/coding-standards/commit/b6e5ce333d99e68d6fdb5526ffa2384a9b101298))
+
 ## [1.10.0](https://github.com/sinemacula/coding-standards/compare/v1.9.2...v1.10.0) (2026-07-16)
 
 
