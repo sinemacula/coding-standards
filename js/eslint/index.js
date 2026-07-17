@@ -49,13 +49,17 @@ export default [
             '@sinemacula/max-methods-per-class': 'error',
             '@sinemacula/no-base-error': 'error',
             '@sinemacula/require-copyright': 'error',
+            '@sinemacula/align-doc-tags': 'error',
 
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],
 
             // Every declared function, method, class and assigned arrow carries
-            // a documentation comment describing intent; types live in the
-            // signature, never in the comment (no @param/@returns type tags).
+            // a documentation comment describing intent. Types live in the
+            // signature, so a tag never annotates one: the @param and @returns
+            // tags themselves are welcome, only their type forms are not. Each
+            // block stands off from the code above it, single-line blocks
+            // included.
             'jsdoc/require-jsdoc': ['error', {
                 require: {
                     ClassDeclaration: true,
@@ -73,6 +77,7 @@ export default [
             'jsdoc/no-types': 'error',
             'jsdoc/require-param-description': 'error',
             'jsdoc/require-returns-description': 'error',
+            'jsdoc/lines-before-block': ['error', { lines: 1, ignoreSingleLines: false }],
         },
     },
     {
