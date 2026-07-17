@@ -20,7 +20,11 @@ const COMMAND_VERBS = new Set([
     'emit', 'apply', 'guard', 'validate', 'verify', 'authorize', 'ensure',
     'assert', 'register', 'boot', 'build', 'make', 'resolve', 'render',
     'compute', 'calculate', 'expose', 'parse', 'format', 'transform', 'toggle',
+    'submit', 'confirm', 'copy', 'attempt',
 ]);
+
+/** Method names that are a primitive type keyword: typed accessors, not predicates. */
+const TYPE_ACCESSOR_NAMES = new Set(['boolean']);
 
 /** Matches @imperative only at a docblock tag position, never inside prose. */
 const IMPERATIVE_TAG = /^[ \t*]*@imperative(?![-\w])/im;
@@ -48,6 +52,11 @@ function isPredicate(name, prefixes, predicates) {
 /** Whether the name is an imperative command verb, not a predicate. */
 function isCommandVerb(name, verbs) {
     return verbs.has(firstWord(name));
+}
+
+/** Whether the name is an on* event-handler callback (onError, onUnauthorized). */
+function isEventHandler(name) {
+    return /^on[A-Z]/.test(name);
 }
 
 /**
@@ -143,6 +152,8 @@ function inspect(state, nameNode, name, fnNode, docHost) {
         name.startsWith('__')
         || isPredicate(name, state.prefixes, state.predicates)
         || isCommandVerb(name, state.commandVerbs)
+        || isEventHandler(name)
+        || TYPE_ACCESSOR_NAMES.has(name)
         || hasImperativeTag(sourceCode, docHost, nameNode)
     ) {
         return;
@@ -266,8 +277,10 @@ function buildListeners(state) {
  * succeeded, failed, expired). An imperative command verb (execute, persist,
  * guard, ...) that returns a result bool is exempt via COMMAND_VERBS. A member
  * may also opt out with an
- * @imperative docblock tag. Accessors, the constructor, computed names, magic
- * names and type-predicate guards (x is T) are exempt. The return type is
+ * @imperative docblock tag. An on* event-handler callback (onError) and a
+ * method named after a primitive type (a typed accessor such as boolean())
+ * are exempt, as are accessors, the constructor, computed names, magic names
+ * and type-predicate guards (x is T). The return type is
  * resolved from type information - inferred booleans and awaited
  * Promise<boolean> included - so the rule degrades to a no-op when no type
  * information is available. The accepted vocabulary can be widened per consumer
