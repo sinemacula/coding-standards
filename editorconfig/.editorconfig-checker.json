@@ -1,5 +1,5 @@
 {
-    "Disable": {
-        "MaxLineLength": true
-    }
+    "Exclude": [
+        "CHANGELOG\\.md$"
+    ]
 }

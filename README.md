@@ -234,7 +234,7 @@ tag = "<version>"
 | `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
 | `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
 | `security/.gitleaks.toml`     | Gitleaks     | Secret-detection ruleset                               |
-| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check |
+| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Excludes the generated `CHANGELOG.md` from checks |
 
 ## Rules
 

@@ -122,9 +122,9 @@ package_file = "composer.json"
 plugins = ["php-codesniffer", "php-cs-fixer"]
 file_patterns = ["php/**", ".qlty/configs/**"]
 
-# Release-please writes CHANGELOG.md with long lines exceeding max_line_length,
-# failing its release PRs. It is tool-generated, so exclude it from
-# editorconfig-checker (mirrors the markdownlint exclude in source.toml).
+# CHANGELOG.md (release-please) and the qlty-generated git hooks are both
+# tool-authored: their line lengths and tab indentation are not ours to fix, so
+# exclude them from editorconfig-checker.
 [[exclude]]
 plugins = ["editorconfig-checker"]
-file_patterns = ["**/CHANGELOG.md"]
+file_patterns = ["**/CHANGELOG.md", ".qlty/hooks/**"]
