@@ -242,10 +242,12 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Classes.RequireReadonlyPublicProperty` | Public properties (declared or promoted) must be `readonly`. |
 | `SineMacula.Commenting.CommentLineLength` | Standalone comment lines must not exceed 80 chars (FQCN/URL exempt). |
 | `SineMacula.Commenting.ConsistentEnumCaseComments` | Enum case docs are all-or-nothing within an enum. |
+| `SineMacula.Commenting.MultilineMethodComment` | A method's doc comment must span multiple lines. |
 | `SineMacula.Commenting.RequireConstantComment` | Every class/interface/enum/trait constant needs a doc comment. |
 | `SineMacula.Commenting.RequireCopyrightTag` | Class/interface/enum/trait docblocks must carry an `@copyright` tag. |
 | `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment. |
 | `SineMacula.Commenting.RequirePromotedPropertyComment` | Every constructor-promoted property needs a doc comment. |
+| `SineMacula.Commenting.SingleLineMemberComment` | A property, constant or enum-case doc comment sits on one line. |
 | `SineMacula.Exceptions.DisallowBaseException` | No throwing the base `\Exception`; throw a domain exception. |
 | `SineMacula.Exceptions.RequireEmptyCatchComment` | An empty catch block must comment its intentional swallow. |
 | `SineMacula.Functions.RequireSensitiveParameter` | Secret-named params need `#[\SensitiveParameter]`. |
