@@ -26,6 +26,18 @@ typedRuleTester.run('boolean-method-name', rule, {
         // Imperative command verbs may return a result bool.
         'function validate(): boolean { return true; }',
         'function execute(): boolean { return true; }',
+        'function submit(): boolean { return true; }',
+        'function confirm(): boolean { return true; }',
+        'function copyToClipboard(): boolean { return true; }',
+        'function attemptLogin(): boolean { return true; }',
+
+        // on* event-handler callbacks read as handlers, not predicates.
+        'const o = { onUnauthorized(): boolean { return true; } };',
+        'class C { onError(): boolean { return true; } }',
+
+        // A method named after a primitive type is a typed accessor.
+        'class C { boolean(): boolean { return true; } }',
+        'interface Env { boolean(key: string): boolean; }',
 
         // Inferred boolean return with a predicate name.
         'function isReady() { return 1 > 0; }',
@@ -237,6 +249,16 @@ typedRuleTester.run('boolean-method-name', rule, {
             code:     'function widget(): boolean { return true; }',
             filename: 'react.tsx',
             errors:   [{ messageId: 'notPredicate', data: { name: 'widget' } }],
+        },
+        {
+            // `on` without a following capital is not an event handler (online -> isOnline).
+            code:   'function online(): boolean { return true; }',
+            errors: [{ messageId: 'notPredicate', data: { name: 'online' } }],
+        },
+        {
+            // Only the exact primitive-type name is a typed accessor; a longer name is not.
+            code:   'class C { booleanFlag(): boolean { return true; } }',
+            errors: [{ messageId: 'notPredicate', data: { name: 'booleanFlag' } }],
         },
     ],
 });
