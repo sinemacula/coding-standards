@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.12.0](https://github.com/sinemacula/coding-standards/compare/v1.11.0...v1.12.0) (2026-07-17)
+
+
+### Features
+
+* enforce docblock shape by member kind in PHP ([#103](https://github.com/sinemacula/coding-standards/issues/103)) ([b834f29](https://github.com/sinemacula/coding-standards/commit/b834f29d0353b0b0c7795ddc1d528493577c37a9))
+* **eslint:** accept action verbs, on* handlers and typed accessors in boolean-method-name ([#101](https://github.com/sinemacula/coding-standards/issues/101)) ([50659c7](https://github.com/sinemacula/coding-standards/commit/50659c7e6c363d0a2a651a3490f57bbcad43ebff))
+* shape member documentation by kind (properties, methods, enum cases) ([#100](https://github.com/sinemacula/coding-standards/issues/100)) ([4f7d76f](https://github.com/sinemacula/coding-standards/commit/4f7d76fd2e1f790bdf9aaf0933d4bff1a0bbb64c))
+
 ## [1.11.0](https://github.com/sinemacula/coding-standards/compare/v1.10.0...v1.11.0) (2026-07-17)
 
 
