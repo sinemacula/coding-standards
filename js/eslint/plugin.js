@@ -5,7 +5,6 @@ import multilineFunctionDoc from './rules/multiline-function-doc.js';
 import noBaseError from './rules/no-base-error.js';
 import noInterfacePrefix from './rules/no-interface-prefix.js';
 import noMutableStatic from './rules/no-mutable-static.js';
-import padBlockStart from './rules/pad-block-start.js';
 import requireCopyright from './rules/require-copyright.js';
 import requireReadonlyPublicProperty from './rules/require-readonly-public-property.js';
 import singleLinePropertyDoc from './rules/single-line-property-doc.js';
@@ -35,7 +34,6 @@ export default {
         'no-base-error': noBaseError,
         'require-copyright': requireCopyright,
         'align-doc-tags': alignDocTags,
-        'pad-block-start': padBlockStart,
         'single-line-property-doc': singleLinePropertyDoc,
         'multiline-function-doc': multilineFunctionDoc,
     },
