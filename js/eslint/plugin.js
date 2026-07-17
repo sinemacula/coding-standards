@@ -1,3 +1,4 @@
+import alignDocTags from './rules/align-doc-tags.js';
 import booleanMethodName from './rules/boolean-method-name.js';
 import maxMethodsPerClass from './rules/max-methods-per-class.js';
 import noBaseError from './rules/no-base-error.js';
@@ -30,5 +31,6 @@ export default {
         'max-methods-per-class': maxMethodsPerClass,
         'no-base-error': noBaseError,
         'require-copyright': requireCopyright,
+        'align-doc-tags': alignDocTags,
     },
 };

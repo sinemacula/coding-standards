@@ -282,14 +282,17 @@ type-checked layer.
 | `@sinemacula/max-methods-per-class` | A single class may declare at most 20 methods; test code exempt. |
 | `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`; test code exempt. |
 | `@sinemacula/require-copyright` | Every file must carry a documentation comment with `@copyright` and `@author`. |
+| `@sinemacula/align-doc-tags` | `@author` and `@copyright` values line up at a single column; autofixable. |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
 to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
-`allow`, and `require-copyright` takes `tags` to adjust their defaults.
+`allow`, and `require-copyright` takes `tags` to adjust their defaults. `align-doc-tags` takes `tags` and `column`,
+the column counting from the `@`, so the default of 14 gives `@author` six spaces and `@copyright` three.
 
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `max-lines-per-function`
 (50 lines, test code exempt) and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment
-on every declared function, method and class and forbid types in `@param`/`@returns` (types belong in the signature).
+on every declared function, method and class, forbid types in `@param`/`@returns` (the tags themselves are welcome,
+types belong in the signature) and keep a blank line above every documentation block, single-line blocks included.
 The type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
 `@typescript-eslint/only-throw-error`.
 
