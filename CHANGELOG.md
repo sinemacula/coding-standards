@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/sinemacula/coding-standards/compare/v1.12.1...v1.12.2) (2026-07-18)
+
+
+### Bug Fixes
+
+* **biome:** allow the void operator (conflicted with no-floating-promises) ([#107](https://github.com/sinemacula/coding-standards/issues/107)) ([0b506e2](https://github.com/sinemacula/coding-standards/commit/0b506e299f74e2a7b431fc427199ee8e983c5651))
+
 ## [1.12.1](https://github.com/sinemacula/coding-standards/compare/v1.12.0...v1.12.1) (2026-07-18)
 
 
