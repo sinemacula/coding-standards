@@ -37,7 +37,6 @@
                 "noUselessStringConcat": "warn",
                 "noUselessTernary": "warn",
                 "noUselessUndefinedInitialization": "warn",
-                "noVoid": "warn",
                 "useArrowFunction": "warn",
                 "useLiteralKeys": "warn",
                 "useNumericLiterals": "warn"
