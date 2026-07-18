@@ -50,7 +50,6 @@ export default [
             '@sinemacula/no-base-error': 'error',
             '@sinemacula/require-copyright': 'error',
             '@sinemacula/align-doc-tags': 'error',
-            '@sinemacula/pad-block-start': 'error',
             '@sinemacula/single-line-property-doc': 'error',
             '@sinemacula/multiline-function-doc': 'error',
 
