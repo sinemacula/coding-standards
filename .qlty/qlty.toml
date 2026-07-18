@@ -84,6 +84,10 @@ name = "trufflehog"
 [[plugin]]
 name = "editorconfig-checker"
 
+[[plugin]]
+name = "markdownlint"
+mode = "comment"
+
 # Dogfood this repo's own standards on its own code: phpcs and php-cs-fixer use
 # the in-tree configs under .qlty/configs, not a released tag. slevomat comes
 # from composer.json; the base class loads via .qlty/configs/autoload.php (qlty
@@ -122,9 +126,15 @@ package_file = "composer.json"
 plugins = ["php-codesniffer", "php-cs-fixer"]
 file_patterns = ["php/**", ".qlty/configs/**"]
 
-# Release-please writes CHANGELOG.md with long lines exceeding max_line_length,
-# failing its release PRs. It is tool-generated, so exclude it from
-# editorconfig-checker (mirrors the markdownlint exclude in source.toml).
+# Release-please generates CHANGELOG.md with `*` bullets and long lines that
+# markdownlint (MD004) and editorconfig-checker would reject. It is
+# tool-authored, so exclude it from both (mirrors the source.toml excludes).
+[[exclude]]
+plugins = ["editorconfig-checker", "markdownlint"]
+file_patterns = ["**/CHANGELOG.md"]
+
+# The qlty-generated git hooks carry tab indentation; they are tool-authored, so
+# their indent style is not ours to fix. Exclude them from editorconfig-checker.
 [[exclude]]
 plugins = ["editorconfig-checker"]
-file_patterns = ["**/CHANGELOG.md"]
+file_patterns = [".qlty/hooks/**"]
