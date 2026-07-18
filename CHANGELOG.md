@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/sinemacula/coding-standards/compare/v1.12.0...v1.12.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* drop pad-block-start, unsatisfiable alongside biome ([#104](https://github.com/sinemacula/coding-standards/issues/104)) ([d1d9c44](https://github.com/sinemacula/coding-standards/commit/d1d9c442b4626f01a40dc0084a64973ec18e834c))
+
 ## [1.12.0](https://github.com/sinemacula/coding-standards/compare/v1.11.0...v1.12.0) (2026-07-17)
 
 
