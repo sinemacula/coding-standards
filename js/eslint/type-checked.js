@@ -31,6 +31,9 @@ export default [
 
             '@typescript-eslint/await-thenable': 'error',
             '@typescript-eslint/consistent-type-imports': 'error',
+            // Type-aware replacement for Biome's useLiteralKeys: dot access for
+            // real properties, bracket access allowed on index signatures.
+            '@typescript-eslint/dot-notation': ['error', { allowIndexSignaturePropertyAccess: true }],
             '@typescript-eslint/explicit-module-boundary-types': 'error',
             '@typescript-eslint/no-floating-promises': 'error',
             '@typescript-eslint/no-misused-promises': 'error',

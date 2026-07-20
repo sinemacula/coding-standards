@@ -195,6 +195,32 @@ package_filters = [
 ]
 ```
 
+### TypeScript (tsconfig)
+
+The package ships a shared `tsconfig` base so every TypeScript repository checks its code to the same bar. Install the
+package (as above) and extend the base from your `tsconfig.json`:
+
+```json
+{
+    "extends": "@sinemacula/coding-standards/js/tsconfig.base.json",
+    "compilerOptions": {
+        "lib": ["ES2023", "DOM", "DOM.Iterable"],
+        "types": ["node"]
+    },
+    "include": ["src"]
+}
+```
+
+The base carries only the environment-independent options: the full strictness set and the module/resolution
+discipline. Everything environment-specific stays in the consuming repo and layers on top - `lib` (DOM for the browser,
+none for a Node service), `types`, Vue's `jsx`/`jsxImportSource`, `paths`, `noEmit`, and the `include`/`exclude` globs.
+The `target` and `module` defaults suit bundler-built apps and libraries; a non-bundler project overrides them.
+
+The base sets `noPropertyAccessFromIndexSignature`, so a property that comes from an index signature is accessed with
+brackets (`config['key']`), not a dot. Biome cannot see types and so cannot tell that access apart from a normal one,
+which is why its `useLiteralKeys` rule is off and the type-aware `@typescript-eslint/dot-notation` rule enforces dot
+access for real properties instead. Load the type-checked ESLint layer to get it.
+
 ### Knip (JavaScript / TypeScript)
 
 ```json

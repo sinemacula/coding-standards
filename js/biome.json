@@ -38,7 +38,7 @@
                 "noUselessTernary": "warn",
                 "noUselessUndefinedInitialization": "warn",
                 "useArrowFunction": "warn",
-                "useLiteralKeys": "warn",
+                "useLiteralKeys": "off",
                 "useNumericLiterals": "warn"
             },
             "correctness": {
