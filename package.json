@@ -16,6 +16,7 @@
         "biome",
         "knip",
         "eslint",
+        "typescript",
         "coding-standards",
         "linting",
         "config"
@@ -36,6 +37,7 @@
         "./js/eslint": "./js/eslint/index.js",
         "./js/eslint/type-checked": "./js/eslint/type-checked.js",
         "./js/eslint/vue": "./js/eslint/vue.js",
+        "./js/tsconfig.base.json": "./js/tsconfig.base.json",
         "./*": "./*"
     },
     "scripts": {
