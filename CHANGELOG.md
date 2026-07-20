@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/sinemacula/coding-standards/compare/v1.12.3...v1.13.0) (2026-07-20)
+
+
+### Features
+
+* add a shared TypeScript config baseline and make index-signature access type-aware ([#111](https://github.com/sinemacula/coding-standards/issues/111)) ([69013bf](https://github.com/sinemacula/coding-standards/commit/69013bf0dc269070174377d9cf8c14c2944d93ef))
+
 ## [1.12.3](https://github.com/sinemacula/coding-standards/compare/v1.12.2...v1.12.3) (2026-07-20)
 
 
