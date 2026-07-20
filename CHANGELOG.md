@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.3](https://github.com/sinemacula/coding-standards/compare/v1.12.2...v1.12.3) (2026-07-20)
+
+
+### Bug Fixes
+
+* dogfood the markdown standards in this repo's own lint ([#109](https://github.com/sinemacula/coding-standards/issues/109)) ([022907a](https://github.com/sinemacula/coding-standards/commit/022907a1a037d190a6757526cce9bc325e32366d))
+
 ## [1.12.2](https://github.com/sinemacula/coding-standards/compare/v1.12.1...v1.12.2) (2026-07-18)
 
 
