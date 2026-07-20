@@ -98,10 +98,16 @@ After installing the npm package, extend the shared Biome config from your proje
 {
     "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
     "root": true,
-    "extends": ["@sinemacula/coding-standards/js/biome.json"],
+    "extends": [
+        "@sinemacula/coding-standards/js/biome.json"
+    ],
     "files": {
         "ignoreUnknown": true,
-        "includes": ["**", "!**/node_modules/**", "!**/vendor/**"]
+        "includes": [
+            "**",
+            "!**/node_modules/**",
+            "!**/vendor/**"
+        ]
     }
 }
 ```
@@ -194,7 +200,9 @@ package_filters = [
 ```json
 {
     "$schema": "https://unpkg.com/knip@6/schema.json",
-    "extends": ["@sinemacula/coding-standards/js/knip.json"]
+    "extends": [
+        "@sinemacula/coding-standards/js/knip.json"
+    ]
 }
 ```
 
@@ -212,20 +220,20 @@ tag = "<version>"
 
 ## What's Included
 
-| Path                          | Tool         | Description                                            |
-|-------------------------------|--------------|--------------------------------------------------------|
-| `src/PhpCsFixerConfig.php`    | PHP CS Fixer | Factory class for building PHP CS Fixer configurations |
-| `php/.php-cs-fixer.rules.php` | PHP CS Fixer | Shared rules array (PSR-12 base + org conventions)     |
-| `SineMacula/ruleset.xml`      | PHPCS        | Auto-discovered coding standard (PSR-12 + exclusions)  |
-| `php/phpstan-base.neon`       | PHPStan      | Base config (org-wide ignored errors + settings)       |
-| `js/biome.json`               | Biome        | JavaScript / TypeScript formatter + linter rules       |
-| `js/knip.json`                | Knip         | Unused-export detection rules                          |
-| `js/eslint/`                  | ESLint       | Structural, type-aware + Vue rules; runs with Biome    |
-| `markdown/.markdownlint.json` | markdownlint | Markdown linting rules                                 |
-| `yaml/.yamllint.yaml`         | yamllint     | YAML linting rules                                     |
-| `shell/.shellcheckrc`         | ShellCheck   | Shell script linting rules                             |
-| `security/.gitleaks.toml`     | Gitleaks     | Secret-detection ruleset                               |
-| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check |
+| Path                                      | Tool                 | Description                                            |
+|-------------------------------------------|----------------------|--------------------------------------------------------|
+| `src/PhpCsFixerConfig.php`                | PHP CS Fixer         | Factory class for building PHP CS Fixer configurations |
+| `php/.php-cs-fixer.rules.php`             | PHP CS Fixer         | Shared rules array (PSR-12 base + org conventions)     |
+| `SineMacula/ruleset.xml`                  | PHPCS                | Auto-discovered coding standard (PSR-12 + exclusions)  |
+| `php/phpstan-base.neon`                   | PHPStan              | Base config (org-wide ignored errors + settings)       |
+| `js/biome.json`                           | Biome                | JavaScript / TypeScript formatter + linter rules       |
+| `js/knip.json`                            | Knip                 | Unused-export detection rules                          |
+| `js/eslint/`                              | ESLint               | Structural, type-aware + Vue rules; runs with Biome    |
+| `markdown/.markdownlint.json`             | markdownlint         | Markdown linting rules                                 |
+| `yaml/.yamllint.yaml`                     | yamllint             | YAML linting rules                                     |
+| `shell/.shellcheckrc`                     | ShellCheck           | Shell script linting rules                             |
+| `security/.gitleaks.toml`                 | Gitleaks             | Secret-detection ruleset                               |
+| `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check                |
 
 ## Rules
 
@@ -235,38 +243,38 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 
 ### PHPCS sniffs
 
-| Sniff | Enforces |
-|-------|----------|
-| `SineMacula.Attributes.DisallowToolingAttribute` | No IDE/tooling attributes (e.g. `JetBrains\PhpStorm`). |
-| `SineMacula.Classes.RequireFinalClass` | Concrete classes must be `final` or `abstract` (`@inheritable` opts out). |
-| `SineMacula.Classes.RequireReadonlyPublicProperty` | Public properties (declared or promoted) must be `readonly`. |
-| `SineMacula.Commenting.CommentLineLength` | Standalone comment lines must not exceed 80 chars (FQCN/URL exempt). |
-| `SineMacula.Commenting.ConsistentEnumCaseComments` | Enum case docs are all-or-nothing within an enum. |
-| `SineMacula.Commenting.MultilineMethodComment` | A method's doc comment must span multiple lines. |
-| `SineMacula.Commenting.RequireConstantComment` | Every class/interface/enum/trait constant needs a doc comment. |
-| `SineMacula.Commenting.RequireCopyrightTag` | Class/interface/enum/trait docblocks must carry an `@copyright` tag. |
-| `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment. |
-| `SineMacula.Commenting.RequirePromotedPropertyComment` | Every constructor-promoted property needs a doc comment. |
-| `SineMacula.Commenting.SingleLineMemberComment` | A property, constant or enum-case doc comment sits on one line. |
-| `SineMacula.Exceptions.DisallowBaseException` | No throwing the base `\Exception`; throw a domain exception. |
-| `SineMacula.Exceptions.RequireEmptyCatchComment` | An empty catch block must comment its intentional swallow. |
-| `SineMacula.Functions.RequireSensitiveParameter` | Secret-named params need `#[\SensitiveParameter]`. |
-| `SineMacula.Metrics.MaxMethodCount` | A class/interface/trait/enum may declare at most 20 methods (tests exempt). |
-| `SineMacula.Metrics.MethodLength` | A method body may have at most 50 significant lines (tests exempt). |
-| `SineMacula.Namespaces.RequireConcernsNamespace` | Traits must live under a `Concerns` namespace segment. |
-| `SineMacula.Namespaces.RequireContractsNamespace` | Interfaces must live under a `Contracts` namespace segment. |
-| `SineMacula.Namespaces.RequireEnumsNamespace` | Enums must live under an `Enums` namespace segment. |
-| `SineMacula.NamingConventions.BooleanMethodName` | `bool` methods are predicates; command verbs/@imperative exempt. |
-| `SineMacula.NamingConventions.DisallowInterfacePrefix` | Interface names must not use the Hungarian `I` prefix. |
-| `SineMacula.NamingConventions.ValidEnumCaseName` | Enum cases must be `SCREAMING_SNAKE_CASE`. |
-| `SineMacula.NamingConventions.ValidGlobalFunctionName` | Global functions must be declared in `snake_case`. |
-| `SineMacula.TypeHints.RequireConstantType` | Class/interface/enum/trait constants must declare a native type. |
-| `SineMacula.WhiteSpace.PromotedConstructorSpacing` | Blank line above each promoted-constructor parameter. |
+| Sniff                                                      | Enforces                                                                    |
+|------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `SineMacula.Attributes.DisallowToolingAttribute`           | No IDE/tooling attributes (e.g. `JetBrains\PhpStorm`).                      |
+| `SineMacula.Classes.RequireFinalClass`                     | Concrete classes must be `final` or `abstract` (`@inheritable` opts out).   |
+| `SineMacula.Classes.RequireReadonlyPublicProperty`         | Public properties (declared or promoted) must be `readonly`.                |
+| `SineMacula.Commenting.CommentLineLength`                  | Standalone comment lines must not exceed 80 chars (FQCN/URL exempt).        |
+| `SineMacula.Commenting.ConsistentEnumCaseComments`         | Enum case docs are all-or-nothing within an enum.                           |
+| `SineMacula.Commenting.MultilineMethodComment`             | A method's doc comment must span multiple lines.                            |
+| `SineMacula.Commenting.RequireConstantComment`             | Every class/interface/enum/trait constant needs a doc comment.              |
+| `SineMacula.Commenting.RequireCopyrightTag`                | Class/interface/enum/trait docblocks must carry an `@copyright` tag.        |
+| `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment.                       |
+| `SineMacula.Commenting.RequirePromotedPropertyComment`     | Every constructor-promoted property needs a doc comment.                    |
+| `SineMacula.Commenting.SingleLineMemberComment`            | A property, constant or enum-case doc comment sits on one line.             |
+| `SineMacula.Exceptions.DisallowBaseException`              | No throwing the base `\Exception`; throw a domain exception.                |
+| `SineMacula.Exceptions.RequireEmptyCatchComment`           | An empty catch block must comment its intentional swallow.                  |
+| `SineMacula.Functions.RequireSensitiveParameter`           | Secret-named params need `#[\SensitiveParameter]`.                          |
+| `SineMacula.Metrics.MaxMethodCount`                        | A class/interface/trait/enum may declare at most 20 methods (tests exempt). |
+| `SineMacula.Metrics.MethodLength`                          | A method body may have at most 50 significant lines (tests exempt).         |
+| `SineMacula.Namespaces.RequireConcernsNamespace`           | Traits must live under a `Concerns` namespace segment.                      |
+| `SineMacula.Namespaces.RequireContractsNamespace`          | Interfaces must live under a `Contracts` namespace segment.                 |
+| `SineMacula.Namespaces.RequireEnumsNamespace`              | Enums must live under an `Enums` namespace segment.                         |
+| `SineMacula.NamingConventions.BooleanMethodName`           | `bool` methods are predicates; command verbs/@imperative exempt.            |
+| `SineMacula.NamingConventions.DisallowInterfacePrefix`     | Interface names must not use the Hungarian `I` prefix.                      |
+| `SineMacula.NamingConventions.ValidEnumCaseName`           | Enum cases must be `SCREAMING_SNAKE_CASE`.                                  |
+| `SineMacula.NamingConventions.ValidGlobalFunctionName`     | Global functions must be declared in `snake_case`.                          |
+| `SineMacula.TypeHints.RequireConstantType`                 | Class/interface/enum/trait constants must declare a native type.            |
+| `SineMacula.WhiteSpace.PromotedConstructorSpacing`         | Blank line above each promoted-constructor parameter.                       |
 
 ### PHPStan rules
 
-| Identifier | Enforces |
-|------------|----------|
+| Identifier                         | Enforces                                                          |
+|------------------------------------|-------------------------------------------------------------------|
 | `sineMacula.mutableStaticProperty` | Static properties written at runtime; `@managed-static` opts out. |
 
 ### ESLint rules
@@ -274,19 +282,19 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 All rules run in the base layer except `boolean-method-name`, which resolves return types and so requires the opt-in
 type-checked layer.
 
-| Rule | Enforces |
-|------|----------|
-| `@sinemacula/no-interface-prefix` | Interface and type-alias names must not use the Hungarian `I` prefix. |
-| `@sinemacula/require-readonly-public-property` | Public class properties (declared or promoted) must be `readonly`. |
-| `@sinemacula/valid-enum-member-name` | Enum members must be declared in `SCREAMING_SNAKE_CASE`. |
-| `@sinemacula/boolean-method-name` | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt. |
-| `@sinemacula/no-mutable-static` | No mutable exported bindings or mutable `static` class fields; test code exempt. |
-| `@sinemacula/max-methods-per-class` | A single class may declare at most 20 methods; test code exempt. |
-| `@sinemacula/no-base-error` | Throw a domain-specific `Error` subclass, never the base `Error`; test code exempt. |
-| `@sinemacula/require-copyright` | Every file must carry a documentation comment with `@copyright` and `@author`. |
-| `@sinemacula/align-doc-tags` | `@author` and `@copyright` values line up at a single column; autofixable. |
-| `@sinemacula/single-line-property-doc` | A data member's documentation comment sits on one line; autofixable. |
-| `@sinemacula/multiline-function-doc` | A method's documentation comment spans multiple lines; autofixable. |
+| Rule                                           | Enforces                                                                            |
+|------------------------------------------------|-------------------------------------------------------------------------------------|
+| `@sinemacula/no-interface-prefix`              | Interface and type-alias names must not use the Hungarian `I` prefix.               |
+| `@sinemacula/require-readonly-public-property` | Public class properties (declared or promoted) must be `readonly`.                  |
+| `@sinemacula/valid-enum-member-name`           | Enum members must be declared in `SCREAMING_SNAKE_CASE`.                            |
+| `@sinemacula/boolean-method-name`              | Boolean-returning methods need an is/has/can prefix; `@imperative` exempt.          |
+| `@sinemacula/no-mutable-static`                | No mutable exported bindings or mutable `static` class fields; test code exempt.    |
+| `@sinemacula/max-methods-per-class`            | A single class may declare at most 20 methods; test code exempt.                    |
+| `@sinemacula/no-base-error`                    | Throw a domain-specific `Error` subclass, never the base `Error`; test code exempt. |
+| `@sinemacula/require-copyright`                | Every file must carry a documentation comment with `@copyright` and `@author`.      |
+| `@sinemacula/align-doc-tags`                   | `@author` and `@copyright` values line up at a single column; autofixable.          |
+| `@sinemacula/single-line-property-doc`         | A data member's documentation comment sits on one line; autofixable.                |
+| `@sinemacula/multiline-function-doc`           | A method's documentation comment spans multiple lines; autofixable.                 |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
 to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
