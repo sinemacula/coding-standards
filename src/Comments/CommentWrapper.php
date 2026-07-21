@@ -83,13 +83,14 @@ final class CommentWrapper
         return match ($this->classifier->classify($lines[$index], false)) {
             CommentLineClassifier::FENCE => [$this->verbatim($lines[$index]), $index + 1, true],
             CommentLineClassifier::PROSE => $this->paragraphAt($lines, $index, null, $marginWidth),
-            CommentLineClassifier::LIST  => $this->listAt($lines, $index, $marginWidth),
+            CommentLineClassifier::LIST  => $this->paragraphAt($lines, $index, $this->classifier->listMarker($lines[$index]), $marginWidth),
             default                      => [$this->verbatim($lines[$index]), $index + 1, false],
         };
     }
 
     /**
-     * Reflow a prose paragraph or list item beginning at the index.
+     * Reflow a prose paragraph or list item beginning at the index. A list line
+     * always parses to a marker, so it never reaches the plain-prose branch.
      *
      * @param  list<string>  $lines
      * @param  int  $start
@@ -103,24 +104,6 @@ final class CommentWrapper
         $slice = array_slice($lines, $start, $end - $start);
 
         return [$this->paragraphs->reflow($slice, $marker, $marginWidth, $start), $end, false];
-    }
-
-    /**
-     * Reflow a list item, or emit its line verbatim when the marker cannot be
-     * parsed.
-     *
-     * @param  list<string>  $lines
-     * @param  int  $start
-     * @param  int  $marginWidth
-     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool}
-     */
-    private function listAt(array $lines, int $start, int $marginWidth): array
-    {
-        $marker = $this->classifier->listMarker($lines[$start]);
-
-        return $marker === null
-            ? [$this->verbatim($lines[$start]), $start + 1, false]
-            : $this->paragraphAt($lines, $start, $marker, $marginWidth);
     }
 
     /**

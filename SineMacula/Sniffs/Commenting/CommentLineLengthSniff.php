@@ -134,8 +134,8 @@ final class CommentLineLengthSniff implements Sniff
     }
 
     /**
-     * Replace the block's tokens with the reflowed text, unless it is
-     * identical.
+     * Replace the block's tokens with the reflowed text. The caller only fixes
+     * a block that has a fault, so the text always differs from the original.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  array<string, mixed>  $block
@@ -144,10 +144,6 @@ final class CommentLineLengthSniff implements Sniff
      */
     private function applyFix(File $phpcsFile, array $block, string $text): void
     {
-        if ($text === $this->tokenText($phpcsFile, $block['first'], $block['last'])) {
-            return;
-        }
-
         $phpcsFile->fixer->beginChangeset();
         $phpcsFile->fixer->replaceToken($block['first'], $text);
 
@@ -384,26 +380,6 @@ final class CommentLineLengthSniff implements Sniff
         }
 
         return $ptrs;
-    }
-
-    /**
-     * The concatenated source of a token range.
-     *
-     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  int  $from
-     * @param  int  $to
-     * @return string
-     */
-    private function tokenText(File $phpcsFile, int $from, int $to): string
-    {
-        $tokens = $phpcsFile->getTokens();
-        $text   = '';
-
-        for ($ptr = $from; $ptr <= $to; $ptr++) {
-            $text .= $tokens[$ptr]['content'];
-        }
-
-        return $text;
     }
 
     /**

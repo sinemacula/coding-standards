@@ -21,12 +21,13 @@
 const WS = '[ \\t\\n\\r\\f\\v]';
 const FENCE = /^(```|~~~)/;
 const TAG = new RegExp(`^@[A-Za-z][A-Za-z0-9-]*(?=${WS}|$)`);
-const LIST = new RegExp(`^${WS}*([-*+]|\\d+[.)])${WS}+[^ \\t\\n\\r\\f\\v]`);
+const LIST = new RegExp(`^${WS}*([-*+]|\\d+[.)])${WS}+`);
 const LIST_MARKER = new RegExp(`^(${WS}*)([-*+]|\\d+[.)])${WS}+`);
 const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint-disable|eslint-enable|@ts-|prettier-ignore|stylelint-|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/;
 const SEPARATOR = /^[=\-~*_#.+ ]{3,}$/;
-const CODE = new RegExp(`([{}]|=>|->|::|;${WS}*$)|^(return|function|public|private|protected|const|namespace|use|class|final|abstract|if|for|foreach|while|switch|echo|import|export)\\b|^[\\w$>[\\]'.-]+${WS}*=[^=>]|^\\$`);
+const CODE = new RegExp(`=>|->|::|;${WS}*$|\\{${WS}*$|^\\}|^(?:if|elseif|for|foreach|while|switch|catch)${WS}*\\(|^[\\w$>[\\]'.-]+${WS}*=[^=>]|^\\$`);
 const POISON = /^(@[A-Za-z][A-Za-z0-9-]*|[-*+]|\d+[.)])$/;
+const SPAN = /`[^`]*`|\{@[^}]*\}|\[[^\]]*\]\([^)]*\)/g;
 const ASCII_TRIM = /^[ \t\n\r\0\v]+|[ \t\n\r\0\v]+$/g;
 const ASCII_TRIM_START = /^[ \t\n\r\0\v]+/;
 
@@ -72,7 +73,7 @@ export function classify(content, inFence) {
     if (trimmed.startsWith('|')) return KIND.TABLE;
     if (SEPARATOR.test(trimmed)) return KIND.SEPARATOR;
     if (LIST.test(content)) return KIND.LIST;
-    if (CODE.test(trimmed)) return KIND.CODE;
+    if (CODE.test(trimmed.replace(SPAN, ''))) return KIND.CODE;
 
     return KIND.PROSE;
 }
@@ -188,14 +189,11 @@ function consume(lines, i, type, ctx) {
     return i + 1;
 }
 
-/** Append a run of prose or a list item, reflowed where it faults. */
+/**
+ * Append a run of prose or a list item, reflowed where it faults. A list line
+ * always parses to a marker, so it never reaches the plain-prose branch.
+ */
 function paragraph(lines, start, marker, ctx) {
-    if (marker === null && classify(lines[start], false) !== KIND.PROSE) {
-        ctx.out.push(lines[start]);
-
-        return start + 1;
-    }
-
     const end = proseEnd(lines, marker === null ? start : start + 1);
     const slice = lines.slice(start, end);
     emit(slice, marker, start, ctx);

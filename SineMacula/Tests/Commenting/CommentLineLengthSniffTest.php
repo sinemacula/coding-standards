@@ -73,4 +73,18 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     {
         $this->assertFixes('CommentLineLengthIndent.inc');
     }
+
+    /**
+     * Every kind of comment the sniff does not govern is left alone, however
+     * far beyond the width it runs: hash comments, single- and multi-line block
+     * comments, framework configuration blocks, single-line docblocks, docblock
+     * tags, fenced code, tables, separators, trailing comments and malformed
+     * docblocks all report no faults.
+     *
+     * @return void
+     */
+    public function testEveryUngovernedCommentTypeReportsNoFaults(): void
+    {
+        $this->assertErrorsOnLines('CommentTypes.inc', []);
+    }
 }

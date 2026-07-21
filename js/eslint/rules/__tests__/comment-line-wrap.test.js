@@ -32,6 +32,18 @@ ruleTester.run('comment-line-wrap', rule, {
         '/**\n * Intro that is short.\n *\n * ```\n * const example = codeInsideAFenceThatRunsWellBeyondTheEightyCharacterLimitForSure();\n * ```\n *\n * | a | b that runs well beyond the eighty character limit for a table row here yes |\n * =========================================================================================\n */\nexport const a = 1;',
         // A list already wrapped with its hanging indentation.
         '/**\n * - a list item already wrapped as tightly as it can be so that the rule will\n *   leave its hanging indentation exactly as the author has laid it out here\n * - a short item\n */\nexport const a = 1;',
+        // A single-line non-doc block comment is left alone, however long.
+        '/* a single-line block comment left alone even when it runs far beyond the eighty character width for sure ok now */\nconst a = 1;',
+        // A multi-line non-doc block comment is never reflowed.
+        '/*\n * A plain block comment (not a docblock) whose long prose line is left entirely alone even beyond the eighty char width here now.\n */\nconst a = 1;',
+        // A framework configuration block (Laravel config style) is verbatim.
+        '/*\n|--------------------------------------------------------------------------\n| Heading\n|--------------------------------------------------------------------------\n|\n| A framework-style configuration block whose lines are left entirely alone however far beyond eighty they run on.\n|\n*/\nconst a = 1;',
+        // A malformed docblock (no leading star on a line) is left alone.
+        '/**\n a malformed docblock whose interior line has no leading star so it is left untouched even when the line runs beyond eighty chars here\n */\nconst a = 1;',
+        // A docblock with inconsistent star indentation is left alone.
+        '/**\n * a docblock whose interior lines carry inconsistent indentation before the star\n  * so the whole block is left untouched however far beyond eighty the lines run on now\n */\nconst a = 1;',
+        // An empty docblock has no prose to reflow.
+        '/**\n *\n */\nconst a = 1;',
     ],
     invalid: [
         {

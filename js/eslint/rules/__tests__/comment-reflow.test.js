@@ -86,6 +86,43 @@ const cases = [
         long: [],
         premature: [],
     },
+    {
+        name: 'prose around a fenced block wraps but the fence is verbatim',
+        lines: [
+            'Some intro prose that is long enough to wrap onto a second line here for the test yes.',
+            '',
+            '```',
+            'code inside the fence that is very long and must never be reflowed at all no matter how long',
+            '```',
+            'Trailing prose after the fence that is also long enough to wrap onto a second line here now.',
+        ],
+        expected: [
+            'Some intro prose that is long enough to wrap onto a second line here for the',
+            'test yes.',
+            '',
+            '```',
+            'code inside the fence that is very long and must never be reflowed at all no matter how long',
+            '```',
+            'Trailing prose after the fence that is also long enough to wrap onto a second',
+            'line here now.',
+        ],
+        long: [0, 5],
+        premature: [],
+    },
+    {
+        name: 'a paragraph that would re-classify once wrapped is left verbatim',
+        lines: ['alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima mike |foo and more words'],
+        expected: ['alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima mike |foo and more words'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'prose wrapping with a keyword at the line start still reflows',
+        lines: ['A description paragraph that is long enough to wrap onto a second line here for the test to exercise it now.'],
+        expected: ['A description paragraph that is long enough to wrap onto a second line here', 'for the test to exercise it now.'],
+        long: [0],
+        premature: [],
+    },
 ];
 
 describe('reflow', () => {
@@ -139,6 +176,16 @@ describe('classify', () => {
         expect(classify('return x;', false)).toBe(KIND.CODE);
         expect(classify('```php', false)).toBe(KIND.FENCE);
         expect(classify('anything at all', true)).toBe(KIND.FENCE);
+    });
+
+    it('treats keyword-led and span-quoted prose as prose, not code', () => {
+        expect(classify('for the test to exercise it now.', false)).toBe(KIND.PROSE);
+        expect(classify('if you look here you will see it.', false)).toBe(KIND.PROSE);
+        expect(classify('See {@link Foo::bar} for the details.', false)).toBe(KIND.PROSE);
+        expect(classify('The `Foo::bar` method is documented.', false)).toBe(KIND.PROSE);
+        expect(classify('if ($x) {', false)).toBe(KIND.CODE);
+        expect(classify('this.value = 1;', false)).toBe(KIND.CODE);
+        expect(classify('Foo::bar();', false)).toBe(KIND.CODE);
     });
 
     it('recognises a fence delimiter', () => {

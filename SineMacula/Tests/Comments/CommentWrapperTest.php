@@ -26,6 +26,9 @@ use SineMacula\CodingStandards\Comments\CommentWrapper;
 #[CoversClass(CommentLineClassifier::class)]
 final class CommentWrapperTest extends TestCase
 {
+    /** @var string A representative line of commented-out code, left verbatim. */
+    private const string CODE_LINE = '$x = compute($this->value);';
+
     /**
      * Cases exercising overflow, premature wrapping, atoms, lists and the
      * verbatim kinds, each with its expected canonical lines and fault indices.
@@ -136,9 +139,9 @@ final class CommentWrapperTest extends TestCase
                 [],
             ],
             'commented-out code is verbatim' => [
-                ['$x = compute($this->value);'],
+                [self::CODE_LINE],
                 3,
-                ['$x = compute($this->value);'],
+                [self::CODE_LINE],
                 [],
                 [],
             ],
@@ -154,6 +157,20 @@ final class CommentWrapperTest extends TestCase
                 3,
                 ['alpha bravo charlie delta echo foxtrot golf hotel india juliet then', 'check @internal and keep going with lots more trailing words to spill'],
                 [],
+                [],
+            ],
+            'a paragraph that would re-classify once wrapped is left verbatim' => [
+                ['alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima mike |foo and more words'],
+                3,
+                ['alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima mike |foo and more words'],
+                [],
+                [],
+            ],
+            'prose wrapping with a keyword at the line start still reflows' => [
+                ['A description paragraph that is long enough to wrap onto a second line here for the test to exercise it now.'],
+                3,
+                ['A description paragraph that is long enough to wrap onto a second line here', 'for the test to exercise it now.'],
+                [0],
                 [],
             ],
         ];
@@ -203,6 +220,39 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
+     * Prose on either side of a fenced block is reflowed while the fence and
+     * its contents stay verbatim, and the result is stable.
+     *
+     * @return void
+     */
+    public function testReflowsProseAroundAFencedBlock(): void
+    {
+        $lines = [
+            'Some intro prose that is long enough to wrap onto a second line here for the test yes.',
+            '',
+            '```',
+            'code inside the fence that is very long and must never be reflowed at all no matter how long',
+            '```',
+            'Trailing prose after the fence that is also long enough to wrap onto a second line here now.',
+        ];
+
+        $result = (new CommentWrapper)->wrap($lines, 3);
+
+        self::assertSame([
+            'Some intro prose that is long enough to wrap onto a second line here for the',
+            'test yes.',
+            '',
+            '```',
+            'code inside the fence that is very long and must never be reflowed at all no matter how long',
+            '```',
+            'Trailing prose after the fence that is also long enough to wrap onto a second',
+            'line here now.',
+        ], $result['lines']);
+        self::assertSame([0, 5], $result['long']);
+        self::assertSame($result['lines'], (new CommentWrapper)->wrap($result['lines'], 3)['lines']);
+    }
+
+    /**
      * The tokenizer keeps inline code, link tags and Markdown links whole, and
      * treats an unclosed delimiter as an ordinary character.
      *
@@ -239,6 +289,31 @@ final class CommentWrapperTest extends TestCase
         self::assertSame(CommentLineClassifier::CODE, $classifier->classify('return $x;', false));
         self::assertSame(CommentLineClassifier::FENCE, $classifier->classify('```php', false));
         self::assertSame(CommentLineClassifier::FENCE, $classifier->classify('anything at all', true));
+
+        self::assertTrue($classifier->isFence('```'));
+        self::assertFalse($classifier->isFence('not a fence'));
+    }
+
+    /**
+     * Prose that merely starts with a keyword, or mentions code inside an
+     * inline span such as a `{@link}` or backticks, is prose; a line carrying
+     * real code syntax is code.
+     *
+     * @return void
+     */
+    public function testDistinguishesProseFromCode(): void
+    {
+        $classifier = new CommentLineClassifier;
+
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('for the test to exercise it now.', false));
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('if you look here you will see it.', false));
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('See {@link Foo::bar} for the details.', false));
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('The `$this->value` shorthand is neat.', false));
+
+        self::assertSame(CommentLineClassifier::CODE, $classifier->classify(self::CODE_LINE, false));
+        self::assertSame(CommentLineClassifier::CODE, $classifier->classify('if ($x) {', false));
+        self::assertSame(CommentLineClassifier::CODE, $classifier->classify('Foo::bar();', false));
+        self::assertSame(CommentLineClassifier::CODE, $classifier->classify('}', false));
     }
 
     /**

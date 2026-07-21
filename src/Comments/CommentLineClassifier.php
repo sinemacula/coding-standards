@@ -51,8 +51,8 @@ final class CommentLineClassifier
     /** @var string A leading bare documentation tag, such as `@param` or `@return`. */
     private const string TAG_PATTERN = '/^@[A-Za-z][A-Za-z0-9-]*(?=\s|$)/';
 
-    /** @var string A list marker: a bullet or an ordered number, then its text. */
-    private const string LIST_PATTERN = '/^\s*([-*+]|\d+[.)])\s+\S/';
+    /** @var string A list marker: a bullet or an ordered number, then a space. */
+    private const string LIST_PATTERN = '/^\s*([-*+]|\d+[.)])\s+/';
 
     /** @var string A leading tool directive whose position or wording must not change. */
     private const string DIRECTIVE_PATTERN = '/^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint-disable'
@@ -61,10 +61,13 @@ final class CommentLineClassifier
     /** @var string A run of rule characters with no letters or digits. */
     private const string SEPARATOR_PATTERN = '/^[=\-~*_#.+ ]{3,}$/';
 
-    /** @var string Punctuation and keywords that mark a line as code, not prose. */
-    private const string CODE_PATTERN = '/([{}]|=>|->|::|;\s*$)'
-        . '|^(return|function|public|private|protected|const|namespace|use|class|final|abstract|if|for|foreach|while|switch|echo|import|export)\b'
+    /** @var string Code syntax that marks a line as code rather than prose. */
+    private const string CODE_PATTERN = '/=>|->|::|;\s*$|\{\s*$|^}'
+        . '|^(?:if|elseif|for|foreach|while|switch|catch)\s*\('
         . '|^[\w$>\[\]\'.-]+\s*=[^=>]|^\$/';
+
+    /** @var string Inline atomic spans whose contents are not code: backticks, {@tags} and links. */
+    private const string SPAN_PATTERN = '/`[^`]*`|\{@[^}]*\}|\[[^\]]*\]\([^)]*\)/';
 
     /**
      * Classify a content line, given whether it sits inside a fenced block.
@@ -132,9 +135,21 @@ final class CommentLineClassifier
             str_starts_with($trimmed, '|')                    => self::TABLE,
             $this->matches(self::SEPARATOR_PATTERN, $trimmed) => self::SEPARATOR,
             $this->matches(self::LIST_PATTERN, $content)      => self::LIST,
-            $this->matches(self::CODE_PATTERN, $trimmed)      => self::CODE,
+            $this->isCode($trimmed)                           => self::CODE,
             default                                           => self::PROSE,
         };
+    }
+
+    /**
+     * Whether a line carries code syntax, ignoring inline atomic spans whose
+     * contents (backticked code, an FQCN in a `{@link}`) are not code.
+     *
+     * @param  string  $trimmed
+     * @return bool
+     */
+    private function isCode(string $trimmed): bool
+    {
+        return $this->matches(self::CODE_PATTERN, (string) preg_replace(self::SPAN_PATTERN, '', $trimmed));
     }
 
     /**
