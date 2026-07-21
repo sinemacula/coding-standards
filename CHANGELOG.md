@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/sinemacula/coding-standards/compare/v1.16.0...v1.17.0) (2026-07-21)
+
+
+### Features
+
+* exempt tool-directive comments from the comment-wrap checks ([#119](https://github.com/sinemacula/coding-standards/issues/119)) ([1bf918a](https://github.com/sinemacula/coding-standards/commit/1bf918a9b8acf664ebc9ec14e7a19a8f3e4c8b13))
+
 ## [1.16.0](https://github.com/sinemacula/coding-standards/compare/v1.15.0...v1.16.0) (2026-07-21)
 
 
