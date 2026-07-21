@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/sinemacula/coding-standards/compare/v1.13.0...v1.14.0) (2026-07-21)
+
+
+### Features
+
+* treat test-support files as test code in the ESLint base ([#113](https://github.com/sinemacula/coding-standards/issues/113)) ([56cbc79](https://github.com/sinemacula/coding-standards/commit/56cbc79b1532dc9dd126cbba3b61457856375c5a))
+
 ## [1.13.0](https://github.com/sinemacula/coding-standards/compare/v1.12.3...v1.13.0) (2026-07-20)
 
 
