@@ -6,6 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
+import { bracketDelta, indentWidth, indented, isTypeBoundary, typeTagDepth } from '../comment-classifier.js';
 import { KIND, classify, isFence, listMarker, reflow, tokenize } from '../comment-reflow.js';
 
 const cases = [
@@ -123,6 +124,76 @@ const cases = [
         long: [0],
         premature: [],
     },
+    {
+        name: 'a heading is a hard break and the line after it is not pulled up',
+        lines: ['### Relation existence', 'Bare array form is the short one here now.'],
+        expected: ['### Relation existence', 'Bare array form is the short one here now.'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'an indented command block is left verbatim, not reflowed as prose',
+        lines: ['Run the two commands in order:', '', '  node gen.mjs > runtime-env.json', '  aws s3 cp runtime-env.json "s3://a-very-long-bucket-name/path/env.json" --cache-control no-store'],
+        expected: ['Run the two commands in order:', '', '  node gen.mjs > runtime-env.json', '  aws s3 cp runtime-env.json "s3://a-very-long-bucket-name/path/env.json" --cache-control no-store'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'a multi-line type-annotation value is left verbatim from opener to close',
+        lines: ['@phpstan-type ServiceHooks array{', '    authorize: \\Closure(): void,', '    concerns: array<int, class-string<X>>,', '}'],
+        expected: ['@phpstan-type ServiceHooks array{', '    authorize: \\Closure(): void,', '    concerns: array<int, class-string<X>>,', '}'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'a flush type continuation that reads as prose is still left verbatim',
+        lines: ['@typedef {{', 'id: number,', 'name: string,', '}} Record'],
+        expected: ['@typedef {{', 'id: number,', 'name: string,', '}} Record'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'an indented command directly under a list item stays verbatim',
+        lines: ['- Build the container image for production before you deploy it', '      docker build -t app:prod . \\', '          --no-cache'],
+        expected: ['- Build the container image for production before you deploy it', '      docker build -t app:prod . \\', '          --no-cache'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'a tab-indented command block stays verbatim',
+        lines: ['Run:', '', '\tnpm install && npm run build with a very long tail that exceeds the eighty limit yes'],
+        expected: ['Run:', '', '\tnpm install && npm run build with a very long tail that exceeds the eighty limit yes'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'a psalm-type flush shape is left verbatim',
+        lines: ['@psalm-type UserRow array{', 'id: int,', 'name: string,', '}'],
+        expected: ['@psalm-type UserRow array{', 'id: int,', 'name: string,', '}'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'a stray bracket in a tag description does not freeze the following prose',
+        lines: ['@return bool True if a<b for the pair', '', 'This trailing paragraph is genuinely long enough that it should be reflowed by the engine now indeed.'],
+        expected: ['@return bool True if a<b for the pair', '', 'This trailing paragraph is genuinely long enough that it should be reflowed', 'by the engine now indeed.'],
+        long: [2],
+        premature: [],
+    },
+    {
+        name: 'a bracket inside a quoted string does not close a brace-delimited type shape',
+        lines: ['@phpstan-type T array{', "sep: ')',", 'a: int,', 'b: string,', '}'],
+        expected: ['@phpstan-type T array{', "sep: ')',", 'a: int,', 'b: string,', '}'],
+        long: [],
+        premature: [],
+    },
+    {
+        name: 'a word-bracket in a variable-less tag description does not freeze the next line',
+        lines: ['@return bool True if a<b for the current pair of records we are comparing', 'This continuation paragraph is long enough that it really ought to wrap onto a second line here now yes.'],
+        expected: ['@return bool True if a<b for the current pair of records we are comparing', 'This continuation paragraph is long enough that it really ought to wrap onto', 'a second line here now yes.'],
+        long: [1],
+        premature: [],
+    },
 ];
 
 describe('reflow', () => {
@@ -175,6 +246,10 @@ describe('classify', () => {
         expect(classify('1. item', false)).toBe(KIND.LIST);
         expect(classify('return x;', false)).toBe(KIND.CODE);
         expect(classify('```php', false)).toBe(KIND.FENCE);
+        expect(classify('# Heading', false)).toBe(KIND.HEADING);
+        expect(classify('###### Deep heading', false)).toBe(KIND.HEADING);
+        expect(classify('#nospace', false)).toBe(KIND.PROSE);
+        expect(classify('#123 is an issue', false)).toBe(KIND.PROSE);
         expect(classify('anything at all', true)).toBe(KIND.FENCE);
     });
 
@@ -191,6 +266,50 @@ describe('classify', () => {
     it('recognises a fence delimiter', () => {
         expect(isFence('```')).toBe(true);
         expect(isFence(' text ')).toBe(false);
+    });
+});
+
+describe('non-prose skips', () => {
+    it('detects indentation of a tab or two or more spaces', () => {
+        expect(indented('  code here')).toBe(true);
+        expect(indented('    deeper')).toBe(true);
+        expect(indented('\ttab code')).toBe(true);
+        expect(indented(' one space')).toBe(false);
+        expect(indented('flush prose')).toBe(false);
+    });
+
+    it('measures leading spaces and recognises a type-block boundary', () => {
+        expect(indentWidth('  two')).toBe(2);
+        expect(indentWidth('      six')).toBe(6);
+        expect(indentWidth('flush')).toBe(0);
+        expect(isTypeBoundary('')).toBe(true);
+        expect(isTypeBoundary('@param int $x')).toBe(true);
+        expect(isTypeBoundary('id: int,')).toBe(false);
+    });
+
+    it('reports the depth a type-annotation tag opens, guarding stray brackets', () => {
+        expect(typeTagDepth('@phpstan-type X array{')).toBe(1);
+        expect(typeTagDepth('@param array{a: int, b:')).toBe(1);
+        expect(typeTagDepth('@var array<int,')).toBe(1);
+        expect(typeTagDepth('@typedef {{')).toBe(2);
+        expect(typeTagDepth('@return array<int, string>')).toBe(0);
+        expect(typeTagDepth('@return void')).toBe(0);
+        expect(typeTagDepth('@param int $x must be < 10 for the loop')).toBe(0);
+        expect(typeTagDepth('@param array $opts shaped like {id, name} but documented in prose')).toBe(0);
+        expect(typeTagDepth('@psalm-type Row array{')).toBe(1);
+        expect(typeTagDepth('@return bool True if a<b for the pair')).toBe(0);
+        expect(typeTagDepth('@return int the count(approx')).toBe(0);
+        expect(typeTagDepth('a: int,')).toBe(0);
+    });
+
+    it('counts net bracket depth over the type slot, ignoring arrows, quotes and description', () => {
+        expect(bracketDelta('array{')).toBe(1);
+        expect(bracketDelta('}')).toBe(-1);
+        expect(bracketDelta('authorize: \\Closure(): void,')).toBe(0);
+        expect(bracketDelta('array<int, class-string<X>>,')).toBe(0);
+        expect(bracketDelta('id: number => other,')).toBe(0);
+        expect(bracketDelta('} $records the records (see the note above)')).toBe(-1);
+        expect(bracketDelta("sep: ')',")).toBe(0);
     });
 });
 

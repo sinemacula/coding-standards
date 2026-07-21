@@ -56,6 +56,27 @@ final class Example
 }
 
 /**
+ * A summary that fits on one line.
+ *
+ * ### Relation existence
+ * Prose after a heading is a new paragraph, never pulled up onto the heading.
+ *
+ * Regenerate and upload the runtime configuration with these two commands:
+ *
+ *   node gen.mjs > runtime-env.json
+ *   aws s3 cp runtime-env.json "s3://a-very-long-bucket-name/path/env.json" --cache-control no-store
+ *
+ * @phpstan-type ServiceHooks array{
+ *     authorize: \Closure(): void,
+ *     validate: \Closure(): void,
+ *     concerns: array<int, class-string<X>>,
+ * }
+ */
+function documented(): void
+{
+}
+
+/**
  A malformed docblock whose interior line carries no leading star, so the sniff
  cannot classify its shape and leaves the whole block untouched even when a line runs well beyond eighty characters.
  */

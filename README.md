@@ -334,10 +334,11 @@ one line where present; a free function keeps the freedom of either shape.
 
 `comment-line-wrap` takes `maxLength` (default 80) and is the syntax-only counterpart of the PHP
 `SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` runs and multi-line docblock prose greedily,
-reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both. Docblock tag
-lines, suppression directives, fenced or indented code, tables, separators, a line whose overflow is a single
-unbreakable token such as a long name or URL, trailing comments after code and compact single-line docblocks are left
-untouched.
+reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both. Markdown
+headings, docblock tag lines, suppression directives, fenced code, an indented code or command block, a doc-tag whose
+value opens a multi-line bracketed type (an `array{...}` shape, a `<...>` generic or a `\Closure(...)` signature),
+tables, separators, a line whose overflow is a single unbreakable token such as a long name or URL, trailing comments
+after code and compact single-line docblocks are left untouched.
 
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
 control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)

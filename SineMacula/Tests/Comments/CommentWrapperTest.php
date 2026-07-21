@@ -29,6 +29,9 @@ final class CommentWrapperTest extends TestCase
     /** @var string A representative line of commented-out code, left verbatim. */
     private const string CODE_LINE = '$x = compute($this->value);';
 
+    /** @var string A tag whose description holds a bracket, but which opens no type. */
+    private const string STRAY_BRACKET_TAG = '@return bool True if a<b for the pair';
+
     /**
      * Cases exercising overflow, premature wrapping, atoms, lists and the
      * verbatim kinds, each with its expected canonical lines and fault indices.
@@ -317,6 +320,105 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
+     * A markdown heading, an indented code or command block, and a
+     * type-annotation tag whose bracketed value spans lines are each left
+     * verbatim rather than reflowed as prose.
+     *
+     * @return void
+     */
+    public function testLeavesNonProseConstructsVerbatim(): void
+    {
+        $this->assertVerbatim(['### Relation existence', 'Bare array form is the short one here now.']);
+        $this->assertVerbatim([
+            'Run these commands in order:',
+            '',
+            '  node gen.mjs > runtime-env.json',
+            '  aws s3 cp runtime-env.json "s3://a-very-long-bucket-name/path/env.json" --cache-control no-store',
+        ]);
+        $this->assertVerbatim([
+            '@phpstan-type ServiceHooks array{',
+            '    authorize: \Closure(): void,',
+            '    concerns: array<int, class-string<X>>,',
+            '}',
+        ]);
+        $this->assertVerbatim(['@typedef {{', 'id: number,', 'name: string,', '}} Record']);
+        $this->assertVerbatim(['@psalm-type UserRow array{', 'id: int,', 'name: string,', '}']);
+        $this->assertVerbatim(['@phpstan-type T array{', 'sep: \')\',', 'a: int,', 'b: string,', '}']);
+        $this->assertVerbatim([
+            '- Build the container image for production before you deploy it',
+            '      docker build -t app:prod . \\',
+            '          --no-cache',
+        ]);
+        $this->assertVerbatim([
+            'Run these commands:',
+            '',
+            "\tnpm install && npm run build with a very long tail that exceeds the eighty limit yes",
+        ]);
+    }
+
+    /**
+     * A stray bracket in a tag's description never opens a verbatim type block
+     * that swallows the rest of the comment: a following prose paragraph is
+     * still reflowed and its overflow flagged.
+     *
+     * @return void
+     */
+    public function testAStrayBracketInADescriptionDoesNotFreezeFollowingProse(): void
+    {
+        $result = (new CommentWrapper)->wrap([
+            self::STRAY_BRACKET_TAG,
+            '',
+            'This trailing paragraph is genuinely long enough that it should be reflowed by the engine now indeed.',
+        ], 3);
+
+        self::assertSame([
+            self::STRAY_BRACKET_TAG,
+            '',
+            'This trailing paragraph is genuinely long enough that it should be reflowed',
+            'by the engine now indeed.',
+        ], $result['lines']);
+        self::assertSame([2], $result['long']);
+    }
+
+    /**
+     * The classifier recognises a markdown heading, a line indented past the
+     * prose baseline, and the depth a type-annotation tag opens, guarding a
+     * stray bracket in a prose description.
+     *
+     * @return void
+     */
+    public function testClassifierDetectsNonProseConstructs(): void
+    {
+        $classifier = new CommentLineClassifier;
+
+        self::assertSame(CommentLineClassifier::HEADING, $classifier->classify('# Heading', false));
+        self::assertSame(CommentLineClassifier::HEADING, $classifier->classify('###### Deep', false));
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('#nospace', false));
+
+        self::assertTrue($classifier->indented('  code here'));
+        self::assertTrue($classifier->indented("\ttab code"));
+        self::assertFalse($classifier->indented(' one space'));
+
+        self::assertSame(2, $classifier->indentWidth('  two'));
+        self::assertSame(0, $classifier->indentWidth('flush'));
+        self::assertTrue($classifier->isTypeBoundary(''));
+        self::assertTrue($classifier->isTypeBoundary('@param int $x'));
+        self::assertFalse($classifier->isTypeBoundary('id: int,'));
+
+        self::assertSame(1, $classifier->typeTagDepth('@phpstan-type X array{'));
+        self::assertSame(1, $classifier->typeTagDepth('@psalm-type Row array{'));
+        self::assertSame(2, $classifier->typeTagDepth('@typedef {{'));
+        self::assertSame(0, $classifier->typeTagDepth('@return array<int, string>'));
+        self::assertSame(0, $classifier->typeTagDepth('@param int $x must be < 10 here'));
+        self::assertSame(0, $classifier->typeTagDepth('@param array $o shaped like {id, name} in prose'));
+        self::assertSame(0, $classifier->typeTagDepth(self::STRAY_BRACKET_TAG));
+        self::assertSame(0, $classifier->typeTagDepth('@return int the count(approx'));
+        self::assertSame(0, $classifier->bracketDelta('authorize: \Closure(): void,'));
+        self::assertSame(-1, $classifier->bracketDelta('} $records the records (see note)'));
+        self::assertSame(0, $classifier->bracketDelta('sep: \')\','));
+    }
+
+    /**
      * The classifier parses a list marker's bullet, indent and occupied width,
      * and yields nothing for a non-list line.
      *
@@ -359,5 +461,20 @@ final class CommentWrapperTest extends TestCase
         self::assertSame(CommentLineClassifier::PROSE, (new CommentLineClassifier)->classify("\u{00a0}", false));
         self::assertSame([0, 1], $result['premature']);
         self::assertCount(2, $result['lines']);
+    }
+
+    /**
+     * Assert that a block is returned exactly as given, with no faults.
+     *
+     * @param  list<string>  $lines
+     * @return void
+     */
+    private function assertVerbatim(array $lines): void
+    {
+        $result = (new CommentWrapper)->wrap($lines, 3);
+
+        self::assertSame($lines, $result['lines']);
+        self::assertSame([], $result['long']);
+        self::assertSame([], $result['premature']);
     }
 }

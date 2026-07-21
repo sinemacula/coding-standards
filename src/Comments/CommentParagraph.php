@@ -222,8 +222,8 @@ final class CommentParagraph
     }
 
     /**
-     * Whether a token would re-classify a line if it opened one: a bare tag or
-     * a lone list bullet.
+     * Whether a token would re-classify a line if it opened one: a bare tag, a
+     * lone list bullet or a heading marker.
      *
      * @param  string  $token
      * @return bool
@@ -231,7 +231,7 @@ final class CommentParagraph
     private function isPoison(string $token): bool
     {
         return preg_match('/^@[A-Za-z][A-Za-z0-9-]*$/', $token) === 1
-            || preg_match('/^([-*+]|\d+[.)])$/', $token)        === 1;
+            || preg_match('/^([-*+]|\d+[.)]|#{1,6})$/', $token) === 1;
     }
 
     /**

@@ -50,11 +50,12 @@ final class CommentWrapper
         $long      = [];
         $premature = [];
         $inFence   = false;
+        $typeDepth = 0;
         $index     = 0;
         $count     = count($lines);
 
         while ($index < $count) {
-            [$segment, $index, $inFence] = $this->segment($lines, $index, $inFence, $marginWidth);
+            [$segment, $index, $inFence, $typeDepth] = $this->segment($lines, $index, $inFence, $typeDepth, $marginWidth);
 
             $out       = [...$out, ...$segment['lines']];
             $long      = [...$long, ...$segment['long']];
@@ -66,59 +67,147 @@ final class CommentWrapper
 
     /**
      * Resolve the next segment of the block: its output and faults, the index
-     * to continue from, and the fence state that follows.
+     * to continue from, and the fence and type-block state that follow.
+     *
+     * A fenced block, and a type-annotation tag whose value opens a bracketed
+     * type across lines, are each left verbatim until they close.
      *
      * @param  list<string>  $lines
      * @param  int  $index
      * @param  bool  $inFence
+     * @param  int  $typeDepth
      * @param  int  $marginWidth
-     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool}
+     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool, int}
      */
-    private function segment(array $lines, int $index, bool $inFence, int $marginWidth): array
+    private function segment(array $lines, int $index, bool $inFence, int $typeDepth, int $marginWidth): array
+    {
+        $continuation = $this->continuation($lines, $index, $inFence, $typeDepth);
+
+        if ($continuation !== null) {
+            return $continuation;
+        }
+
+        $opening = $this->classifier->typeTagDepth($lines[$index]);
+
+        if ($opening > 0) {
+            return [$this->verbatim($lines[$index]), $index + 1, false, $opening];
+        }
+
+        return $this->dispatch($lines, $index, $marginWidth);
+    }
+
+    /**
+     * The verbatim segment for a line inside an open fenced block or an open
+     * type-annotation value, or null when neither block is open at this line.
+     *
+     * @param  list<string>  $lines
+     * @param  int  $index
+     * @param  bool  $inFence
+     * @param  int  $typeDepth
+     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool, int}|null
+     */
+    private function continuation(array $lines, int $index, bool $inFence, int $typeDepth): ?array
     {
         if ($inFence) {
-            return [$this->verbatim($lines[$index]), $index + 1, !$this->classifier->isFence($lines[$index])];
+            return [$this->verbatim($lines[$index]), $index + 1, !$this->classifier->isFence($lines[$index]), 0];
+        }
+
+        if ($typeDepth > 0 && !$this->classifier->isTypeBoundary($lines[$index])) {
+            $depth = max(0, $typeDepth + $this->classifier->bracketDelta($lines[$index]));
+
+            return [$this->verbatim($lines[$index]), $index + 1, false, $depth];
+        }
+
+        return null;
+    }
+
+    /**
+     * Dispatch a line by its kind: enter a fence, reflow a prose paragraph or
+     * list item, or leave the line verbatim.
+     *
+     * @param  list<string>  $lines
+     * @param  int  $index
+     * @param  int  $marginWidth
+     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool, int}
+     */
+    private function dispatch(array $lines, int $index, int $marginWidth): array
+    {
+        if ($this->classifier->indented($lines[$index])) {
+            return [$this->verbatim($lines[$index]), $index + 1, false, 0];
         }
 
         return match ($this->classifier->classify($lines[$index], false)) {
-            CommentLineClassifier::FENCE => [$this->verbatim($lines[$index]), $index + 1, true],
+            CommentLineClassifier::FENCE => [$this->verbatim($lines[$index]), $index + 1, true, 0],
             CommentLineClassifier::PROSE => $this->paragraphAt($lines, $index, null, $marginWidth),
             CommentLineClassifier::LIST  => $this->paragraphAt($lines, $index, $this->classifier->listMarker($lines[$index]), $marginWidth),
-            default                      => [$this->verbatim($lines[$index]), $index + 1, false],
+            default                      => [$this->verbatim($lines[$index]), $index + 1, false, 0],
         };
     }
 
     /**
-     * Reflow a prose paragraph or list item beginning at the index. A list line
-     * always parses to a marker, so it never reaches the plain-prose branch.
+     * Reflow a prose paragraph or list item beginning at the index. A prose
+     * paragraph is a run of flush prose lines; a list item is its marker line
+     * with any continuation lines that stay within its hanging indent. A list
+     * line always parses to a marker, so it never reaches the plain-prose
+     * branch.
      *
      * @param  list<string>  $lines
      * @param  int  $start
      * @param  array{marker: string, indent: int, width: int}|null  $marker
      * @param  int  $marginWidth
-     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool}
+     * @return array{array{lines: list<string>, long: list<int>, premature: list<int>}, int, bool, int}
      */
     private function paragraphAt(array $lines, int $start, ?array $marker, int $marginWidth): array
     {
-        $end   = $this->proseEnd($lines, $marker === null ? $start : $start + 1);
+        $end = $marker === null
+            ? $this->flushEnd($lines, $start)
+            : $this->continuationEnd($lines, $start + 1, $marker['indent'] + $marker['width']);
+
         $slice = array_slice($lines, $start, $end - $start);
 
-        return [$this->paragraphs->reflow($slice, $marker, $marginWidth, $start), $end, false];
+        return [$this->paragraphs->reflow($slice, $marker, $marginWidth, $start), $end, false, 0];
     }
 
     /**
-     * The index one past the last prose line of a paragraph, given the index of
-     * its first continuation candidate.
+     * The index one past the last flush prose line, given the index of the
+     * paragraph's first line. An indented line ends the paragraph, bounding a
+     * verbatim indented code block beneath it.
      *
      * @param  list<string>  $lines
      * @param  int  $from
      * @return int
      */
-    private function proseEnd(array $lines, int $from): int
+    private function flushEnd(array $lines, int $from): int
     {
         $end = $from;
 
-        while ($end < count($lines) && $this->classifier->classify($lines[$end], false) === CommentLineClassifier::PROSE) {
+        while ($end < count($lines) && $this->classifier->classify($lines[$end], false) === CommentLineClassifier::PROSE && !$this->classifier->indented($lines[$end])) {
+            $end++;
+        }
+
+        return $end;
+    }
+
+    /**
+     * The index one past the last continuation line of a list item, given the
+     * index of its first candidate and the item's hanging indent. A line
+     * indented past the hanging indent is a verbatim code block, not a
+     * continuation, so it ends the item.
+     *
+     * @param  list<string>  $lines
+     * @param  int  $from
+     * @param  int  $hanging
+     * @return int
+     */
+    private function continuationEnd(array $lines, int $from, int $hanging): int
+    {
+        $end = $from;
+
+        while (
+            $end < count($lines)
+            && $this->classifier->classify($lines[$end], false) === CommentLineClassifier::PROSE
+            && $this->classifier->indentWidth($lines[$end]) <= $hanging
+        ) {
             $end++;
         }
 
