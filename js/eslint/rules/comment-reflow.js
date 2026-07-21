@@ -44,6 +44,17 @@ export const KIND = {
     CODE: 'code',
 };
 
+/** The ordered rules mapping the first matching leading mark to a kind. */
+const KINDS = [
+    { kind: KIND.FENCE, test: ({ trimmed }) => FENCE.test(trimmed) },
+    { kind: KIND.DIRECTIVE, test: ({ trimmed }) => DIRECTIVE.test(trimmed) },
+    { kind: KIND.TAG, test: ({ trimmed }) => TAG.test(trimmed) },
+    { kind: KIND.TABLE, test: ({ trimmed }) => trimmed.startsWith('|') },
+    { kind: KIND.SEPARATOR, test: ({ trimmed }) => SEPARATOR.test(trimmed) },
+    { kind: KIND.LIST, test: ({ content }) => LIST.test(content) },
+    { kind: KIND.CODE, test: ({ trimmed }) => CODE.test(trimmed.replace(SPAN, '')) },
+];
+
 /** The number of Unicode code points in a string, matching PHP mb_strlen. */
 function len(text) {
     return [...text].length;
@@ -66,16 +77,15 @@ export function classify(content, inFence) {
     const trimmed = trimAscii(content);
 
     if (inFence) return KIND.FENCE;
-    if (trimmed === '') return KIND.BLANK;
-    if (FENCE.test(trimmed)) return KIND.FENCE;
-    if (DIRECTIVE.test(trimmed)) return KIND.DIRECTIVE;
-    if (TAG.test(trimmed)) return KIND.TAG;
-    if (trimmed.startsWith('|')) return KIND.TABLE;
-    if (SEPARATOR.test(trimmed)) return KIND.SEPARATOR;
-    if (LIST.test(content)) return KIND.LIST;
-    if (CODE.test(trimmed.replace(SPAN, ''))) return KIND.CODE;
 
-    return KIND.PROSE;
+    return trimmed === '' ? KIND.BLANK : kindOf(content, trimmed);
+}
+
+/** Classify a non-blank line by its leading marks, defaulting to prose. */
+function kindOf(content, trimmed) {
+    const line = { content, trimmed };
+
+    return KINDS.find(({ test }) => test(line))?.kind ?? KIND.PROSE;
 }
 
 /** Whether a content line opens or closes a fenced block. */
@@ -174,17 +184,12 @@ export function reflow(lines, marginWidth, maxLength) {
 
 /** Handle one line or paragraph, appending its output and any faults. */
 function consume(lines, i, type, ctx) {
-    if (type === KIND.FENCE) {
-        ctx.out.push(lines[i]);
-        ctx.fence(true);
-
-        return i + 1;
-    }
-
     if (type === KIND.PROSE) return paragraph(lines, i, null, ctx);
     if (type === KIND.LIST) return paragraph(lines, i, listMarker(lines[i]), ctx);
 
     ctx.out.push(lines[i]);
+
+    if (type === KIND.FENCE) ctx.fence(true);
 
     return i + 1;
 }
