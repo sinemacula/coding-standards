@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/sinemacula/coding-standards/compare/v1.15.0...v1.16.0) (2026-07-21)
+
+
+### Features
+
+* leave headings, indented code and type-annotation values verbatim ([#117](https://github.com/sinemacula/coding-standards/issues/117)) ([e6dae04](https://github.com/sinemacula/coding-standards/commit/e6dae0417471145e21cb1f0be1a8ff5fead7ac53))
+
 ## [1.15.0](https://github.com/sinemacula/coding-standards/compare/v1.14.0...v1.15.0) (2026-07-21)
 
 
