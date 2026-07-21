@@ -194,6 +194,13 @@ const cases = [
         long: [1],
         premature: [],
     },
+    {
+        name: 'a tool-directive comment is left verbatim, however far it runs past the width',
+        lines: ['eslint-disable-next-line no-console -- raw CLI output must bypass the logger and go straight to stdout'],
+        expected: ['eslint-disable-next-line no-console -- raw CLI output must bypass the logger and go straight to stdout'],
+        long: [],
+        premature: [],
+    },
 ];
 
 describe('reflow', () => {
@@ -266,6 +273,22 @@ describe('classify', () => {
     it('recognises a fence delimiter', () => {
         expect(isFence('```')).toBe(true);
         expect(isFence(' text ')).toBe(false);
+    });
+
+    it('recognises tool-directive comments, keeping lookalike prose as prose', () => {
+        expect(classify('eslint no-console: "error"', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('biome-ignore lint/style/noVar: intentional', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('Stryker disable all: metadata', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('c8 ignore next -- unreachable', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('v8 ignore next 3 -- defensive', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('istanbul ignore else -- legacy', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('global fetch, Headers', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('globals a, b', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('exported handler', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('@vite-ignore keep opaque', false)).toBe(KIND.DIRECTIVE);
+        expect(classify('globalization support is being added here', false)).toBe(KIND.PROSE);
+        expect(classify('exports are defined below in this file', false)).toBe(KIND.PROSE);
+        expect(classify('note this is prose that should still wrap here', false)).toBe(KIND.PROSE);
     });
 });
 

@@ -298,6 +298,29 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
+     * A tool-directive comment is recognised whatever the tool, while prose
+     * that merely begins with a similar word is left as prose.
+     *
+     * @return void
+     */
+    public function testClassifierRecognisesToolDirectives(): void
+    {
+        $classifier = new CommentLineClassifier;
+
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('eslint no-console: "error"', false));
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('biome-ignore lint/style/x: ok', false));
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('Stryker disable all: metadata', false));
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('c8 ignore next -- skip', false));
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('istanbul ignore else -- legacy', false));
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('global fetch, Headers', false));
+        self::assertSame(CommentLineClassifier::DIRECTIVE, $classifier->classify('exported handler', false));
+
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('globalization is being added', false));
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('exports are defined below here', false));
+        self::assertSame(CommentLineClassifier::PROSE, $classifier->classify('note this is ordinary prose here', false));
+    }
+
+    /**
      * Prose that merely starts with a keyword, or mentions code inside an
      * inline span such as a `{@link}` or backticks, is prose; a line carrying
      * real code syntax is code.

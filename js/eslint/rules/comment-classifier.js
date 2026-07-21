@@ -18,7 +18,7 @@ const FENCE = /^(```|~~~)/;
 const TAG = new RegExp(`^@[A-Za-z][A-Za-z0-9-]*(?=${WS}|$)`);
 const LIST = new RegExp(`^${WS}*([-*+]|\\d+[.)])${WS}+`);
 const HEADING = new RegExp(`^#{1,6}${WS}`);
-const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint-disable|eslint-enable|@ts-|prettier-ignore|stylelint-|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/;
+const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint\b|globals?\b|exported\b|biome-ignore\b|@ts-|prettier-ignore|stylelint-|Stryker (?:disable|restore)\b|(?:c8|v8|istanbul) ignore\b|@vite-ignore\b|webpackChunkName\b|@preserve\b|@license\b|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/;
 const SEPARATOR = /^[=\-~*_#.+ ]{3,}$/;
 const CODE = new RegExp(`=>|->|::|;${WS}*$|\\{${WS}*$|^\\}|^(?:if|elseif|for|foreach|while|switch|catch)${WS}*\\(|^[\\w$>[\\]'.-]+${WS}*=[^=>]|^\\$`);
 const SPAN = /`[^`]*`|\{@[^}]*\}|\[[^\]]*\]\([^)]*\)/g;
