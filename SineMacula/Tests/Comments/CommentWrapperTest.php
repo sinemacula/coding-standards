@@ -149,6 +149,13 @@ final class CommentWrapperTest extends TestCase
                 [],
                 [],
             ],
+            'a mid-prose tag glued to the previous word is already canonical' => [
+                ['alpha bravo charlie delta echo foxtrot golf hotel india juliet then', 'check @internal and keep going with lots more trailing words to spill'],
+                3,
+                ['alpha bravo charlie delta echo foxtrot golf hotel india juliet then', 'check @internal and keep going with lots more trailing words to spill'],
+                [],
+                [],
+            ],
         ];
     }
 
@@ -247,5 +254,35 @@ final class CommentWrapperTest extends TestCase
         self::assertSame(['marker' => '-', 'indent' => 0, 'width' => 2], $classifier->listMarker('- item'));
         self::assertSame(['marker' => '1.', 'indent' => 2, 'width' => 3], $classifier->listMarker('  1. item'));
         self::assertNull($classifier->listMarker('not a list'));
+    }
+
+    /**
+     * Widths count Unicode code points, so an astral emoji is one column and a
+     * line of 76 columns fits within 80 rather than overflowing.
+     *
+     * @return void
+     */
+    public function testCountsCodePointsNotBytes(): void
+    {
+        $line   = 'aaaa ' . str_repeat("\u{1F600}", 3) . ' bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk llll mmmm nnnn oo';
+        $result = (new CommentWrapper)->wrap([$line], 3);
+
+        self::assertSame([$line], $result['lines']);
+        self::assertSame([], $result['long']);
+    }
+
+    /**
+     * Whitespace is matched as ASCII only, so a line of a single non-breaking
+     * space is prose, not a blank boundary, and the paragraph merges across it.
+     *
+     * @return void
+     */
+    public function testTreatsUnicodeWhitespaceAsProse(): void
+    {
+        $result = (new CommentWrapper)->wrap(['prose line one that is fairly short and mergeable', "\u{00a0}", 'prose line two also short here'], 3);
+
+        self::assertSame(CommentLineClassifier::PROSE, (new CommentLineClassifier)->classify("\u{00a0}", false));
+        self::assertSame([0, 1], $result['premature']);
+        self::assertCount(2, $result['lines']);
     }
 }

@@ -10,18 +10,25 @@
  * left verbatim and bound the paragraph around them; a paragraph that cannot be
  * reflowed safely is left untouched.
  *
+ * Widths count Unicode code points and whitespace is matched as ASCII only, so
+ * the output is byte-for-byte identical to the PHP engine (mb_strlen and the
+ * non-unicode PCRE `\s`).
+ *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 
+const WS = '[ \\t\\n\\r\\f\\v]';
 const FENCE = /^(```|~~~)/;
-const TAG = /^@[A-Za-z][A-Za-z0-9-]*(?=\s|$)/;
-const LIST = /^\s*([-*+]|\d+[.)])\s+\S/;
-const LIST_MARKER = /^(\s*)([-*+]|\d+[.)])\s+/;
+const TAG = new RegExp(`^@[A-Za-z][A-Za-z0-9-]*(?=${WS}|$)`);
+const LIST = new RegExp(`^${WS}*([-*+]|\\d+[.)])${WS}+[^ \\t\\n\\r\\f\\v]`);
+const LIST_MARKER = new RegExp(`^(${WS}*)([-*+]|\\d+[.)])${WS}+`);
 const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint-disable|eslint-enable|@ts-|prettier-ignore|stylelint-|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/;
 const SEPARATOR = /^[=\-~*_#.+ ]{3,}$/;
-const CODE = /([{}]|=>|->|::|;\s*$)|^(return|function|public|private|protected|const|namespace|use|class|final|abstract|if|for|foreach|while|switch|echo|import|export)\b|^[\w$>[\]'.-]+\s*=[^=>]|^\$/;
+const CODE = new RegExp(`([{}]|=>|->|::|;${WS}*$)|^(return|function|public|private|protected|const|namespace|use|class|final|abstract|if|for|foreach|while|switch|echo|import|export)\\b|^[\\w$>[\\]'.-]+${WS}*=[^=>]|^\\$`);
 const POISON = /^(@[A-Za-z][A-Za-z0-9-]*|[-*+]|\d+[.)])$/;
+const ASCII_TRIM = /^[ \t\n\r\0\v]+|[ \t\n\r\0\v]+$/g;
+const ASCII_TRIM_START = /^[ \t\n\r\0\v]+/;
 
 /** The kinds a comment content line can take. Only prose and lists reflow. */
 export const KIND = {
@@ -36,11 +43,26 @@ export const KIND = {
     CODE: 'code',
 };
 
+/** The number of Unicode code points in a string, matching PHP mb_strlen. */
+function len(text) {
+    return [...text].length;
+}
+
+/** Strip leading and trailing ASCII whitespace, matching PHP trim. */
+function trimAscii(text) {
+    return text.replace(ASCII_TRIM, '');
+}
+
+/** Strip leading ASCII whitespace, matching PHP ltrim. */
+function trimAsciiStart(text) {
+    return text.replace(ASCII_TRIM_START, '');
+}
+
 /**
  * Classify a content line, given whether it sits inside a fenced block.
  */
 export function classify(content, inFence) {
-    const trimmed = content.trim();
+    const trimmed = trimAscii(content);
 
     if (inFence) return KIND.FENCE;
     if (trimmed === '') return KIND.BLANK;
@@ -57,7 +79,7 @@ export function classify(content, inFence) {
 
 /** Whether a content line opens or closes a fenced block. */
 export function isFence(content) {
-    return FENCE.test(content.trim());
+    return FENCE.test(trimAscii(content));
 }
 
 /** Parse a list marker into its bullet, indent and occupied width, or null. */
@@ -66,7 +88,7 @@ export function listMarker(content) {
 
     if (!match) return null;
 
-    return { marker: match[2], indent: match[1].length, width: match[2].length + 1 };
+    return { marker: match[2], indent: len(match[1]), width: len(match[2]) + 1 };
 }
 
 /**
@@ -74,29 +96,30 @@ export function listMarker(content) {
  * Markdown links whole even when they hold spaces.
  */
 export function tokenize(text) {
+    const chars = [...text];
     const tokens = [];
     let i = 0;
 
-    while (i < text.length) {
-        if (text[i] === ' ') {
+    while (i < chars.length) {
+        if (chars[i] === ' ') {
             i += 1;
             continue;
         }
 
         const start = i;
-        i = consumeToken(text, i);
-        tokens.push(text.slice(start, i));
+        i = consumeToken(chars, i);
+        tokens.push(chars.slice(start, i).join(''));
     }
 
     return tokens;
 }
 
 /** Advance past one token, stepping over any atomic span it contains. */
-function consumeToken(text, i) {
-    while (i < text.length && text[i] !== ' ') {
-        if (text[i] === '`') i = consumeSpan(text, i, '`');
-        else if (text[i] === '{' && text[i + 1] === '@') i = consumeSpan(text, i, '}');
-        else if (text[i] === '[') i = consumeLink(text, i);
+function consumeToken(chars, i) {
+    while (i < chars.length && chars[i] !== ' ') {
+        if (chars[i] === '`') i = consumeSpan(chars, i, '`');
+        else if (chars[i] === '{' && chars[i + 1] === '@') i = consumeSpan(chars, i, '}');
+        else if (chars[i] === '[') i = consumeLink(chars, i);
         else i += 1;
     }
 
@@ -104,19 +127,19 @@ function consumeToken(text, i) {
 }
 
 /** Advance past a delimited span to its closer, or by one when it never closes. */
-function consumeSpan(text, i, close) {
-    const found = text.indexOf(close, i + 1);
+function consumeSpan(chars, i, close) {
+    const found = chars.indexOf(close, i + 1);
 
     return found === -1 ? i + 1 : found + 1;
 }
 
 /** Advance past a Markdown link, or by one when the shape does not hold. */
-function consumeLink(text, i) {
-    const label = consumeSpan(text, i, ']');
+function consumeLink(chars, i) {
+    const label = consumeSpan(chars, i, ']');
 
-    if (label === i + 1 || text[label] !== '(') return i + 1;
+    if (label === i + 1 || chars[label] !== '(') return i + 1;
 
-    const target = consumeSpan(text, label, ')');
+    const target = consumeSpan(chars, label, ')');
 
     return target === label + 1 ? i + 1 : target;
 }
@@ -246,7 +269,7 @@ function findFaults(slice, marginWidth, maxLength) {
     const premature = [];
 
     slice.forEach((content, offset) => {
-        if (marginWidth + content.length > maxLength) long.push(offset);
+        if (marginWidth + len(content) > maxLength) long.push(offset);
         if (wrapsEarly(slice, offset, marginWidth, maxLength)) premature.push(offset);
     });
 
@@ -257,15 +280,15 @@ function findFaults(slice, marginWidth, maxLength) {
 function wrapsEarly(slice, offset, marginWidth, maxLength) {
     if (offset + 1 >= slice.length) return false;
 
-    const next = tokenize(slice[offset + 1])[0] ?? '';
+    const next = glue(tokenize(slice[offset + 1]))[0] ?? '';
 
-    return next !== '' && marginWidth + slice[offset].length + 1 + next.length <= maxLength;
+    return next !== '' && marginWidth + len(slice[offset]) + 1 + len(next) <= maxLength;
 }
 
 /** Join a paragraph's lines, stripping any list marker from the first line. */
 function joinText(slice, marker) {
-    const first = marker === null ? slice[0].trimStart() : slice[0].replace(LIST_MARKER, '');
-    const rest = slice.slice(1).map(line => line.trimStart());
+    const first = marker === null ? trimAsciiStart(slice[0]) : slice[0].replace(LIST_MARKER, '');
+    const rest = slice.slice(1).map(line => trimAsciiStart(line));
 
     return [first, ...rest].join(' ');
 }
@@ -289,7 +312,7 @@ function greedy(tokens, width) {
 
     for (const token of tokens) {
         if (current === '') current = token;
-        else if (current.length + 1 + token.length <= width) current += ` ${token}`;
+        else if (len(current) + 1 + len(token) <= width) current += ` ${token}`;
         else {
             lines.push(current);
             current = token;
@@ -303,10 +326,10 @@ function greedy(tokens, width) {
 
 /** The length of the longest token. */
 function longestToken(tokens) {
-    return Math.max(...tokens.map(token => token.length));
+    return Math.max(...tokens.map(len));
 }
 
 /** The number of leading spaces on a line. */
 function leadingSpaces(text) {
-    return text.length - text.trimStart().length;
+    return len(text) - len(trimAsciiStart(text));
 }

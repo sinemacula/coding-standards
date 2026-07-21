@@ -263,6 +263,9 @@ final class CommentLineLengthSniff implements Sniff
         $tokens  = $phpcsFile->getTokens();
         $run     = $this->slashRun($phpcsFile, $firstPtr);
         $lastPtr = $run[count($run) - 1];
+        $lines   = $this->fileLines($phpcsFile);
+        $first   = $lines[$tokens[$firstPtr]['line'] - 1] ?? '';
+        $indent  = mb_substr($first, 0, mb_strlen($first) - mb_strlen(ltrim($first)));
         $content = [];
 
         foreach ($run as $ptr) {
@@ -274,9 +277,9 @@ final class CommentLineLengthSniff implements Sniff
             'last'        => $lastPtr,
             'content'     => $content,
             'ptrs'        => $run,
-            'margin'      => ($tokens[$firstPtr]['column'] - 1) + 3,
+            'margin'      => mb_strlen($indent) + 3,
             'kind'        => 'slash',
-            'indent'      => str_repeat(' ', $tokens[$firstPtr]['column'] - 1),
+            'indent'      => $indent,
             'trailingEol' => str_ends_with($tokens[$lastPtr]['content'], "\n"),
         ];
     }
@@ -296,7 +299,11 @@ final class CommentLineLengthSniff implements Sniff
         $ptr    = $firstPtr;
 
         while (($next = $phpcsFile->findNext(T_COMMENT, $ptr + 1)) !== false) {
-            if ($tokens[$next]['line'] !== $tokens[$ptr]['line'] + 1 || !$this->isStandaloneSlash($phpcsFile, $next)) {
+            if (
+                $tokens[$next]['line']      !== $tokens[$ptr]['line'] + 1
+                || $tokens[$next]['column'] !== $tokens[$firstPtr]['column']
+                || !$this->isStandaloneSlash($phpcsFile, $next)
+            ) {
                 break;
             }
 
@@ -325,7 +332,8 @@ final class CommentLineLengthSniff implements Sniff
         $above  = $phpcsFile->findPrevious(T_COMMENT, $ptr - 1);
 
         return $above === false
-            || $tokens[$above]['line'] !== $tokens[$ptr]['line'] - 1
+            || $tokens[$above]['line']   !== $tokens[$ptr]['line'] - 1
+            || $tokens[$above]['column'] !== $tokens[$ptr]['column']
             || !$this->isStandaloneSlash($phpcsFile, $above);
     }
 

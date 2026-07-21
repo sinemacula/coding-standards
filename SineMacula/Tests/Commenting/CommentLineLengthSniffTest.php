@@ -62,4 +62,15 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('CommentLineLengthValid.inc', []);
     }
+
+    /**
+     * Adjacent `//` comments at different indents are separate runs: each
+     * reflows within its own indent rather than merging into one paragraph.
+     *
+     * @return void
+     */
+    public function testKeepsDifferentlyIndentedRunsSeparate(): void
+    {
+        $this->assertFixes('CommentLineLengthIndent.inc');
+    }
 }

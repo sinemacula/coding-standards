@@ -79,6 +79,13 @@ const cases = [
         long: [],
         premature: [],
     },
+    {
+        name: 'a mid-prose tag glued to the previous word is already canonical',
+        lines: ['alpha bravo charlie delta echo foxtrot golf hotel india juliet then', 'check @internal and keep going with lots more trailing words to spill'],
+        expected: ['alpha bravo charlie delta echo foxtrot golf hotel india juliet then', 'check @internal and keep going with lots more trailing words to spill'],
+        long: [],
+        premature: [],
+    },
 ];
 
 describe('reflow', () => {
@@ -145,5 +152,23 @@ describe('listMarker', () => {
         expect(listMarker('- item')).toEqual({ marker: '-', indent: 0, width: 2 });
         expect(listMarker('  1. item')).toEqual({ marker: '1.', indent: 2, width: 3 });
         expect(listMarker('not a list')).toBeNull();
+    });
+});
+
+describe('unicode parity with the PHP engine', () => {
+    it('counts code points, so an astral emoji is one column', () => {
+        const line = `aaaa ${'\u{1F600}'.repeat(3)} bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk llll mmmm nnnn oo`;
+        const result = reflow([line], 3, 80);
+
+        expect(result.lines).toEqual([line]);
+        expect(result.long).toEqual([]);
+    });
+
+    it('matches whitespace as ASCII only, so a non-breaking-space line stays prose', () => {
+        const result = reflow(['prose line one that is fairly short and mergeable', '\u00a0', 'prose line two also short here'], 3, 80);
+
+        expect(classify('\u00a0', false)).toBe(KIND.PROSE);
+        expect(result.premature).toEqual([0, 1]);
+        expect(result.lines).toHaveLength(2);
     });
 });

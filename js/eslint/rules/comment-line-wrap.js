@@ -4,7 +4,7 @@ import { reflow } from './comment-reflow.js';
 const DEFAULT_MAX_LENGTH = 80;
 
 /** A docblock interior line: its indent, the star, and the prose after it. */
-const DOC_LINE = /^(\s*)\*( ?)(.*)$/;
+const DOC_LINE = /^([ \t\n\r\f\v]*)\*( ?)(.*)$/;
 
 /** Whether only whitespace precedes the comment on its own line. */
 function isStandalone(comment, sourceCode) {
@@ -46,15 +46,16 @@ function slashContent(value) {
 }
 
 /** Describe a `//` run: its content lines, margin, report locations and rebuild. */
-function slashDescriptor(run, eol) {
-    const indent = run[0].loc.start.column;
+function slashDescriptor(run, sourceCode, eol) {
+    const first = run[0].loc.start;
+    const indent = sourceCode.lines[first.line - 1].slice(0, first.column);
 
     return {
         content: run.map(comment => slashContent(comment.value)),
-        marginWidth: indent + 3,
+        marginWidth: indent.length + 3,
         locs: run.map(comment => comment.loc),
         range: [run[0].range[0], run[run.length - 1].range[1]],
-        rebuild: lines => lines.map((line, offset) => `${offset === 0 ? '' : ' '.repeat(indent)}//${line === '' ? '' : ` ${line}`}`).join(eol),
+        rebuild: lines => lines.map((line, offset) => `${offset === 0 ? '' : indent}//${line === '' ? '' : ` ${line}`}`).join(eol),
     };
 }
 
@@ -181,7 +182,7 @@ export default createRule({
                 const comments = sourceCode.getAllComments();
 
                 for (const run of slashRuns(comments, sourceCode)) {
-                    enforce(context, slashDescriptor(run, eol), maxLength);
+                    enforce(context, slashDescriptor(run, sourceCode, eol), maxLength);
                 }
 
                 for (const comment of comments) {

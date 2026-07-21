@@ -172,7 +172,7 @@ final class CommentParagraph
             return false;
         }
 
-        $next = $this->tokenizer->tokenize($slice[$offset + 1])[0] ?? '';
+        $next = $this->glue($this->tokenizer->tokenize($slice[$offset + 1]))[0] ?? '';
 
         return $next !== ''
             && $marginWidth + mb_strlen($slice[$offset]) + 1 + mb_strlen($next) <= $this->maxLength;

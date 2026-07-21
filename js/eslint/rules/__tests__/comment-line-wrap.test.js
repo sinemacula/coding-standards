@@ -71,5 +71,12 @@ ruleTester.run('comment-line-wrap', rule, {
             output: '// alpha beta gamma delta epsilon zeta\n// eta theta iota kappa\nconst x = 1;',
             errors: [{ messageId: 'tooLong' }],
         },
+        {
+            // Adjacent `//` comments at different indents are separate runs; the
+            // deeper one reflows within its own indent and the other is left be.
+            code: '// Short comment at column one that fits within the width comfortably here now.\n    // A deeper indented standalone comment that runs on well beyond the eighty character limit for sure.\nconst value = 1;',
+            output: '// Short comment at column one that fits within the width comfortably here now.\n    // A deeper indented standalone comment that runs on well beyond the eighty\n    // character limit for sure.\nconst value = 1;',
+            errors: [{ messageId: 'tooLong' }],
+        },
     ],
 });
