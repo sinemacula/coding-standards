@@ -92,7 +92,7 @@ export default [
         },
     },
     {
-        files: ['**/*.{test,spec}.{ts,tsx,mts,cts,js,jsx,mjs,cjs}', '**/__tests__/**', '**/tests/**'],
+        files: ['**/*.{test,spec}.{ts,tsx,mts,cts,js,jsx,mjs,cjs}', '**/__tests__/**', '**/tests/**', '**/test-support/**'],
         rules: {
             'max-lines-per-function': 'off',
             'max-depth': 'off',
