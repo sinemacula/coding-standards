@@ -2,11 +2,11 @@
 
 namespace App;
 
-// This standalone prose comment is intentionally written to run far beyond the eighty character limit for sure.
+// This standalone prose comment is intentionally written to run far beyond the
+// eighty character limit for sure.
 
-// This standalone comment run
-// was wrapped far too early
-// on each of its lines here.
+// This standalone comment run was wrapped far too early on each of its lines
+// here.
 
 // This standalone comment run is already wrapped as tightly as the width
 // allows, so the sniff leaves every line of it exactly where the author placed
@@ -21,13 +21,14 @@ namespace App;
 /**
  * This class summary line is short.
  *
- * This is a long descriptive prose paragraph inside the docblock that runs comfortably beyond eighty chars.
+ * This is a long descriptive prose paragraph inside the docblock that runs
+ * comfortably beyond eighty chars.
  *
- * It also holds a paragraph that
- * was wrapped much too early on
- * each of its short little lines.
+ * It also holds a paragraph that was wrapped much too early on each of its
+ * short little lines.
  *
- * - a list item that is quite long and will need to wrap onto a second line with a hanging indent applied
+ * - a list item that is quite long and will need to wrap onto a second line
+ *   with a hanging indent applied
  * - a short second item
  *
  * @param  \App\Some\Deeply\Nested\Namespace\VeryLongClassName  $argument  the value to use in the method here

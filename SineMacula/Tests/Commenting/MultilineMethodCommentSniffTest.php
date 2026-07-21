@@ -21,8 +21,8 @@ final class MultilineMethodCommentSniffTest extends AbstractSniffTestCase
 {
     /**
      * A single-line doc comment on a class, interface or trait method is
-     * flagged, whatever its modifiers; a multi-line one, an undocumented
-     * method and a single-line free function are not.
+     * flagged, whatever its modifiers; a multi-line one, an undocumented method
+     * and a single-line free function are not.
      *
      * @return void
      */

@@ -8,14 +8,14 @@ import tseslint from 'typescript-eslint';
  * through the TypeScript parser, and holds component filenames to the same
  * kebab-case convention the shared formatter enforces on plain sources.
  *
- * This layer also carries the template layout rules, which the shared
- * formatter cannot: it does not understand single-file components, so `.vue`
- * markup would otherwise go unformatted entirely.
+ * This layer also carries the template layout rules, which the shared formatter
+ * cannot: it does not understand single-file components, so `.vue` markup would
+ * otherwise go unformatted entirely.
  *
  * Additive, and deliberately unlike the type-aware layer: it carries no base
  * rules of its own, so spread it after whichever layer a repo already uses
- * rather than in place of one. Vue is orthogonal to type-awareness, and a
- * repo enabling both would otherwise apply the base rules twice.
+ * rather than in place of one. Vue is orthogonal to type-awareness, and a repo
+ * enabling both would otherwise apply the base rules twice.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

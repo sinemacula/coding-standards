@@ -17,6 +17,7 @@
             <directory suffix="Sniff.php">src</directory>
             <directory suffix="Rule.php">src</directory>
             <directory suffix="Collector.php">src</directory>
+            <directory suffix=".php">src/Comments</directory>
         </include>
     </source>
 </phpunit>
