@@ -61,8 +61,10 @@ final class CommentLineClassifier
     private const string LIST_PATTERN = '/^\s*([-*+]|\d+[.)])\s+/';
 
     /** @var string A leading tool directive whose position or wording must not change. */
-    private const string DIRECTIVE_PATTERN = '/^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint-disable'
-        . '|eslint-enable|@ts-|prettier-ignore|stylelint-|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/';
+    private const string DIRECTIVE_PATTERN = '/^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint\b|globals?\b'
+        . '|exported\b|biome-ignore\b|@ts-|prettier-ignore|stylelint-|Stryker (?:disable|restore)\b'
+        . '|(?:c8|v8|istanbul) ignore\b|@vite-ignore\b|webpackChunkName\b|@preserve\b|@license\b'
+        . '|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/';
 
     /** @var string A run of rule characters with no letters or digits. */
     private const string SEPARATOR_PATTERN = '/^[=\-~*_#.+ ]{3,}$/';

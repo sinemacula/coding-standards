@@ -20,6 +20,14 @@ ruleTester.run('comment-line-wrap', rule, {
         '//ThisIsASingleVeryLongCommentTokenWithoutAnySpacesThatExceedsTheEightyCharacterLimitForSureXX\nconst x = 1;',
         // A directive line is never reflowed, whatever its length.
         '// prettier-ignore because the construct below is intentionally formatted by hand and must be left exactly so\nconst x = 1;',
+        // A tool-directive comment is exempt from the length and wrap checks.
+        '// biome-ignore lint/suspicious/noExplicitAny: the upstream type is genuinely any so we accept it here now\nconst x = 1;',
+        '// Stryker disable all: declarative rule metadata not behaviour, verified via the messageId and its data\nconst x = 1;',
+        '// c8 ignore next -- this branch only runs on a platform we do not exercise in CI so it is skipped here\nconst x = 1;',
+        // A directive in a non-doc block comment is not governed either.
+        '/* c8 ignore next -- this branch only runs on a platform we do not exercise in CI so it is skipped ok */\nconst x = 1;',
+        // A directive line inside a docblock is exempt while its prose wraps.
+        '/**\n * A short summary that fits.\n *\n * biome-ignore lint/suspicious/noExplicitAny: the upstream type is genuinely any so we accept it here now\n */\nexport const a = 1;',
         // A docblock description already wrapped greedily.
         '/**\n * A description already wrapped greedily so that each of its lines is filled\n * with as many whole words as the width will accept before the next one here.\n */\nexport const a = 1;',
         // A docblock tag line is exempt even when it overflows.
