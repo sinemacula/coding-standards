@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/sinemacula/coding-standards/compare/v1.14.0...v1.15.0) (2026-07-21)
+
+
+### Features
+
+* deterministic comment-wrapping rules for PHP and JS/TS ([#115](https://github.com/sinemacula/coding-standards/issues/115)) ([fd8ce09](https://github.com/sinemacula/coding-standards/commit/fd8ce097ba4c4cbc20d4a9b0526468c9e2b30d1b))
+
 ## [1.14.0](https://github.com/sinemacula/coding-standards/compare/v1.13.0...v1.14.0) (2026-07-21)
 
 
