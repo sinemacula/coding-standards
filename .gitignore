@@ -6,4 +6,5 @@
 .phpunit.result.cache
 .phpunit.cache
 clover.xml
+/coverage
 .DS_Store
