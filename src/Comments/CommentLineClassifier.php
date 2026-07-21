@@ -45,8 +45,14 @@ final class CommentLineClassifier
     /** @var string A line of code, left verbatim. */
     public const string CODE = 'code';
 
+    /** @var string A Markdown heading, a hard break left verbatim. */
+    public const string HEADING = 'heading';
+
     /** @var string A fenced-code delimiter opening or closing a verbatim block. */
     private const string FENCE_PATTERN = '/^(```|~~~)/';
+
+    /** @var string A Markdown heading: one to six leading hashes then a space. */
+    private const string HEADING_PATTERN = '/^#{1,6}\s/';
 
     /** @var string A leading bare documentation tag, such as `@param` or `@return`. */
     private const string TAG_PATTERN = '/^@[A-Za-z][A-Za-z0-9-]*(?=\s|$)/';
@@ -68,6 +74,19 @@ final class CommentLineClassifier
 
     /** @var string Inline atomic spans whose contents are not code: backticks, {@tags} and links. */
     private const string SPAN_PATTERN = '/`[^`]*`|\{@[^}]*\}|\[[^\]]*\]\([^)]*\)/';
+
+    /** @var string A documentation tag whose value may be a structured type expression. */
+    private const string TYPE_TAG_PATTERN = '/^@(?:(?:phpstan|psalm|phan)-(?:type|import-type|param|return|var)'
+        . '|var|param|return|typedef|type|property|returns)\b/';
+
+    /** @var string A type slot cut off mid-construct, opening a multi-line type value. */
+    private const string TYPE_CONTINUES_PATTERN = '/[{<(,:|&]\s*$/';
+
+    /** @var string A single or double quoted string literal within a type value. */
+    private const string QUOTE_PATTERN = '/\'[^\']*\'|"[^"]*"/';
+
+    /** @var string A leading tab or two or more spaces, marking an indented code block. */
+    private const string INDENT_PATTERN = '/^(?: {2,}|\t)/';
 
     /**
      * Classify a content line, given whether it sits inside a fenced block.
@@ -119,6 +138,99 @@ final class CommentLineClassifier
     }
 
     /**
+     * Whether a content line is indented past the prose baseline - a leading
+     * tab or two or more spaces - marking it as a verbatim code or command
+     * block.
+     *
+     * @param  string  $content
+     * @return bool
+     */
+    public function indented(string $content): bool
+    {
+        return $this->matches(self::INDENT_PATTERN, $content);
+    }
+
+    /**
+     * The number of leading spaces on a content line, for comparing a list
+     * item's continuation indent against its hanging indent.
+     *
+     * @param  string  $content
+     * @return int
+     */
+    public function indentWidth(string $content): int
+    {
+        return mb_strlen($content) - mb_strlen(ltrim($content, ' '));
+    }
+
+    /**
+     * Whether a line ends the verbatim type block that precedes it: a blank
+     * line or a fresh tag, neither of which a bracketed type ever spans.
+     *
+     * @param  string  $content
+     * @return bool
+     */
+    public function isTypeBoundary(string $content): bool
+    {
+        $trimmed = trim($content);
+
+        return $trimmed === '' || str_starts_with($trimmed, '@');
+    }
+
+    /**
+     * The depth a type-annotation tag's bracketed value opens on this line, or
+     * zero when the line is not a type tag or its type closes on the same line.
+     * Only the type slot is considered, so a stray bracket in the description
+     * that follows the variable never opens a block.
+     *
+     * @param  string  $content
+     * @return int
+     */
+    public function typeTagDepth(string $content): int
+    {
+        if (!$this->matches(self::TYPE_TAG_PATTERN, trim($content))) {
+            return 0;
+        }
+
+        $delta = $this->bracketDelta($content);
+
+        return $delta > 0 && $this->matches(self::TYPE_CONTINUES_PATTERN, $this->typeSlot($content)) ? $delta : 0;
+    }
+
+    /**
+     * The net depth the type slot of a line opens: braces, angle brackets and
+     * parentheses opened less those closed, ignoring inline spans and the
+     * object and double-arrow operators.
+     *
+     * @param  string  $text
+     * @return int
+     */
+    public function bracketDelta(string $text): int
+    {
+        $stripped = str_replace(['->', '=>'], '', $this->typeSlot($text));
+
+        $opens  = substr_count($stripped, '{') + substr_count($stripped, '<') + substr_count($stripped, '(');
+        $closes = substr_count($stripped, '}') + substr_count($stripped, '>') + substr_count($stripped, ')');
+
+        return $opens - $closes;
+    }
+
+    /**
+     * The portion of a line that carries the type: inline spans removed and
+     * everything from the first variable onward dropped, so a bracket in a
+     * description never counts toward the type's depth.
+     *
+     * @param  string  $content
+     * @return string
+     */
+    private function typeSlot(string $content): string
+    {
+        $stripped = (string) preg_replace([self::SPAN_PATTERN, self::QUOTE_PATTERN], '', $content);
+        $variable = mb_strpos($stripped, '$');
+
+        return $variable === false ? $stripped : mb_substr($stripped, 0, $variable);
+    }
+
+    /**
      * Classify a non-blank content line by its leading marks, defaulting to
      * prose.
      *
@@ -133,6 +245,7 @@ final class CommentLineClassifier
             $this->matches(self::DIRECTIVE_PATTERN, $trimmed) => self::DIRECTIVE,
             $this->matches(self::TAG_PATTERN, $trimmed)       => self::TAG,
             str_starts_with($trimmed, '|')                    => self::TABLE,
+            $this->matches(self::HEADING_PATTERN, $trimmed)   => self::HEADING,
             $this->matches(self::SEPARATOR_PATTERN, $trimmed) => self::SEPARATOR,
             $this->matches(self::LIST_PATTERN, $content)      => self::LIST,
             $this->isCode($trimmed)                           => self::CODE,

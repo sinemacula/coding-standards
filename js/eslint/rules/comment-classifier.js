@@ -17,10 +17,19 @@ const WS = '[ \\t\\n\\r\\f\\v]';
 const FENCE = /^(```|~~~)/;
 const TAG = new RegExp(`^@[A-Za-z][A-Za-z0-9-]*(?=${WS}|$)`);
 const LIST = new RegExp(`^${WS}*([-*+]|\\d+[.)])${WS}+`);
+const HEADING = new RegExp(`^#{1,6}${WS}`);
 const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint-disable|eslint-enable|@ts-|prettier-ignore|stylelint-|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/;
 const SEPARATOR = /^[=\-~*_#.+ ]{3,}$/;
 const CODE = new RegExp(`=>|->|::|;${WS}*$|\\{${WS}*$|^\\}|^(?:if|elseif|for|foreach|while|switch|catch)${WS}*\\(|^[\\w$>[\\]'.-]+${WS}*=[^=>]|^\\$`);
 const SPAN = /`[^`]*`|\{@[^}]*\}|\[[^\]]*\]\([^)]*\)/g;
+const TYPE_TAG = /^@(?:(?:phpstan|psalm|phan)-(?:type|import-type|param|return|var)|var|param|return|typedef|type|property|returns)\b/;
+const TYPE_CONTINUES = /[{<(,:|&]\s*$/;
+const QUOTE = /'[^']*'|"[^"]*"/g;
+const INDENT = /^(?: {2,}|\t)/;
+const LEADING_SPACES = /^ +/;
+const ARROWS = /->|=>/g;
+const OPENERS = /[{<(]/g;
+const CLOSERS = /[}>)]/g;
 
 /** A list marker: a bullet or an ordered number, and the space after it. */
 export const LIST_MARKER = new RegExp(`^(${WS}*)([-*+]|\\d+[.)])${WS}+`);
@@ -36,6 +45,7 @@ export const KIND = {
     TABLE: 'table',
     FENCE: 'fence',
     CODE: 'code',
+    HEADING: 'heading',
 };
 
 /** The ordered rules mapping the first matching leading mark to a kind. */
@@ -44,6 +54,7 @@ const KINDS = [
     { kind: KIND.DIRECTIVE, test: ({ trimmed }) => DIRECTIVE.test(trimmed) },
     { kind: KIND.TAG, test: ({ trimmed }) => TAG.test(trimmed) },
     { kind: KIND.TABLE, test: ({ trimmed }) => trimmed.startsWith('|') },
+    { kind: KIND.HEADING, test: ({ trimmed }) => HEADING.test(trimmed) },
     { kind: KIND.SEPARATOR, test: ({ trimmed }) => SEPARATOR.test(trimmed) },
     { kind: KIND.LIST, test: ({ content }) => LIST.test(content) },
     { kind: KIND.CODE, test: ({ trimmed }) => CODE.test(trimmed.replace(SPAN, '')) },
@@ -83,4 +94,47 @@ export function listMarker(content) {
     }
 
     return { marker: match[2], indent: len(match[1]), width: len(match[2]) + 1 };
+}
+
+/** Whether a content line is indented past the baseline: a tab or two spaces. */
+export function indented(content) {
+    return INDENT.test(content);
+}
+
+/** The number of leading spaces on a content line, for the hanging-indent bound. */
+export function indentWidth(content) {
+    return content.length - content.replace(LEADING_SPACES, '').length;
+}
+
+/** Whether a line ends the verbatim type block before it: a blank line or a fresh tag. */
+export function isTypeBoundary(content) {
+    const trimmed = trimAscii(content);
+
+    return trimmed === '' || trimmed.startsWith('@');
+}
+
+/** The net depth a line's type slot opens, ignoring inline spans and arrows. */
+export function bracketDelta(text) {
+    const stripped = typeSlot(text).replace(ARROWS, '');
+
+    return (stripped.match(OPENERS) ?? []).length - (stripped.match(CLOSERS) ?? []).length;
+}
+
+/** The depth a type-annotation tag opens, or zero when it is not one or closes here. */
+export function typeTagDepth(content) {
+    if (!TYPE_TAG.test(trimAscii(content))) {
+        return 0;
+    }
+
+    const delta = bracketDelta(content);
+
+    return delta > 0 && TYPE_CONTINUES.test(typeSlot(content)) ? delta : 0;
+}
+
+/** The type-carrying portion of a line: spans and quotes removed, and everything from the first variable dropped. */
+function typeSlot(content) {
+    const stripped = content.replace(SPAN, '').replace(QUOTE, '');
+    const variable = stripped.indexOf('$');
+
+    return variable === -1 ? stripped : stripped.slice(0, variable);
 }

@@ -15,7 +15,7 @@
 import { KIND, LIST_MARKER, classify } from './comment-classifier.js';
 import { len, tokenize, trimAsciiStart } from './comment-tokenizer.js';
 
-const POISON = /^(@[A-Za-z][A-Za-z0-9-]*|[-*+]|\d+[.)])$/;
+const POISON = /^(@[A-Za-z][A-Za-z0-9-]*|[-*+]|\d+[.)]|#{1,6})$/;
 
 /**
  * Reflow a paragraph, returning its output lines and the faults found, their

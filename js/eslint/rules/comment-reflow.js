@@ -5,9 +5,10 @@
  * content lines of one comment block (their margin already stripped) and the
  * width that margin will reclaim, it walks the block and hands each run of
  * prose and each list item to a paragraph reflow, gathering the canonical lines
- * and the indices of the input lines that overflow or wrap prematurely. Tags,
- * directives, fenced or indented code, tables and separators are left verbatim
- * and bound the paragraph around them.
+ * and the indices of the input lines that overflow or wrap prematurely. A
+ * fenced block, a type-annotation tag whose value opens a bracketed type across
+ * lines, headings, indented code, tags, directives, tables and separators are
+ * left verbatim and bound the paragraph around them.
  *
  * Widths count Unicode code points and whitespace is matched as ASCII only, so
  * the output is byte-for-byte identical to the PHP engine (mb_strlen and the
@@ -17,7 +18,7 @@
  * @copyright   2026 Sine Macula Limited
  */
 
-import { KIND, classify, isFence, listMarker } from './comment-classifier.js';
+import { KIND, bracketDelta, classify, indentWidth, indented, isFence, isTypeBoundary, listMarker, typeTagDepth } from './comment-classifier.js';
 import { reflowParagraph } from './comment-paragraph.js';
 
 export { KIND, classify, isFence, listMarker } from './comment-classifier.js';
@@ -29,41 +30,72 @@ export { tokenize } from './comment-tokenizer.js';
  * prematurely.
  */
 export function reflow(lines, marginWidth, maxLength) {
-    const out = [];
-    const long = [];
-    const premature = [];
-    let inFence = false;
+    const ctx = { out: [], long: [], premature: [], marginWidth, maxLength, inFence: false, typeDepth: 0 };
     let i = 0;
 
     while (i < lines.length) {
-        const type = inFence ? KIND.FENCE : classify(lines[i], false);
-
-        if (inFence) {
-            out.push(lines[i]);
-            inFence = !isFence(lines[i]);
-            i += 1;
-        } else {
-            i = consume(lines, i, type, { out, long, premature, marginWidth, maxLength, fence: value => { inFence = value; } });
-        }
+        i = step(lines, i, ctx);
     }
 
-    return { lines: out, long, premature };
+    return { lines: ctx.out, long: ctx.long, premature: ctx.premature };
 }
 
-/** Handle one line or paragraph, appending its output and any faults. */
-function consume(lines, i, type, ctx) {
+/**
+ * Advance one line, keeping verbatim any line inside a fenced block or inside a
+ * type-annotation tag whose bracketed value is still open.
+ */
+function step(lines, i, ctx) {
+    const line = lines[i];
+
+    if (ctx.inFence) {
+        ctx.inFence = !isFence(line);
+
+        return verbatim(line, i, ctx);
+    }
+
+    if (ctx.typeDepth > 0 && !isTypeBoundary(line)) {
+        ctx.typeDepth = Math.max(0, ctx.typeDepth + bracketDelta(line));
+
+        return verbatim(line, i, ctx);
+    }
+
+    ctx.typeDepth = 0;
+
+    const opening = typeTagDepth(line);
+
+    if (opening > 0) {
+        ctx.typeDepth = opening;
+
+        return verbatim(line, i, ctx);
+    }
+
+    return consume(lines, i, ctx);
+}
+
+/** Dispatch a line by kind: an indented line is verbatim; else fence, prose or list. */
+function consume(lines, i, ctx) {
+    if (indented(lines[i])) {
+        return verbatim(lines[i], i, ctx);
+    }
+
+    const type = classify(lines[i], false);
+
     if (type === KIND.PROSE) {
         return paragraph(lines, i, null, ctx);
     }
     if (type === KIND.LIST) {
         return paragraph(lines, i, listMarker(lines[i]), ctx);
     }
-
-    ctx.out.push(lines[i]);
-
     if (type === KIND.FENCE) {
-        ctx.fence(true);
+        ctx.inFence = true;
     }
+
+    return verbatim(lines[i], i, ctx);
+}
+
+/** Emit one line unchanged and advance past it. */
+function verbatim(line, i, ctx) {
+    ctx.out.push(line);
 
     return i + 1;
 }
@@ -73,7 +105,7 @@ function consume(lines, i, type, ctx) {
  * always parses to a marker, so it never reaches the plain-prose branch.
  */
 function paragraph(lines, start, marker, ctx) {
-    const end = proseEnd(lines, marker === null ? start : start + 1);
+    const end = marker === null ? flushEnd(lines, start) : continuationEnd(lines, start + 1, marker.indent + marker.width);
     const slice = lines.slice(start, end);
     const segment = reflowParagraph(slice, marker, ctx.marginWidth, ctx.maxLength, start);
 
@@ -84,11 +116,28 @@ function paragraph(lines, start, marker, ctx) {
     return end;
 }
 
-/** The index one past the last prose line from the given start. */
-function proseEnd(lines, from) {
+/**
+ * The index one past the last flush prose line from the given start. An
+ * indented line ends the paragraph, bounding a verbatim indented code block.
+ */
+function flushEnd(lines, from) {
     let end = from;
 
-    while (end < lines.length && classify(lines[end], false) === KIND.PROSE) {
+    while (end < lines.length && classify(lines[end], false) === KIND.PROSE && !indented(lines[end])) {
+        end += 1;
+    }
+
+    return end;
+}
+
+/**
+ * The index one past the last continuation line of a list item. A line indented
+ * past the hanging indent is verbatim code, not a continuation.
+ */
+function continuationEnd(lines, from, hanging) {
+    let end = from;
+
+    while (end < lines.length && classify(lines[end], false) === KIND.PROSE && indentWidth(lines[end]) <= hanging) {
         end += 1;
     }
 

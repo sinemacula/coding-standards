@@ -32,6 +32,14 @@ ruleTester.run('comment-line-wrap', rule, {
         '/**\n * Intro that is short.\n *\n * ```\n * const example = codeInsideAFenceThatRunsWellBeyondTheEightyCharacterLimitForSure();\n * ```\n *\n * | a | b that runs well beyond the eighty character limit for a table row here yes |\n * =========================================================================================\n */\nexport const a = 1;',
         // A list already wrapped with its hanging indentation.
         '/**\n * - a list item already wrapped as tightly as it can be so that the rule will\n *   leave its hanging indentation exactly as the author has laid it out here\n * - a short item\n */\nexport const a = 1;',
+        // A markdown heading is a hard break; the next line is never pulled up.
+        '/**\n * ### Relation existence\n * Bare array form is the short one here now.\n */\nexport const a = 1;',
+        // An indented command block is verbatim, however long its lines.
+        '/**\n * Generate the runtime env file and upload it:\n *\n *   node gen.mjs > runtime-env.json\n *   aws s3 cp runtime-env.json "s3://very-long-bucket-name/path/to/env.json" --cache-control no-store\n */\nexport const a = 1;',
+        // A multi-line typedef object type is left verbatim, not reflowed.
+        '/**\n * @typedef {{\n * id: number,\n * name: string,\n * }} Record\n */\nexport const a = 1;',
+        // A @param whose generic type wraps across lines is left verbatim.
+        '/**\n * @param {Array<{ id: number, name: string, tags: Array<string>, extra:\n * Record<string, unknown> }>} records the list to normalise here now ok\n */\nexport const a = 1;',
         // A single-line non-doc block comment is left alone, however long.
         '/* a single-line block comment left alone even when it runs far beyond the eighty character width for sure ok now */\nconst a = 1;',
         // A multi-line non-doc block comment is never reflowed.
