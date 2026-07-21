@@ -274,7 +274,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Attributes.DisallowToolingAttribute`           | No IDE/tooling attributes (e.g. `JetBrains\PhpStorm`).                      |
 | `SineMacula.Classes.RequireFinalClass`                     | Concrete classes must be `final` or `abstract` (`@inheritable` opts out).   |
 | `SineMacula.Classes.RequireReadonlyPublicProperty`         | Public properties (declared or promoted) must be `readonly`.                |
-| `SineMacula.Commenting.CommentLineLength`                  | Standalone comment lines must not exceed 80 chars (FQCN/URL exempt).        |
+| `SineMacula.Commenting.CommentLineLength`                  | Standalone comment prose wrapped to 80 chars; premature wraps also fixed.   |
 | `SineMacula.Commenting.ConsistentEnumCaseComments`         | Enum case docs are all-or-nothing within an enum.                           |
 | `SineMacula.Commenting.MultilineMethodComment`             | A method's doc comment must span multiple lines.                            |
 | `SineMacula.Commenting.RequireConstantComment`             | Every class/interface/enum/trait constant needs a doc comment.              |
@@ -321,6 +321,7 @@ type-checked layer.
 | `@sinemacula/align-doc-tags`                   | `@author` and `@copyright` values line up at a single column; autofixable.          |
 | `@sinemacula/single-line-property-doc`         | A data member's documentation comment sits on one line; autofixable.                |
 | `@sinemacula/multiline-function-doc`           | A method's documentation comment spans multiple lines; autofixable.                 |
+| `@sinemacula/comment-line-wrap`                | Standalone comment prose wrapped to 80 chars; premature wraps also fixed.           |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
 to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
@@ -330,6 +331,13 @@ Together `single-line-property-doc` and `multiline-function-doc` set a member's 
 members (interface property signatures, enum members and data class fields) take one line, while methods, interface
 method signatures and class fields holding a function take several. A data comment is never required, only held to
 one line where present; a free function keeps the freedom of either shape.
+
+`comment-line-wrap` takes `maxLength` (default 80) and is the syntax-only counterpart of the PHP
+`SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` runs and multi-line docblock prose greedily,
+reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both. Docblock tag
+lines, suppression directives, fenced or indented code, tables, separators, a line whose overflow is a single
+unbreakable token such as a long name or URL, trailing comments after code and compact single-line docblocks are left
+untouched.
 
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `max-lines-per-function`
 (50 lines, test code exempt) and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment

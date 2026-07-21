@@ -278,13 +278,12 @@ function buildListeners(state) {
  * guard, ...) that returns a result bool is exempt via COMMAND_VERBS. A member
  * may also opt out with an
  * @imperative docblock tag. An on* event-handler callback (onError) and a
- * method named after a primitive type (a typed accessor such as boolean())
- * are exempt, as are accessors, the constructor, computed names, magic names
- * and type-predicate guards (x is T). The return type is
- * resolved from type information - inferred booleans and awaited
- * Promise<boolean> included - so the rule degrades to a no-op when no type
- * information is available. The accepted vocabulary can be widened per consumer
- * through the rule options.
+ * method named after a primitive type (a typed accessor such as boolean()) are
+ * exempt, as are accessors, the constructor, computed names, magic names and
+ * type-predicate guards (x is T). The return type is resolved from type
+ * information - inferred booleans and awaited Promise<boolean> included - so
+ * the rule degrades to a no-op when no type information is available. The
+ * accepted vocabulary can be widened per consumer through the rule options.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

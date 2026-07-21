@@ -52,6 +52,7 @@ export default [
             '@sinemacula/align-doc-tags': 'error',
             '@sinemacula/single-line-property-doc': 'error',
             '@sinemacula/multiline-function-doc': 'error',
+            '@sinemacula/comment-line-wrap': 'error',
 
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],

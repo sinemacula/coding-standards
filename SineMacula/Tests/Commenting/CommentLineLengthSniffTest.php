@@ -20,14 +20,46 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class CommentLineLengthSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Over-long standalone comment lines are flagged, while tag lines, lines
-     * whose overflow is an unbreakable token, suppression directives
-     * (phpstan-ignore), and trailing comments are not.
+     * Overflowing prose reports TooLong and prematurely wrapped prose reports
+     * PrematurelyWrapped, each on its own line, across `//` runs and docblocks,
+     * while exempt lines (tags, directives, code, tables, separators, URLs,
+     * single-line docblocks and trailing comments) report nothing.
      *
      * @return void
      */
-    public function testFlagsOverLongCommentLines(): void
+    public function testReportsOverflowAndPrematureWrappingSeparately(): void
     {
-        $this->assertErrorsOnLines('CommentLineLength.inc', [6, 12]);
+        $this->assertErrorCodesOnLines('CommentLineLength.inc', [
+            5  => ['TooLong'],
+            7  => ['PrematurelyWrapped'],
+            8  => ['PrematurelyWrapped'],
+            24 => ['TooLong'],
+            26 => ['PrematurelyWrapped'],
+            27 => ['PrematurelyWrapped'],
+            30 => ['TooLong'],
+        ]);
+    }
+
+    /**
+     * The fixer reflows every faulted paragraph to its greedy canonical form,
+     * preserving indentation, delimiters and hanging list indent, and a second
+     * pass over the result leaves it unchanged.
+     *
+     * @return void
+     */
+    public function testFixesToGreedyCanonicalForm(): void
+    {
+        $this->assertFixes('CommentLineLength.inc');
+    }
+
+    /**
+     * Comments that are already canonical, or exempt from reflow, report no
+     * faults at all.
+     *
+     * @return void
+     */
+    public function testCanonicalAndExemptCommentsAreClean(): void
+    {
+        $this->assertErrorsOnLines('CommentLineLengthValid.inc', []);
     }
 }

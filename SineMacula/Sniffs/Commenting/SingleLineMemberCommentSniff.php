@@ -102,8 +102,8 @@ final class SingleLineMemberCommentSniff implements Sniff
 
     /**
      * Whether the variable at the pointer declares a class member property,
-     * distinguishing a declaration in a class body from a promoted parameter,
-     * a local variable or a static access inside a method.
+     * distinguishing a declaration in a class body from a promoted parameter, a
+     * local variable or a static access inside a method.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

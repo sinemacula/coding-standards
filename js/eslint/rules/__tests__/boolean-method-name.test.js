@@ -256,7 +256,8 @@ typedRuleTester.run('boolean-method-name', rule, {
             errors: [{ messageId: 'notPredicate', data: { name: 'online' } }],
         },
         {
-            // Only the exact primitive-type name is a typed accessor; a longer name is not.
+            // Only the exact primitive-type name is a typed accessor; a longer
+            // name is not.
             code:   'class C { booleanFlag(): boolean { return true; } }',
             errors: [{ messageId: 'notPredicate', data: { name: 'booleanFlag' } }],
         },
