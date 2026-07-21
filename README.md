@@ -339,8 +339,9 @@ lines, suppression directives, fenced or indented code, tables, separators, a li
 unbreakable token such as a long name or URL, trailing comments after code and compact single-line docblocks are left
 untouched.
 
-The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `max-lines-per-function`
-(50 lines, test code exempt) and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment
+The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
+control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)
+and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment
 on every declared function, method, class, interface member and class field, forbid types in `@param`/`@returns` (the
 tags themselves are welcome, types belong in the signature) and keep a blank line above every documentation block,
 single-line blocks included. The type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and

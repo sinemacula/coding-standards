@@ -76,7 +76,9 @@ function trimAsciiStart(text) {
 export function classify(content, inFence) {
     const trimmed = trimAscii(content);
 
-    if (inFence) return KIND.FENCE;
+    if (inFence) {
+        return KIND.FENCE;
+    }
 
     return trimmed === '' ? KIND.BLANK : kindOf(content, trimmed);
 }
@@ -97,7 +99,9 @@ export function isFence(content) {
 export function listMarker(content) {
     const match = LIST_MARKER.exec(content);
 
-    if (!match) return null;
+    if (!match) {
+        return null;
+    }
 
     return { marker: match[2], indent: len(match[1]), width: len(match[2]) + 1 };
 }
@@ -128,10 +132,15 @@ export function tokenize(text) {
 /** Advance past one token, stepping over any atomic span it contains. */
 function consumeToken(chars, i) {
     while (i < chars.length && chars[i] !== ' ') {
-        if (chars[i] === '`') i = consumeSpan(chars, i, '`');
-        else if (chars[i] === '{' && chars[i + 1] === '@') i = consumeSpan(chars, i, '}');
-        else if (chars[i] === '[') i = consumeLink(chars, i);
-        else i += 1;
+        if (chars[i] === '`') {
+            i = consumeSpan(chars, i, '`');
+        } else if (chars[i] === '{' && chars[i + 1] === '@') {
+            i = consumeSpan(chars, i, '}');
+        } else if (chars[i] === '[') {
+            i = consumeLink(chars, i);
+        } else {
+            i += 1;
+        }
     }
 
     return i;
@@ -148,7 +157,9 @@ function consumeSpan(chars, i, close) {
 function consumeLink(chars, i) {
     const label = consumeSpan(chars, i, ']');
 
-    if (label === i + 1 || chars[label] !== '(') return i + 1;
+    if (label === i + 1 || chars[label] !== '(') {
+        return i + 1;
+    }
 
     const target = consumeSpan(chars, label, ')');
 
@@ -184,12 +195,18 @@ export function reflow(lines, marginWidth, maxLength) {
 
 /** Handle one line or paragraph, appending its output and any faults. */
 function consume(lines, i, type, ctx) {
-    if (type === KIND.PROSE) return paragraph(lines, i, null, ctx);
-    if (type === KIND.LIST) return paragraph(lines, i, listMarker(lines[i]), ctx);
+    if (type === KIND.PROSE) {
+        return paragraph(lines, i, null, ctx);
+    }
+    if (type === KIND.LIST) {
+        return paragraph(lines, i, listMarker(lines[i]), ctx);
+    }
 
     ctx.out.push(lines[i]);
 
-    if (type === KIND.FENCE) ctx.fence(true);
+    if (type === KIND.FENCE) {
+        ctx.fence(true);
+    }
 
     return i + 1;
 }
@@ -210,7 +227,9 @@ function paragraph(lines, start, marker, ctx) {
 function proseEnd(lines, from) {
     let end = from;
 
-    while (end < lines.length && classify(lines[end], false) === KIND.PROSE) end += 1;
+    while (end < lines.length && classify(lines[end], false) === KIND.PROSE) {
+        end += 1;
+    }
 
     return end;
 }
@@ -241,7 +260,9 @@ function reflowParagraph(slice, marker, marginWidth, maxLength) {
     const width = maxLength - marginWidth - hanging;
     const tokens = glue(tokenize(joinText(slice, marker)));
 
-    if (width < 1 || tokens.length === 0 || longestToken(tokens) > width) return null;
+    if (width < 1 || tokens.length === 0 || longestToken(tokens) > width) {
+        return null;
+    }
 
     const lines = layout(greedy(tokens, width), marker, indent, hanging);
 
@@ -272,8 +293,12 @@ function findFaults(slice, marginWidth, maxLength) {
     const premature = [];
 
     slice.forEach((content, offset) => {
-        if (marginWidth + len(content) > maxLength) long.push(offset);
-        if (wrapsEarly(slice, offset, marginWidth, maxLength)) premature.push(offset);
+        if (marginWidth + len(content) > maxLength) {
+            long.push(offset);
+        }
+        if (wrapsEarly(slice, offset, marginWidth, maxLength)) {
+            premature.push(offset);
+        }
     });
 
     return { long, premature };
@@ -281,7 +306,9 @@ function findFaults(slice, marginWidth, maxLength) {
 
 /** Whether a line could hold the first word of the next line within the width. */
 function wrapsEarly(slice, offset, marginWidth, maxLength) {
-    if (offset + 1 >= slice.length) return false;
+    if (offset + 1 >= slice.length) {
+        return false;
+    }
 
     const next = glue(tokenize(slice[offset + 1]))[0] ?? '';
 
@@ -301,8 +328,11 @@ function glue(tokens) {
     const out = [];
 
     for (const token of tokens) {
-        if (out.length > 0 && POISON.test(token)) out[out.length - 1] += ` ${token}`;
-        else out.push(token);
+        if (out.length > 0 && POISON.test(token)) {
+            out[out.length - 1] += ` ${token}`;
+        } else {
+            out.push(token);
+        }
     }
 
     return out;
@@ -314,15 +344,19 @@ function greedy(tokens, width) {
     let current = '';
 
     for (const token of tokens) {
-        if (current === '') current = token;
-        else if (len(current) + 1 + len(token) <= width) current += ` ${token}`;
-        else {
+        if (current === '') {
+            current = token;
+        } else if (len(current) + 1 + len(token) <= width) {
+            current += ` ${token}`;
+        } else {
             lines.push(current);
             current = token;
         }
     }
 
-    if (current !== '') lines.push(current);
+    if (current !== '') {
+        lines.push(current);
+    }
 
     return lines;
 }
