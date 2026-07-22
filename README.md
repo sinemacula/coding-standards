@@ -88,8 +88,8 @@ parameters:
 
 For Laravel projects, also install
 [`sinemacula/coding-standards-laravel`](https://github.com/sinemacula/coding-standards-laravel) and reference its
-`SineMaculaLaravel` PHPCS standard (which includes this one) in place of `SineMacula`. It adds the
-Laravel-specific sniffs and PHPStan rules; see that package's README for setup.
+`SineMaculaLaravel` PHPCS standard (which includes this one) in place of `SineMacula`. It adds the Laravel-specific
+sniffs and PHPStan rules; see that package's README for setup.
 
 ### Biome (JavaScript / TypeScript)
 
@@ -114,9 +114,8 @@ After installing the npm package, extend the shared Biome config from your proje
 }
 ```
 
-`extends` paths are resolved through normal Node module lookup, so the package only needs to be installed (no path
-math against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer
-config.
+`extends` paths are resolved through normal Node module lookup, so the package only needs to be installed (no path math
+against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer config.
 
 ### ESLint (JavaScript / TypeScript)
 
@@ -136,9 +135,9 @@ The package exposes three flat-config entry points:
 - `@sinemacula/coding-standards/js/eslint/type-checked` - the opt-in type-aware layer. It includes the base layer and
   adds the cross-file / type-driven rules, so it needs a consumer `tsconfig`; use it in place of the base layer where
   one exists.
-- `@sinemacula/coding-standards/js/eslint/vue` - the opt-in Vue layer for single-file components. Unlike the
-  type-aware layer it carries no base rules of its own, so spread it *alongside* whichever layer the repository
-  already uses rather than in place of one.
+- `@sinemacula/coding-standards/js/eslint/vue` - the opt-in Vue layer for single-file components. Unlike the type-aware
+  layer it carries no base rules of its own, so spread it *alongside* whichever layer the repository already uses rather
+  than in place of one.
 
 Create an `eslint.config.js` (or `.qlty/configs/eslint.config.js` when wired through Qlty) that spreads the layer you
 want. Without a `tsconfig`, use the base layer:
@@ -171,23 +170,23 @@ export default [...typeChecked, ...vue];
 ```
 
 The Vue layer registers the single-file-component parser (without it `.vue` files are not linted at all), resolves
-`<script lang="ts">` blocks through the TypeScript parser, and holds component filenames to kebab-case. It also
-carries the template layout rules, which is the one place ESLint takes on formatting: Biome does not understand
-single-file components, so `.vue` markup would otherwise go unformatted entirely. Those rules are aligned to the
-shared four-space indent.
+`<script lang="ts">` blocks through the TypeScript parser, and holds component filenames to kebab-case. It also carries
+the template layout rules, which is the one place ESLint takes on formatting: Biome does not understand single-file
+components, so `.vue` markup would otherwise go unformatted entirely. Those rules are aligned to the shared four-space
+indent.
 
 When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
-default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install
-filter in your `.qlty/qlty.toml` so the sandbox carries them (this repository's `source.toml` exports the same
-override, but source-exported plugin definitions do not reliably propagate, so mirror it consumer-side):
+default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install filter
+in your `.qlty/qlty.toml` so the sandbox carries them (this repository's `source.toml` exports the same override, but
+source-exported plugin definitions do not reliably propagate, so mirror it consumer-side):
 
 ```toml
 [plugins.definitions.eslint]
 package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc"]
 ```
 
-Repositories enabling the Vue layer widen the same filter further, since its plugins have to resolve inside that
-sandbox too:
+Repositories enabling the Vue layer widen the same filter further, since its plugins have to resolve inside that sandbox
+too:
 
 ```toml
 [plugins.definitions.eslint]
@@ -206,17 +205,25 @@ package (as above) and extend the base from your `tsconfig.json`:
 {
     "extends": "@sinemacula/coding-standards/js/tsconfig.base.json",
     "compilerOptions": {
-        "lib": ["ES2023", "DOM", "DOM.Iterable"],
-        "types": ["node"]
+        "lib": [
+            "ES2023",
+            "DOM",
+            "DOM.Iterable"
+        ],
+        "types": [
+            "node"
+        ]
     },
-    "include": ["src"]
+    "include": [
+        "src"
+    ]
 }
 ```
 
-The base carries only the environment-independent options: the full strictness set and the module/resolution
-discipline. Everything environment-specific stays in the consuming repo and layers on top - `lib` (DOM for the browser,
-none for a Node service), `types`, Vue's `jsx`/`jsxImportSource`, `paths`, `noEmit`, and the `include`/`exclude` globs.
-The `target` and `module` defaults suit bundler-built apps and libraries; a non-bundler project overrides them.
+The base carries only the environment-independent options: the full strictness set and the module/resolution discipline.
+Everything environment-specific stays in the consuming repo and layers on top - `lib` (DOM for the browser, none for a
+Node service), `types`, Vue's `jsx`/`jsxImportSource`, `paths`, `noEmit`, and the `include`/`exclude` globs. The`target`
+and `module` defaults suit bundler-built apps and libraries; a non-bundler project overrides them.
 
 The base sets `noPropertyAccessFromIndexSignature`, so a property that comes from an index signature is accessed with
 brackets (`config['key']`), not a dot. Biome cannot see types and so cannot tell that access apart from a normal one,
@@ -327,28 +334,28 @@ type-checked layer.
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
 to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
-`allow`, and `require-copyright` takes `tags` to adjust their defaults. `align-doc-tags` takes `tags` and `column`,
-the column counting from the `@`, so the default of 14 gives `@author` six spaces and `@copyright` three.
-Together `single-line-property-doc` and `multiline-function-doc` set a member's comment shape by its kind: data
-members (interface property signatures, enum members and data class fields) take one line, while methods, interface
-method signatures and class fields holding a function take several. A data comment is never required, only held to
-one line where present; a free function keeps the freedom of either shape.
+`allow`, and `require-copyright` takes `tags` to adjust their defaults. `align-doc-tags` takes `tags` and `column`, the
+column counting from the `@`, so the default of 14 gives `@author` six spaces and `@copyright` three. Together
+`single-line-property-doc` and `multiline-function-doc` set a member's comment shape by its kind: data members
+(interface property signatures, enum members and data class fields) take one line, while methods, interface method
+signatures and class fields holding a function take several. A data comment is never required, only held to one line
+where present; a free function keeps the freedom of either shape.
 
 `comment-line-wrap` takes `maxLength` (default 80) and is the syntax-only counterpart of the PHP
 `SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` runs and multi-line docblock prose greedily,
 reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both. Markdown
 headings, docblock tag lines, machine-parsed tool directives (`eslint`, `biome-ignore`, `@ts-`, `Stryker`, `c8`/`v8`/
-`istanbul ignore`, `@vite-ignore` and the like), fenced code, an indented code or command block, a doc-tag whose
-value opens a multi-line bracketed type (an `array{...}` shape, a `<...>` generic or a `\Closure(...)` signature),
-tables, separators, a line whose overflow is a single unbreakable token such as a long name or URL, trailing comments
-after code and compact single-line docblocks are left untouched.
+`istanbul ignore`, `@vite-ignore` and the like), fenced code, an indented code or command block, a doc-tag whose value
+opens a multi-line bracketed type (an `array{...}` shape, a `<...>` generic or a `\Closure(...)` signature), tables,
+separators, a line whose overflow is a single unbreakable token such as a long name or URL, trailing comments after code
+and compact single-line docblocks are left untouched.
 
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
 control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)
-and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment
-on every declared function, method, class, interface member and class field, forbid types in `@param`/`@returns` (the
-tags themselves are welcome, types belong in the signature) and keep a blank line above every documentation block,
-single-line blocks included. The type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
+and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment on every declared function,
+method, class, interface member and class field, forbid types in `@param`/`@returns` (the tags themselves are welcome,
+types belong in the signature) and keep a blank line above every documentation block, single-line blocks included. The
+type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
 `@typescript-eslint/only-throw-error`.
 
 ## Requirements
