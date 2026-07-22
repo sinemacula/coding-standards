@@ -28,4 +28,17 @@ final class DisallowInterfacePrefixSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('DisallowInterfacePrefix.inc', [9]);
     }
+
+    /**
+     * The rendered message names the offending interface, proving the name is
+     * passed through to the report.
+     *
+     * @return void
+     */
+    public function testReportsTheOffendingInterfaceNameInTheMessage(): void
+    {
+        $this->assertErrorMessagesOnLines('DisallowInterfacePrefix.inc', [
+            9 => ['Interface "IUserRepository" must not use an "I" prefix.'],
+        ]);
+    }
 }

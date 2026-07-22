@@ -36,4 +36,11 @@ class Handler
             risky();
         } catch (\RuntimeException $e) {}
     }
+
+    public function commentHugsBraces(): void
+    {
+        try {
+            risky();
+        } catch (\Throwable) {/* swallow: the caller inspects state instead */}
+    }
 }

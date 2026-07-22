@@ -29,4 +29,29 @@ final class PromotedConstructorSpacingSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('PromotedConstructorSpacing.inc', [21, 23]);
     }
+
+    /**
+     * A directive comment tight against the opening parenthesis is skipped, a
+     * plain trailing comment is not, one that merely mentions a directive is
+     * not, and a directive on its own line still needs a blank line above it.
+     *
+     * @return void
+     */
+    public function testHandlesTrailingComments(): void
+    {
+        $this->assertErrorsOnLines('PromotedConstructorSpacingComments.inc', [16, 25, 35]);
+    }
+
+    /**
+     * The rendered error message names the offending parameter.
+     *
+     * @return void
+     */
+    public function testErrorMessageNamesTheParameter(): void
+    {
+        $this->assertErrorMessagesOnLines('PromotedConstructorSpacing.inc', [
+            21 => ['Constructor parameter "$id" must be preceded by a blank line.'],
+            23 => ['Constructor parameter "$name" must be preceded by a blank line.'],
+        ]);
+    }
 }

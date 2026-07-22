@@ -1,0 +1,113 @@
+# ==============================================================================
+# QUALITY GATES
+# ==============================================================================
+name: Quality Gates
+
+# ==============================================================================
+# TRIGGERS
+# ==============================================================================
+on:
+    push:
+        branches: [ master ]
+    pull_request:
+        types: [ opened, synchronize, reopened, ready_for_review ]
+    schedule:
+        -   cron: 0 7 * * 1
+    workflow_dispatch:
+
+# ==============================================================================
+# CONCURRENCY
+# ==============================================================================
+concurrency:
+    group: quality-gates-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+# ==============================================================================
+# PERMISSIONS
+# ==============================================================================
+permissions:
+    contents: read
+
+# ==============================================================================
+# DEFAULTS
+# ==============================================================================
+defaults:
+    run:
+        shell: bash
+
+jobs:
+
+    # ==========================================================================
+    # JOB: SCOPED MUTATION GATE (PR + PUSH)
+    # ==========================================================================
+    mutation:
+        if: ${{ github.event_name != 'schedule' }}
+        name: Mutation / PHP 8.3
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+                    fetch-depth: 0
+
+            -   name: Fetch base branch for the diff
+                run: git fetch --no-tags origin master
+
+            # This repo diverges from the shared setup-php action, which pins the
+            # coverage driver to pcov: php_codesniffer loads sniffs through its own
+            # include()-based autoloader, which pcov does not instrument (it reports
+            # 0%). Xdebug is the only driver that sees them, so it is set directly.
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.3
+                    coverage: xdebug
+                    tools: composer
+
+            # The suite supports phpcs 3.x and 4.x; the mutation leg pins the 4.x
+            # major consumers run so the mutant population stays stable run-to-run.
+            -   name: Install dependencies
+                run: >
+                    composer update --prefer-dist --no-interaction --no-progress
+                    --with "squizlabs/php_codesniffer:^4.0"
+
+            -   name: Scoped mutation gate
+                run: composer test:mutation
+
+    # ==========================================================================
+    # JOB: FULL MUTATION SUITE (SCHEDULED + MANUAL)
+    # ==========================================================================
+    mutation-full:
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        continue-on-error: true
+        name: Mutation Full / PHP 8.3
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            # This repo diverges from the shared setup-php action, which pins the
+            # coverage driver to pcov: php_codesniffer loads sniffs through its own
+            # include()-based autoloader, which pcov does not instrument (it reports
+            # 0%). Xdebug is the only driver that sees them, so it is set directly.
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.3
+                    coverage: xdebug
+                    tools: composer
+
+            # The suite supports phpcs 3.x and 4.x; the mutation leg pins the 4.x
+            # major consumers run so the mutant population stays stable run-to-run.
+            -   name: Install dependencies
+                run: >
+                    composer update --prefer-dist --no-interaction --no-progress
+                    --with "squizlabs/php_codesniffer:^4.0"
+
+            -   name: Full mutation suite
+                run: composer test:mutation:full

@@ -74,3 +74,32 @@ class SchemaCase extends TestCase
         self::$schema = ['x'];
     }
 }
+
+class Gauges
+{
+    public static int $compound = 0;
+
+    public static int $preIncremented = 0;
+
+    public static int $preDecremented = 0;
+
+    public static int $postDecremented = 0;
+
+    public static array $buffer = [];
+
+    public static ?object $holder = null;
+
+    public static int $first = 0, $second = 0;
+
+    public function touch(): void
+    {
+        self::$compound += 1;
+        ++self::$preIncremented;
+        --self::$preDecremented;
+        self::$postDecremented--;
+        self::$buffer['k'][] = 'x';
+        self::$holder->count = 1;
+        self::$first  = 1;
+        self::$second = 2;
+    }
+}

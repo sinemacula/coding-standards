@@ -29,4 +29,27 @@ final class RequirePromotedPropertyCommentSniffTest extends AbstractSniffTestCas
     {
         $this->assertErrorsOnLines('RequirePromotedPropertyComment.inc', [10]);
     }
+
+    /**
+     * A doc comment hugging the opening parenthesis still documents the first
+     * promoted property.
+     *
+     * @return void
+     */
+    public function testAcceptsDocCommentHuggingTheOpeningParenthesis(): void
+    {
+        $this->assertErrorsOnLines('RequirePromotedPropertyCommentEdges.inc', []);
+    }
+
+    /**
+     * The reported message names the offending property.
+     *
+     * @return void
+     */
+    public function testReportsPropertyNameInMessage(): void
+    {
+        $this->assertErrorMessagesOnLines('RequirePromotedPropertyComment.inc', [
+            10 => ['Promoted property "$name" must have a doc comment.'],
+        ]);
+    }
 }

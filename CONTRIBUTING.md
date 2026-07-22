@@ -64,13 +64,14 @@ composer test:coverage   # With Clover coverage report (requires Xdebug)
 Single test file or method:
 
 ```bash
-vendor/bin/phpunit SineMacula/Tests/Sniffs/<Category>/<Name>SniffTest.php
-vendor/bin/phpunit --filter testDetectsViolations SineMacula/Tests/Sniffs/<Category>/<Name>SniffTest.php
+vendor/bin/phpunit SineMacula/Tests/<Category>/<Name>SniffTest.php
+vendor/bin/phpunit --filter testDetectsViolations SineMacula/Tests/<Category>/<Name>SniffTest.php
 ```
 
 ### Standards
 
-- New sniffs and PHPStan rules ship with tests and maintain 100% line coverage
+- New sniffs and PHPStan rules ship with tests and maintain 100% line coverage; the package's mutation-testing gate
+  (`composer test:mutation`) is the enforced floor
 - Full type hints on all method parameters and return types
 - PHPDoc on all classes and methods
 - Sniffs are token-based; PHPStan rules are AST/reflection-based

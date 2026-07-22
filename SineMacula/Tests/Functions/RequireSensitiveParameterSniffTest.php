@@ -5,6 +5,9 @@ declare(strict_types = 1);
 namespace SineMacula\Tests\Functions;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
+use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 use SineMacula\Sniffs\Functions\RequireSensitiveParameterSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
@@ -17,6 +20,8 @@ use SineMacula\Tests\AbstractSniffTestCase;
  * @internal
  */
 #[CoversClass(RequireSensitiveParameterSniff::class)]
+#[CoversTrait(DetectsTestClasses::class)]
+#[CoversTrait(ResolvesQualifiedNames::class)]
 final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
 {
     /**
@@ -39,5 +44,32 @@ final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
     public function testExemptsFixturesUnderTestsDirectory(): void
     {
         $this->assertErrorsOnLines('tests/SensitiveParameterFixture.inc', []);
+    }
+
+    /**
+     * Camel-case names are matched case-insensitively - $apiKey matches the
+     * joined keyword form and $currentPassword matches on a word boundary - the
+     * reported message names the offending parameter, and an unqualified
+     * imported attribute counts as marked.
+     *
+     * @return void
+     */
+    public function testMatchesCamelCaseNamesAndReportsParameterName(): void
+    {
+        $this->assertErrorMessagesOnLines('RequireSensitiveParameterNaming.inc', [
+            9  => ['Parameter "$apiKey" looks sensitive and must be marked #[\SensitiveParameter].'],
+            13 => ['Parameter "$currentPassword" looks sensitive and must be marked #[\SensitiveParameter].'],
+        ]);
+    }
+
+    /**
+     * The closest enclosing class decides the test exemption - a test class
+     * declared inside a production class method is still exempt.
+     *
+     * @return void
+     */
+    public function testExemptsNestedTestClassByClosestEnclosingClass(): void
+    {
+        $this->assertErrorsOnLines('RequireSensitiveParameterNested.inc', []);
     }
 }

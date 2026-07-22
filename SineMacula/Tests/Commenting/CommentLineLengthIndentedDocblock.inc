@@ -1,0 +1,14 @@
+<?php
+
+namespace App;
+
+class Demo
+{
+    /**
+     * This method docblock paragraph was
+     * wrapped far too early on its lines.
+     */
+    public function demo(): void
+    {
+    }
+}

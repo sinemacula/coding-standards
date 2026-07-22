@@ -28,4 +28,18 @@ final class ValidGlobalFunctionNameSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('ValidGlobalFunctionName.inc', [9, 13]);
     }
+
+    /**
+     * The rendered message names the offending function, proving the name is
+     * passed through to the report.
+     *
+     * @return void
+     */
+    public function testReportsTheOffendingFunctionNameInTheMessage(): void
+    {
+        $this->assertErrorMessagesOnLines('ValidGlobalFunctionName.inc', [
+            9  => ['Global function "doThing" must be declared in snake_case.'],
+            13 => ['Global function "DoThing" must be declared in snake_case.'],
+        ]);
+    }
 }

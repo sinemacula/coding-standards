@@ -1,6 +1,7 @@
 /vendor
 /node_modules
 /.idea
+/build
 /composer.lock
 .php-cs-fixer.cache
 .phpunit.result.cache

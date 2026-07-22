@@ -5,7 +5,9 @@ declare(strict_types = 1);
 namespace SineMacula\Tests\Namespaces;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 use SineMacula\Sniffs\Namespaces\RequireConcernsNamespaceSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
@@ -19,6 +21,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  */
 #[CoversClass(RequireConcernsNamespaceSniff::class)]
 #[CoversClass(AbstractRequiredNamespaceSniff::class)]
+#[CoversTrait(ResolvesQualifiedNames::class)]
 final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
 {
     /**
@@ -41,5 +44,28 @@ final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
     public function testFlagsTraitInGlobalNamespace(): void
     {
         $this->assertErrorsOnLines('RequireConcernsNamespaceGlobal.inc', [3]);
+    }
+
+    /**
+     * A trait in the global namespace whose own name matches the required
+     * segment is still flagged - the declaration name is not a namespace
+     * segment.
+     *
+     * @return void
+     */
+    public function testFlagsGlobalTraitNamedAfterSegment(): void
+    {
+        $this->assertErrorsOnLines('RequireConcernsNamespaceSegmentNamedTrait.inc', [3]);
+    }
+
+    /**
+     * The required segment may appear at any depth of the namespace, not only
+     * as the final segment.
+     *
+     * @return void
+     */
+    public function testAllowsSegmentInMiddleOfNamespace(): void
+    {
+        $this->assertErrorsOnLines('RequireConcernsNamespaceMidSegment.inc', []);
     }
 }

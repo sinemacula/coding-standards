@@ -135,4 +135,47 @@ class Example
     {
         return true;
     }
+
+    public function pending(): ?bool
+    {
+        return true;
+    }
+
+    public function HasErrors(): bool
+    {
+        return true;
+    }
+
+    public function operational(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Runs the checks and reports the outcome.
+     *
+     * @return bool
+     */
+    public function launch(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @Imperative
+     */
+    public function shutdown(): bool
+    {
+        return true;
+    }
+
+    /** @imperative */function cleanup(): bool
+    {
+        return true;
+    }
+
+    /** @imperative */#[\Override] public function teardown(): bool
+    {
+        return true;
+    }
 }

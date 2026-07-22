@@ -2,6 +2,7 @@
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
 [![npm Version](https://img.shields.io/npm/v/@sinemacula/coding-standards.svg)](https://www.npmjs.com/package/@sinemacula/coding-standards)
+[![Quality Gates](https://github.com/sinemacula/coding-standards/actions/workflows/quality-gates.yml/badge.svg?branch=master)](https://github.com/sinemacula/coding-standards/actions/workflows/quality-gates.yml)
 [![Maintainability](https://qlty.sh/gh/sinemacula/projects/coding-standards/maintainability.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
 [![Code Coverage](https://qlty.sh/gh/sinemacula/projects/coding-standards/coverage.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
 [![Total Downloads](https://img.shields.io/packagist/dt/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
@@ -357,12 +358,14 @@ single-line blocks included. The type-checked layer adds `@typescript-eslint/exp
 ## Testing
 
 ```bash
-composer test           # PHPUnit suite for the custom sniffs and PHPStan rule
-composer test:coverage  # suite with Clover coverage output
-composer analyse        # PHPStan static analysis
-composer check          # static analysis and lint via qlty
-composer format         # format via qlty
-composer smells         # duplication / complexity smells via qlty
+composer test                # PHPUnit suite for the custom sniffs and PHPStan rule
+composer test:coverage       # suite with Clover coverage output
+composer test:mutation       # Infection mutation gate (min MSI 90)
+composer test:mutation:full  # full mutation suite without thresholds
+composer analyse             # PHPStan static analysis
+composer check               # static analysis and lint via qlty
+composer format              # format via qlty
+composer smells              # duplication / complexity smells via qlty
 ```
 
 ## Changelog

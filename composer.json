@@ -39,6 +39,7 @@
         "squizlabs/php_codesniffer": "^3.13 || ^4.0",
         "slevomat/coding-standard": "^8.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "infection/infection": "^0.33.2",
         "phpunit/phpunit": "^12",
         "phpstan/phpstan": "^2.1",
         "phpstan/extension-installer": "^1.4",
@@ -48,6 +49,7 @@
     "config": {
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": true,
             "phpstan/extension-installer": true
         }
     },
@@ -69,6 +71,12 @@
         ],
         "test:coverage": [
             "@php -d pcov.enabled=0 -d xdebug.mode=coverage vendor/bin/phpunit --coverage-clover=clover.xml"
+        ],
+        "test:mutation": [
+            "@php -d memory_limit=-1 -d pcov.enabled=0 -d xdebug.mode=coverage vendor/bin/infection --configuration=infection.json5 --only-covering-test-cases --threads=max --git-diff-lines --git-diff-base=origin/master --map-source-class-to-test --min-msi=90 --min-covered-msi=90 --ignore-msi-with-no-mutations"
+        ],
+        "test:mutation:full": [
+            "@php -d memory_limit=-1 -d pcov.enabled=0 -d xdebug.mode=coverage vendor/bin/infection --configuration=infection.full.json5 --only-covering-test-cases --threads=max"
         ]
     },
     "scripts-descriptions": {
@@ -77,6 +85,8 @@
         "smells": "Report code smells (duplication, complexity) via qlty.",
         "analyse": "Run PHPStan over the repo's own sniffs and rule (phpstan.neon.dist).",
         "test": "Run the PHPUnit sniff test suite.",
-        "test:coverage": "Run the PHPUnit sniff test suite with Clover coverage output (requires Xdebug)."
+        "test:coverage": "Run the PHPUnit sniff test suite with Clover coverage output (requires Xdebug).",
+        "test:mutation": "Run the Infection mutation-testing gate against the MSI thresholds.",
+        "test:mutation:full": "Run the full Infection mutation suite without MSI thresholds."
     }
 }

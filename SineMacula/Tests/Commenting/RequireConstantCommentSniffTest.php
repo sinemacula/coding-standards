@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace SineMacula\Tests\Commenting;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 use SineMacula\Sniffs\Commenting\RequireConstantCommentSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
@@ -17,6 +19,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  * @internal
  */
 #[CoversClass(RequireConstantCommentSniff::class)]
+#[CoversTrait(ResolvesDocComment::class)]
 final class RequireConstantCommentSniffTest extends AbstractSniffTestCase
 {
     /**
