@@ -48,3 +48,21 @@ class ExtendableWithAttribute
 class PlainWithAttribute
 {
 }
+
+/**
+ * Tagged but still concrete.
+ *
+ * @deprecated
+ */
+class TaggedButConcrete
+{
+}
+
+/**
+ * Opt-out written with different tag casing.
+ *
+ * @Inheritable
+ */
+class CasedOptOut
+{
+}

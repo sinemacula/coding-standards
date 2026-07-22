@@ -20,8 +20,9 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequireEmptyCatchCommentSniffTest extends AbstractSniffTestCase
 {
     /**
-     * A bare empty catch is flagged; a swallow documented with a comment and a
-     * catch with statements are not.
+     * A bare empty catch is flagged; a swallow documented with a comment, one
+     * whose comment hugs the braces with no whitespace, and a catch with
+     * statements are not.
      *
      * @return void
      */

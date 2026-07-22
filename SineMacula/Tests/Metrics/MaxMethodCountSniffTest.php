@@ -5,7 +5,9 @@ declare(strict_types = 1);
 namespace SineMacula\Tests\Metrics;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 use SineMacula\Sniffs\Metrics\MaxMethodCountSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
@@ -19,6 +21,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  */
 #[CoversClass(MaxMethodCountSniff::class)]
 #[CoversClass(AbstractMetricSniff::class)]
+#[CoversTrait(DetectsTestClasses::class)]
 final class MaxMethodCountSniffTest extends AbstractSniffTestCase
 {
     /**
@@ -29,6 +32,19 @@ final class MaxMethodCountSniffTest extends AbstractSniffTestCase
     public function testFlagsStructuresWithTooManyMethods(): void
     {
         $this->assertErrorsOnLines('MaxMethodCount.inc', [5]);
+    }
+
+    /**
+     * A method whose declaration directly follows the opening brace is still
+     * counted.
+     *
+     * @return void
+     */
+    public function testCountsMethodDeclaredDirectlyAfterOpeningBrace(): void
+    {
+        $this->assertErrorMessagesOnLines('MaxMethodCountBraceLine.inc', [
+            5 => ['Structure declares 3 methods; the maximum is 2.'],
+        ]);
     }
 
     /**

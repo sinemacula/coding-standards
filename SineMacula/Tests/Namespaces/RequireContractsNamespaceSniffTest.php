@@ -5,7 +5,9 @@ declare(strict_types = 1);
 namespace SineMacula\Tests\Namespaces;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
 use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 use SineMacula\Sniffs\Namespaces\RequireContractsNamespaceSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
@@ -19,6 +21,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  */
 #[CoversClass(RequireContractsNamespaceSniff::class)]
 #[CoversClass(AbstractRequiredNamespaceSniff::class)]
+#[CoversTrait(ResolvesQualifiedNames::class)]
 final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
 {
     /**
@@ -41,5 +44,17 @@ final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
     public function testFlagsInterfaceInGlobalNamespace(): void
     {
         $this->assertErrorsOnLines('RequireContractsNamespaceGlobal.inc', [3]);
+    }
+
+    /**
+     * An interface inside a braced global namespace is flagged even when the
+     * opening brace directly follows the namespace keyword and the interface
+     * shares the segment's name.
+     *
+     * @return void
+     */
+    public function testFlagsInterfaceInBracedGlobalNamespace(): void
+    {
+        $this->assertErrorsOnLines('RequireContractsNamespaceBracedGlobal.inc', [4]);
     }
 }

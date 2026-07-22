@@ -1,0 +1,23 @@
+{
+    $schema: "./vendor/infection/infection/resources/schema.json",
+    source: {
+        directories: [
+            "src",
+            "SineMacula/Sniffs"
+        ]
+    },
+    logs: {
+        summary: "build/infection-summary.log",
+        text: "build/infection.log"
+    },
+    phpUnit: {
+        configDir: ".",
+        customPath: "vendor/bin/phpunit"
+    },
+    bootstrap: "SineMacula/Tests/bootstrap.php",
+    initialTestsPhpOptions: "-d pcov.enabled=0 -d xdebug.mode=coverage -d memory_limit=1G",
+    timeout: 30,
+    mutators: {
+        "@default": true
+    }
+}

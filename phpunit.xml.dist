@@ -15,9 +15,11 @@
         <include>
             <directory suffix="Sniff.php">SineMacula/Sniffs</directory>
             <directory suffix="Sniff.php">src</directory>
+            <directory suffix=".php">src/Sniffs/Concerns</directory>
             <directory suffix="Rule.php">src</directory>
             <directory suffix="Collector.php">src</directory>
             <directory suffix=".php">src/Comments</directory>
+            <file>src/PhpCsFixerConfig.php</file>
         </include>
     </source>
 </phpunit>

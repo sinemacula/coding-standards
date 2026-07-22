@@ -31,7 +31,10 @@ final class NoMutableStaticPropertyRuleTest extends RuleTestCase
     /**
      * Only static properties written at runtime are flagged; read-only config,
      * a @managed-static opt-out, instance/constant members, and members of test
-     * classes (named *Test or extending *TestCase) are not.
+     * classes (named *Test or extending *TestCase) are not. Every write form
+     * counts: assignment, compound assignment, pre/post increment and
+     * decrement, and writes through array or object access, including each name
+     * of a multi-property declaration.
      *
      * @return void
      */
@@ -40,6 +43,14 @@ final class NoMutableStaticPropertyRuleTest extends RuleTestCase
         $this->analyse([__DIR__ . '/data/mutable-static.inc'], [
             [$this->message('count'), 7],
             [$this->message('shared'), 14],
+            [$this->message('compound'), 80],
+            [$this->message('preIncremented'), 82],
+            [$this->message('preDecremented'), 84],
+            [$this->message('postDecremented'), 86],
+            [$this->message('buffer'), 88],
+            [$this->message('holder'), 90],
+            [$this->message('first'), 92],
+            [$this->message('second'), 92],
         ]);
     }
 

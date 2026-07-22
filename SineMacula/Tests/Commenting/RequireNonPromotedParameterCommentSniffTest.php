@@ -30,4 +30,29 @@ final class RequireNonPromotedParameterCommentSniffTest extends AbstractSniffTes
     {
         $this->assertErrorsOnLines('RequireNonPromotedParameterComment.inc', [11]);
     }
+
+    /**
+     * A constructor with only plain parameters is not mixed, so its parameters
+     * need no comments; a comment hugging the opening parenthesis or the
+     * preceding parameter counts only for the parameter that follows it, so the
+     * next uncommented plain parameter is still flagged.
+     *
+     * @return void
+     */
+    public function testHandlesEdgeCommentPlacementAndPlainOnlyConstructors(): void
+    {
+        $this->assertErrorsOnLines('RequireNonPromotedParameterCommentEdges.inc', [27]);
+    }
+
+    /**
+     * The reported message names the offending parameter.
+     *
+     * @return void
+     */
+    public function testReportsParameterNameInMessage(): void
+    {
+        $this->assertErrorMessagesOnLines('RequireNonPromotedParameterComment.inc', [
+            11 => ['Non-promoted parameter "$name" mixed with promoted properties must carry a preceding comment.'],
+        ]);
+    }
 }

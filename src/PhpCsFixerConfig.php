@@ -18,6 +18,7 @@ use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
  * @copyright   2026 Sine Macula Limited
  *
  * @SuppressWarnings("php:S4833")
+ * @SuppressWarnings("php:S2003")
  */
 final class PhpCsFixerConfig
 {
@@ -30,7 +31,7 @@ final class PhpCsFixerConfig
      */
     public static function make(array $directories, array $overrides = []): Config
     {
-        $rules = require_once __DIR__ . '/../php/.php-cs-fixer.rules.php';
+        $rules = require __DIR__ . '/../php/.php-cs-fixer.rules.php';
 
         $finder = Finder::create()
             ->in($directories)

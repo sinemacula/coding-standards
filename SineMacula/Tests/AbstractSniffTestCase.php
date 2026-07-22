@@ -68,6 +68,32 @@ abstract class AbstractSniffTestCase extends TestCase
     }
 
     /**
+     * Assert that the sniff reports the given rendered error messages on the
+     * given lines, where the map is keyed by line and lists each message.
+     *
+     * @param  string  $fixture
+     * @param  array<int, list<string>>  $expected
+     * @return void
+     */
+    protected function assertErrorMessagesOnLines(string $fixture, array $expected): void
+    {
+        $actual = [];
+
+        foreach ($this->process($fixture)->getErrors() as $line => $columns) {
+            foreach ($columns as $messages) {
+                foreach ($messages as $message) {
+                    $actual[$line][] = $message['message'];
+                }
+            }
+        }
+
+        ksort($actual);
+        ksort($expected);
+
+        static::assertSame($expected, $actual);
+    }
+
+    /**
      * Assert that the sniff fixes the fixture to its expected `.fixed`
      * companion, and that a second pass over the output leaves it unchanged.
      *

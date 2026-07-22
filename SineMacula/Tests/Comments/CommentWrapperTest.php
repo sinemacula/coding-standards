@@ -32,6 +32,18 @@ final class CommentWrapperTest extends TestCase
     /** @var string A tag whose description holds a bracket, but which opens no type. */
     private const string STRAY_BRACKET_TAG = '@return bool True if a<b for the pair';
 
+    /** @var string A filler sentence of seventy-two columns, for exact break points. */
+    private const string FILLER_72 = 'alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima';
+
+    /** @var string The filler extended to seventy-seven columns, filling a line exactly. */
+    private const string FILLER_77 = self::FILLER_72 . ' mike';
+
+    /** @var string A multibyte emoji, one code point wide, for width counting. */
+    private const string EMOJI = "\u{1F600}";
+
+    /** @var string A four-letter filler word with its trailing space. */
+    private const string FILLER_WORD = 'aaaa ';
+
     /**
      * Cases exercising overflow, premature wrapping, atoms, lists and the
      * verbatim kinds, each with its expected canonical lines and fault indices.
@@ -180,6 +192,228 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
+     * Cases exercising the walk across segments: fault accumulation over
+     * paragraphs, fault indices offset to the paragraph's base, the bounds of a
+     * list item's continuation lines, and the state that follows a type block
+     * or an indented line.
+     *
+     * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
+     */
+    public static function segmentBoundaryCases(): iterable
+    {
+        yield from [
+            'faults accumulate across paragraphs' => [
+                ['First half wrapped', 'too early here.', '', 'Second half wrapped', 'too early again.'],
+                3,
+                ['First half wrapped too early here.', '', 'Second half wrapped too early again.'],
+                [],
+                [0, 3],
+            ],
+            'faults are indexed from the paragraph base' => [
+                ['', 'This paragraph was wrapped', 'far too early here.', '@internal'],
+                3,
+                ['', 'This paragraph was wrapped far too early here.', '@internal'],
+                [],
+                [1],
+            ],
+            'a continuation at exactly the hanging indent joins its list item' => [
+                ['- alpha beta gamma', '  delta echo'],
+                3,
+                ['- alpha beta gamma delta echo'],
+                [],
+                [0],
+            ],
+            'a list item directly after a paragraph is still reflowed' => [
+                ['Lead-in prose paragraph.', '- a list item long enough that it needs to wrap onto a second line right here x'],
+                3,
+                [
+                    'Lead-in prose paragraph.',
+                    '- a list item long enough that it needs to wrap onto a second line right here',
+                    '  x',
+                ],
+                [1],
+                [],
+            ],
+            'prose directly after a type block closes is reflowed' => [
+                [
+                    '@phpstan-type Hooks array{',
+                    '    run: \Closure(): void,',
+                    '}',
+                    'Trailing prose long enough that the engine must reflow it onto a second line here now.',
+                ],
+                3,
+                [
+                    '@phpstan-type Hooks array{',
+                    '    run: \Closure(): void,',
+                    '}',
+                    'Trailing prose long enough that the engine must reflow it onto a second line',
+                    'here now.',
+                ],
+                [3],
+                [],
+            ],
+            'prose directly after an indented line is reflowed' => [
+                ['  $config = load();', 'Long prose here that must wrap onto a second line for this test to observe it working now.'],
+                3,
+                [
+                    '  $config = load();',
+                    'Long prose here that must wrap onto a second line for this test to observe it',
+                    'working now.',
+                ],
+                [1],
+                [],
+            ],
+        ];
+    }
+
+    /**
+     * Cases pinning the exact wrap boundary: which tokens may open a wrapped
+     * line when the break lands directly before them, the one-column edges of
+     * the premature-wrap check, and separated premature indices.
+     *
+     * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
+     */
+    public static function wrapBoundaryCases(): iterable
+    {
+        yield from [
+            'a bare tag at the break point pulls its preceding word down' => [
+                [self::FILLER_77 . ' @internal keeps reading on.'],
+                3,
+                [self::FILLER_72, 'mike @internal keeps reading on.'],
+                [0],
+                [],
+            ],
+            'a tag with trailing punctuation may open a wrapped line' => [
+                [self::FILLER_77 . ' @internal. keeps reading on.'],
+                3,
+                [self::FILLER_77, '@internal. keeps reading on.'],
+                [0],
+                [],
+            ],
+            'a token with a mid-word at sign may open a wrapped line' => [
+                [self::FILLER_77 . ' user@example keeps reading on.'],
+                3,
+                [self::FILLER_77, 'user@example keeps reading on.'],
+                [0],
+                [],
+            ],
+            'a flag token starting with a hyphen may open a wrapped line' => [
+                [self::FILLER_77 . ' --no-cache keeps reading on.'],
+                3,
+                [self::FILLER_77, '--no-cache keeps reading on.'],
+                [0],
+                [],
+            ],
+            'a token ending with a hyphen may open a wrapped line' => [
+                [self::FILLER_77 . ' micro- managed style here.'],
+                3,
+                [self::FILLER_77, 'micro- managed style here.'],
+                [0],
+                [],
+            ],
+            'premature lines are reported even when separated' => [
+                ['Tiny.', self::FILLER_72, 'wonderful stuff', 'end words.'],
+                3,
+                [
+                    'Tiny. alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo',
+                    'lima wonderful stuff end words.',
+                ],
+                [],
+                [0, 2],
+            ],
+            'a line one column short of holding the next word is canonical' => [
+                ['alpha bravo charlie delta echos foxtrot golf hotel india juliet kilo lima', 'word tail.'],
+                3,
+                ['alpha bravo charlie delta echos foxtrot golf hotel india juliet kilo lima', 'word tail.'],
+                [],
+                [],
+            ],
+            'a line exactly able to hold the next word is premature' => [
+                [self::FILLER_72, 'word tail here.'],
+                3,
+                [self::FILLER_72 . ' word', 'tail here.'],
+                [],
+                [0],
+            ],
+            'an empty list marker is left verbatim' => [
+                ['- '],
+                3,
+                ['- '],
+                [],
+                [],
+            ],
+        ];
+    }
+
+    /**
+     * Cases pinning code-point width counting in every measurement and how odd
+     * leading whitespace and small indents are carried through a reflow.
+     *
+     * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
+     */
+    public static function whitespaceAndWidthCases(): iterable
+    {
+        yield from [
+            'packing emoji lines counts code points' => [
+                [str_repeat(self::FILLER_WORD, 11) . str_repeat(self::EMOJI, 6), 'bbbb cccc dddd eeee.'],
+                3,
+                [str_repeat(self::FILLER_WORD, 11) . str_repeat(self::EMOJI, 6) . ' bbbb cccc dddd', 'eeee.'],
+                [],
+                [0],
+            ],
+            'the premature check counts the next word in code points' => [
+                [self::FILLER_72, str_repeat(self::EMOJI, 4) . ' done.'],
+                3,
+                [self::FILLER_72 . ' ' . str_repeat(self::EMOJI, 4), 'done.'],
+                [],
+                [0],
+            ],
+            'the longest token is measured in code points' => [
+                [str_repeat(self::EMOJI, 20), 'tail words here.'],
+                3,
+                [str_repeat(self::EMOJI, 20) . ' tail words here.'],
+                [],
+                [0],
+            ],
+            'a mixed space and tab lead collapses to spaces on reflow' => [
+                [" \t alpha beta", 'gamma delta.'],
+                3,
+                ['   alpha beta gamma delta.'],
+                [],
+                [0],
+            ],
+            'a tab-led list continuation joins its item cleanly' => [
+                ['- alpha bravo', "\tcharlie delta."],
+                3,
+                ['- alpha bravo charlie delta.'],
+                [],
+                [0],
+            ],
+            'a single space indent is kept when a paragraph merges' => [
+                [' alpha bravo', 'charlie delta.'],
+                3,
+                [' alpha bravo charlie delta.'],
+                [],
+                [0],
+            ],
+            'a single space indent alone does not force a reflow' => [
+                [' alpha bravo charlie delta echoes foxtrot golf hotel india juliet kilos lima', 'beta gamma'],
+                3,
+                [' alpha bravo charlie delta echoes foxtrot golf hotel india juliet kilos lima', 'beta gamma'],
+                [],
+                [],
+            ],
+            'an indented list item keeps its indent when wrapped' => [
+                [' - an indented item long enough that it must wrap onto a second line with its indent kept'],
+                3,
+                [' - an indented item long enough that it must wrap onto a second line with its', '   indent kept'],
+                [0],
+                [],
+            ],
+        ];
+    }
+
+    /**
      * Reflowing a paragraph fills each line greedily, reports overflowing and
      * prematurely wrapped lines on their own indices, and leaves atoms, lists,
      * canonical prose and verbatim kinds intact. Wrapping the result again is a
@@ -193,6 +427,9 @@ final class CommentWrapperTest extends TestCase
      * @return void
      */
     #[DataProvider('reflowCases')]
+    #[DataProvider('segmentBoundaryCases')]
+    #[DataProvider('wrapBoundaryCases')]
+    #[DataProvider('whitespaceAndWidthCases')]
     public function testReflowsToGreedyCanonicalForm(array $lines, int $margin, array $expected, array $long, array $premature): void
     {
         $wrapper = new CommentWrapper;
@@ -220,6 +457,57 @@ final class CommentWrapperTest extends TestCase
 
         self::assertSame(['alpha beta gamma delta epsilon zeta', 'eta theta iota kappa'], $result['lines']);
         self::assertSame([0], $result['long']);
+    }
+
+    /**
+     * A width of exactly one column still wraps: single-character tokens are
+     * laid out one per line rather than the paragraph being left verbatim.
+     *
+     * @return void
+     */
+    public function testWrapsAtAWidthOfOneColumn(): void
+    {
+        $result = (new CommentWrapper(4))->wrap(['a b'], 3);
+
+        self::assertSame(['a', 'b'], $result['lines']);
+        self::assertSame([0], $result['long']);
+        self::assertSame([], $result['premature']);
+    }
+
+    /**
+     * A token exactly as wide as the available width still wraps onto its own
+     * line rather than the paragraph being left verbatim.
+     *
+     * @return void
+     */
+    public function testWrapsATokenExactlyAtTheAvailableWidth(): void
+    {
+        $result = (new CommentWrapper(10))->wrap(['abcdefg hi'], 3);
+
+        self::assertSame(['abcdefg', 'hi'], $result['lines']);
+        self::assertSame([0], $result['long']);
+        self::assertSame([], $result['premature']);
+    }
+
+    /**
+     * A paragraph reflow reports its fault indices offset from the given base
+     * and as plain lists, so a caller can splice them straight into its own
+     * block-level indices even when the faulted lines are not consecutive.
+     *
+     * @return void
+     */
+    public function testReflowReportsFaultsAsListsFromTheBase(): void
+    {
+        $result = (new CommentParagraph(80))->reflow(['Tiny.', self::FILLER_72, 'wonderful stuff', 'end words.'], null, 3, 5);
+
+        self::assertSame([
+            'lines' => [
+                'Tiny. alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo',
+                'lima wonderful stuff end words.',
+            ],
+            'long'      => [],
+            'premature' => [5, 7],
+        ], $result);
     }
 
     /**
@@ -464,7 +752,7 @@ final class CommentWrapperTest extends TestCase
      */
     public function testCountsCodePointsNotBytes(): void
     {
-        $line   = 'aaaa ' . str_repeat("\u{1F600}", 3) . ' bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk llll mmmm nnnn oo';
+        $line   = self::FILLER_WORD . str_repeat(self::EMOJI, 3) . ' bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk llll mmmm nnnn oo';
         $result = (new CommentWrapper)->wrap([$line], 3);
 
         self::assertSame([$line], $result['lines']);

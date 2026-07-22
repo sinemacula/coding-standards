@@ -1,0 +1,9 @@
+<?php
+
+namespace App;
+
+function demo(): void
+{
+    // Le café sélectionné restera fermé pour la durée entière de la journée
+    // selon les employés présents.
+}

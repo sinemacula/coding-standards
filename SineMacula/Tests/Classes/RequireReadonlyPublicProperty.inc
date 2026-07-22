@@ -53,3 +53,14 @@ class SpyHandler extends TestCase
 {
     public int $calls = 0;
 }
+
+class Widget extends Component
+{
+    public int $width = 0;
+
+    public function __construct(
+        private string $first,
+        public int $second,
+    ) {
+    }
+}

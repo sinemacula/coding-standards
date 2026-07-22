@@ -29,4 +29,29 @@ final class RequireConstantTypeSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('RequireConstantType.inc', [7, 13]);
     }
+
+    /**
+     * Untyped constants keep their error when the spacing around the equals
+     * sign is tight, and a comment between `const` and the name leaves the
+     * declaration ambiguous, so it is not flagged.
+     *
+     * @return void
+     */
+    public function testHandlesTightSpacingAroundEquals(): void
+    {
+        $this->assertErrorsOnLines('RequireConstantTypeTight.inc', [7, 9]);
+    }
+
+    /**
+     * The rendered error message names the offending constant.
+     *
+     * @return void
+     */
+    public function testErrorMessageNamesTheConstant(): void
+    {
+        $this->assertErrorMessagesOnLines('RequireConstantType.inc', [
+            7  => ['Class constant "UNTYPED" must declare a type.'],
+            13 => ['Class constant "ANOTHER" must declare a type.'],
+        ]);
+    }
 }

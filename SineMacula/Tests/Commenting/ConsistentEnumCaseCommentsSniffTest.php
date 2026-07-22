@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace SineMacula\Tests\Commenting;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\CoversTrait;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 use SineMacula\Sniffs\Commenting\ConsistentEnumCaseCommentsSniff;
 use SineMacula\Tests\AbstractSniffTestCase;
 
@@ -17,6 +19,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
  * @internal
  */
 #[CoversClass(ConsistentEnumCaseCommentsSniff::class)]
+#[CoversTrait(ResolvesDocComment::class)]
 final class ConsistentEnumCaseCommentsSniffTest extends AbstractSniffTestCase
 {
     /**
@@ -30,5 +33,16 @@ final class ConsistentEnumCaseCommentsSniffTest extends AbstractSniffTestCase
     public function testFlagsInconsistentlyDocumentedEnumCases(): void
     {
         $this->assertErrorsOnLines('ConsistentEnumCaseComments.inc', [10, 28]);
+    }
+
+    /**
+     * A case declared immediately after the opening brace is still counted, so
+     * it is flagged when a later case is documented.
+     *
+     * @return void
+     */
+    public function testCountsCaseImmediatelyAfterOpeningBrace(): void
+    {
+        $this->assertErrorsOnLines('ConsistentEnumCaseCommentsEdges.inc', [6]);
     }
 }

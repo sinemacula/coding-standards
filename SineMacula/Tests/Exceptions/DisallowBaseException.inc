@@ -20,4 +20,15 @@ class Service
     {
         throw $e;
     }
+
+    public function guarded(bool $ok, \Throwable $e): void
+    {
+        if (!$ok) { throw $e; }
+        $audit = new \Exception('recorded, not thrown');
+    }
+
+    public function inline(): void
+    {
+        risky();throw new \Exception('compact');
+    }
 }

@@ -1,0 +1,7 @@
+<?php
+
+namespace{
+    interface Contracts
+    {
+    }
+}

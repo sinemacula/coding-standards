@@ -28,4 +28,19 @@ final class ValidEnumCaseNameSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorsOnLines('ValidEnumCaseName.inc', [7, 8, 14]);
     }
+
+    /**
+     * The rendered message names the offending enum case, proving the name is
+     * passed through to the report.
+     *
+     * @return void
+     */
+    public function testReportsTheOffendingCaseNameInTheMessage(): void
+    {
+        $this->assertErrorMessagesOnLines('ValidEnumCaseName.inc', [
+            7  => ['Enum case "Clubs" must be declared in SCREAMING_SNAKE_CASE.'],
+            8  => ['Enum case "spades" must be declared in SCREAMING_SNAKE_CASE.'],
+            14 => ['Enum case "In_Progress" must be declared in SCREAMING_SNAKE_CASE.'],
+        ]);
+    }
 }
