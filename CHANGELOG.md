@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/sinemacula/coding-standards/compare/v1.17.0...v1.18.0) (2026-07-22)
+
+
+### Features
+
+* add Infection mutation testing with a scoped 90% MSI gate ([#121](https://github.com/sinemacula/coding-standards/issues/121)) ([02fad1f](https://github.com/sinemacula/coding-standards/commit/02fad1fc03f0f09e3466fb6da92a5ba2a9bdd5e7))
+
 ## [1.17.0](https://github.com/sinemacula/coding-standards/compare/v1.16.0...v1.17.0) (2026-07-21)
 
 
