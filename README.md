@@ -303,7 +303,6 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.NamingConventions.DisallowInterfacePrefix`     | Interface names must not use the Hungarian `I` prefix.                      |
 | `SineMacula.NamingConventions.ValidEnumCaseName`           | Enum cases must be `SCREAMING_SNAKE_CASE`.                                  |
 | `SineMacula.NamingConventions.ValidGlobalFunctionName`     | Global functions must be declared in `snake_case`.                          |
-| `SineMacula.TypeHints.DisallowFullyQualifiedConstantType`  | Constant types must be imported, not inline fully-qualified names.          |
 | `SineMacula.TypeHints.RequireConstantType`                 | Class/interface/enum/trait constants must declare a native type.            |
 | `SineMacula.WhiteSpace.PromotedConstructorSpacing`         | Blank line above each promoted-constructor parameter.                       |
 
