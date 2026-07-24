@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/sinemacula/coding-standards/compare/v1.18.0...v1.19.0) (2026-07-24)
+
+
+### Features
+
+* add readonly-class and fully-qualified-constant-type sniffs ([#126](https://github.com/sinemacula/coding-standards/issues/126)) ([43f9fc2](https://github.com/sinemacula/coding-standards/commit/43f9fc2f618780e3f32f87bcbca50a3c3cdc98d2))
+
 ## [1.18.0](https://github.com/sinemacula/coding-standards/compare/v1.17.0...v1.18.0) (2026-07-22)
 
 
