@@ -84,6 +84,11 @@ parameters:
         - tests
 ```
 
+The base config enables PHPStan's checked-exception analysis: every exception a method can throw must appear in its
+`@throws` tag, except the `LogicException` and `RuntimeException` families, which stay unchecked (they model programming
+errors and runtime failures that propagate freely). Suppress a deliberate case with
+`@phpstan-ignore missingType.checkedException`.
+
 #### Laravel projects
 
 For Laravel projects, also install

@@ -34,6 +34,8 @@ final class PhpCsFixerConfigTest extends TestCase
      * one dotfile so the finder's filters are observable.
      *
      * @return void
+     *
+     * @throws \Random\RandomException
      */
     #[\Override]
     protected function setUp(): void
