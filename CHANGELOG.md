@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/sinemacula/coding-standards/compare/v1.19.0...v1.19.1) (2026-07-24)
+
+
+### Bug Fixes
+
+* move readonly-class enforcement to PHPStan and drop the constant-type sniff ([#128](https://github.com/sinemacula/coding-standards/issues/128)) ([f3e9416](https://github.com/sinemacula/coding-standards/commit/f3e9416c93f6152d555871e9091f1c0674e27651))
+
 ## [1.19.0](https://github.com/sinemacula/coding-standards/compare/v1.18.0...v1.19.0) (2026-07-24)
 
 
