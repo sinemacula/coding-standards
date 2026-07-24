@@ -28,12 +28,12 @@
     "packageRules": [
         {
             "description": "Manage only sinemacula/coding-standards itself; ignore everything else",
-            "matchPackageNames": ["!sinemacula/coding-standards", "!@sinemacula/coding-standards"],
+            "matchPackageNames": ["!sinemacula/coding-standards", "!@sinemacula/coding-standards", "!sinemacula/coding-standards-laravel"],
             "enabled": false
         },
         {
             "description": "Group the qlty tag, composer and npm bumps into one PR; auto-merge minor and patch",
-            "matchPackageNames": ["sinemacula/coding-standards", "@sinemacula/coding-standards"],
+            "matchPackageNames": ["sinemacula/coding-standards", "@sinemacula/coding-standards", "sinemacula/coding-standards-laravel"],
             "groupName": "Sine Macula coding standards",
             "rangeStrategy": "bump",
             "automerge": true
