@@ -32,3 +32,4 @@ services:
 
 rules:
     - SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule
+    - SineMacula\CodingStandards\PHPStan\Rules\RequireReadonlyClassRule

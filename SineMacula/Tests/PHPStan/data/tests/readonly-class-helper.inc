@@ -2,7 +2,7 @@
 
 namespace App\Tests;
 
-class ImmutableSpy
+final class ImmutableFixture
 {
     public readonly int $value;
 }
