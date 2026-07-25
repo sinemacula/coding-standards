@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/sinemacula/coding-standards/compare/v1.20.0...v1.20.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* broaden the unchecked-exception list ([#132](https://github.com/sinemacula/coding-standards/issues/132)) ([39ae775](https://github.com/sinemacula/coding-standards/commit/39ae775ab26be4c21466024bc135337720c40cd5))
+
 ## [1.20.0](https://github.com/sinemacula/coding-standards/compare/v1.19.1...v1.20.0) (2026-07-25)
 
 
