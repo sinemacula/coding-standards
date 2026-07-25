@@ -22,16 +22,22 @@ parameters:
 
     # Require every checked exception a method can throw to be declared in its
     # @throws tag (and, via tooWideThrowType, no @throws that cannot be thrown).
-    # The LogicException and RuntimeException families stay unchecked: they model
-    # programming errors and runtime failures that propagate freely, so they need
-    # no @throws. implicitThrows is off so an un-analysable call is not assumed to
-    # throw Throwable.
+    # implicitThrows is off so an un-analysable call is not assumed to throw
+    # Throwable. Unchecked are the exceptions that signal a programming or engine
+    # error (the LogicException, RuntimeException and Error families), or are so
+    # ubiquitous that a @throws for them everywhere is noise rather than signal
+    # (reflection, JSON, error-handler and PSR cache throwables).
     exceptions:
         implicitThrows: false
         check:
             missingCheckedExceptionInThrows: true
         uncheckedExceptionClasses:
+            - Error
+            - ErrorException
+            - JsonException
             - LogicException
+            - Psr\SimpleCache\InvalidArgumentException
+            - ReflectionException
             - RuntimeException
 
 services:
