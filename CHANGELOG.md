@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/sinemacula/coding-standards/compare/v1.19.1...v1.20.0) (2026-07-25)
+
+
+### Features
+
+* require checked exceptions in [@throws](https://github.com/throws) ([#130](https://github.com/sinemacula/coding-standards/issues/130)) ([4038ea7](https://github.com/sinemacula/coding-standards/commit/4038ea7cb94e759abf6d9573490ea1c523f5f82d))
+
 ## [1.19.1](https://github.com/sinemacula/coding-standards/compare/v1.19.0...v1.19.1) (2026-07-24)
 
 
