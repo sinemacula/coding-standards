@@ -20,6 +20,20 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: false
     reportUnmatchedIgnoredErrors: false
 
+    # Require every checked exception a method can throw to be declared in its
+    # @throws tag (and, via tooWideThrowType, no @throws that cannot be thrown).
+    # The LogicException and RuntimeException families stay unchecked: they model
+    # programming errors and runtime failures that propagate freely, so they need
+    # no @throws. implicitThrows is off so an un-analysable call is not assumed to
+    # throw Throwable.
+    exceptions:
+        implicitThrows: false
+        check:
+            missingCheckedExceptionInThrows: true
+        uncheckedExceptionClasses:
+            - LogicException
+            - RuntimeException
+
 services:
     -
         class: SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyWriteCollector
