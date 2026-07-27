@@ -6,6 +6,12 @@ config_version = "0"
 plugins = ["markdownlint"]
 file_patterns = ["**/CHANGELOG.md"]
 
+# The qlty-generated git hooks carry tab indentation; they are tool-authored, so
+# their indent style is not ours to fix. Exclude them from editorconfig-checker.
+[[exclude]]
+plugins = ["editorconfig-checker"]
+file_patterns = [".qlty/hooks/**"]
+
 [plugins.definitions.markdownlint]
 exported_config_paths = ["markdown/.markdownlint.json"]
 
