@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.2](https://github.com/sinemacula/coding-standards/compare/v1.20.1...v1.20.2) (2026-07-27)
+
+
+### Bug Fixes
+
+* exclude qlty-generated git hooks from editorconfig-checker ([#134](https://github.com/sinemacula/coding-standards/issues/134)) ([07cc0d6](https://github.com/sinemacula/coding-standards/commit/07cc0d6fb8d7defa899e16ce1a4cadedefaa4707))
+
 ## [1.20.1](https://github.com/sinemacula/coding-standards/compare/v1.20.0...v1.20.1) (2026-07-25)
 
 
