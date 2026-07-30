@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/sinemacula/coding-standards/compare/v1.20.2...v1.21.0) (2026-07-30)
+
+
+### Features
+
+* enforce comment line-wrapping in YAML ([#136](https://github.com/sinemacula/coding-standards/issues/136)) ([6ffc5cf](https://github.com/sinemacula/coding-standards/commit/6ffc5cfbc772601bdb3163bcfc97781dbfee0b21))
+
 ## [1.20.2](https://github.com/sinemacula/coding-standards/compare/v1.20.1...v1.20.2) (2026-07-27)
 
 
