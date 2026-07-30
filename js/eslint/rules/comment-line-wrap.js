@@ -6,6 +6,12 @@ const DEFAULT_MAX_LENGTH = 80;
 /** A docblock interior line: its indent, the star, and the prose after it. */
 const DOC_LINE = /^([ \t\n\r\f\v]*)\*( ?)(.*)$/;
 
+/** The comment types a parser gives a line or block comment it recognises. */
+const COMMENT_TYPES = ['Line', 'Block'];
+
+/** The line-comment openers governed, matched longest first. */
+const LINE_TOKENS = ['//', '#'];
+
 /** Whether only whitespace precedes the comment on its own line. */
 function isStandalone(comment, sourceCode) {
     const line = sourceCode.lines[comment.loc.start.line - 1];
@@ -14,25 +20,44 @@ function isStandalone(comment, sourceCode) {
 }
 
 /**
- * Group standalone `//` comments into runs of adjacent lines sharing an indent,
- * so a wrapped paragraph is reflowed as one unit.
+ * The line-comment token a comment opens with, or null when it opens none.
+ *
+ * Read from the source text rather than inferred from the comment's type,
+ * because parsers label the same shape differently: a `//` comment arrives as
+ * `Line`, while yaml-eslint-parser tags a `#` comment `Block`. Requiring one of
+ * the two recognised types first leaves out a hashbang, which is neither and
+ * whose leading `#` must never be read as prose.
  */
-function slashRuns(comments, sourceCode) {
+function lineToken(comment, sourceCode) {
+    if (!COMMENT_TYPES.includes(comment.type)) {
+        return null;
+    }
+
+    const opener = sourceCode.text.slice(comment.range[0], comment.range[0] + 2);
+
+    return LINE_TOKENS.find(token => opener.startsWith(token)) ?? null;
+}
+
+/**
+ * Group standalone line comments into runs of adjacent lines sharing a token
+ * and an indent, so a wrapped paragraph is reflowed as one unit.
+ */
+function lineRuns(comments, sourceCode) {
     const runs = [];
     let current = null;
 
     for (const comment of comments) {
-        if (comment.type !== 'Line' || !isStandalone(comment, sourceCode)) {
+        const token = lineToken(comment, sourceCode);
+
+        if (token === null || !isStandalone(comment, sourceCode)) {
             current = null;
             continue;
         }
 
-        const last = current?.[current.length - 1];
-
-        if (current && comment.loc.start.line === last.loc.start.line + 1 && comment.loc.start.column === current[0].loc.start.column) {
-            current.push(comment);
+        if (current !== null && continues(current, comment, token)) {
+            current.comments.push(comment);
         } else {
-            current = [comment];
+            current = { token, comments: [comment] };
             runs.push(current);
         }
     }
@@ -40,22 +65,32 @@ function slashRuns(comments, sourceCode) {
     return runs;
 }
 
-/** Strip the single optional space that follows a `//` from a comment's value. */
-function slashContent(value) {
+/** Whether a comment extends the open run: same token, next line, same column. */
+function continues(run, comment, token) {
+    const last = run.comments[run.comments.length - 1];
+
+    return run.token === token
+        && comment.loc.start.line === last.loc.start.line + 1
+        && comment.loc.start.column === run.comments[0].loc.start.column;
+}
+
+/** Strip the single optional space that follows the token from a value. */
+function lineContent(value) {
     return value.startsWith(' ') ? value.slice(1) : value;
 }
 
-/** Describe a `//` run: its content lines, margin, report locations and rebuild. */
-function slashDescriptor(run, sourceCode, eol) {
-    const first = run[0].loc.start;
+/** Describe a line-comment run: content, margin, report locations and rebuild. */
+function lineDescriptor(run, sourceCode, eol) {
+    const { token, comments } = run;
+    const first = comments[0].loc.start;
     const indent = sourceCode.lines[first.line - 1].slice(0, first.column);
 
     return {
-        content: run.map(comment => slashContent(comment.value)),
-        marginWidth: indent.length + 3,
-        locs: run.map(comment => comment.loc),
-        range: [run[0].range[0], run[run.length - 1].range[1]],
-        rebuild: lines => lines.map((line, offset) => `${offset === 0 ? '' : indent}//${line === '' ? '' : ` ${line}`}`).join(eol),
+        content: comments.map(comment => lineContent(comment.value)),
+        marginWidth: indent.length + token.length + 1,
+        locs: comments.map(comment => comment.loc),
+        range: [comments[0].range[0], comments[comments.length - 1].range[1]],
+        rebuild: lines => lines.map((line, offset) => `${offset === 0 ? '' : indent}${token}${line === '' ? '' : ` ${line}`}`).join(eol),
     };
 }
 
@@ -135,13 +170,19 @@ function enforce(context, descriptor, maxLength) {
  * The syntax-only counterpart of the PHP comment line length sniff. It fills
  * each line greedily with as many whole words as fit and reports two faults on
  * their own footings: a line that overflows the width, and a line that wraps
- * earlier than it needs to. Standalone `//` runs and multi-line docblocks are
- * governed; tag lines, suppression directives, fenced or indented code, tables,
- * separators and trailing comments after code are left untouched, as is a line
- * whose overflow is a single unbreakable token such as a long name or URL, and
- * a compact single-line docblock, which the single-line property rule governs.
- * The fix reflows each faulted paragraph to its greedy canonical form and is
- * idempotent.
+ * earlier than it needs to. Standalone runs of the line-comment tokens `//` and
+ * `#` and multi-line docblocks are governed; tag lines, suppression directives,
+ * fenced or indented code, tables, separators and trailing comments after code
+ * are left untouched, as is a line whose overflow is a single unbreakable token
+ * such as a long name or URL, and a compact single-line docblock, which the
+ * single-line property rule governs. The fix reflows each faulted paragraph to
+ * its greedy canonical form and is idempotent.
+ *
+ * The `#` token carries the rule into YAML through yaml-eslint-parser, where it
+ * reaches only standalone comments: block-scalar bodies are content rather than
+ * comments, so a shell comment inside a `run:` step is never seen, and a
+ * comment trailing a value is not standalone. Each token reclaims its own
+ * width, so a `#` comment fills one column further than a `//` one.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -181,8 +222,8 @@ export default createRule({
             Program() {
                 const comments = sourceCode.getAllComments();
 
-                for (const run of slashRuns(comments, sourceCode)) {
-                    enforce(context, slashDescriptor(run, sourceCode, eol), maxLength);
+                for (const run of lineRuns(comments, sourceCode)) {
+                    enforce(context, lineDescriptor(run, sourceCode, eol), maxLength);
                 }
 
                 for (const comment of comments) {

@@ -130,13 +130,17 @@ type-aware rules (the curated typescript-eslint set plus the type-driven custom 
 typescript-eslint tooling, and this package to your dev dependencies:
 
 ```bash
-npm install --save-dev eslint typescript typescript-eslint eslint-plugin-jsdoc @sinemacula/coding-standards
+npm install --save-dev eslint typescript typescript-eslint eslint-plugin-jsdoc yaml-eslint-parser \
+    @sinemacula/coding-standards
 ```
+
+`yaml-eslint-parser` is imported by the base layer for the YAML comment-width block, so it has to resolve even in a
+repository with no YAML worth linting; without it the flat config fails to load at all.
 
 The package exposes three flat-config entry points:
 
 - `@sinemacula/coding-standards/js/eslint` - the base layer of syntax-only custom rules; needs no `tsconfig`, so it
-  stays cheap and runs anywhere Biome runs.
+  stays cheap and runs anywhere Biome runs. Covers `.ts`/`.js` and, for the comment-width rule alone, `.yml`/`.yaml`.
 - `@sinemacula/coding-standards/js/eslint/type-checked` - the opt-in type-aware layer. It includes the base layer and
   adds the cross-file / type-driven rules, so it needs a consumer `tsconfig`; use it in place of the base layer where
   one exists.
@@ -187,7 +191,10 @@ source-exported plugin definitions do not reliably propagate, so mirror it consu
 
 ```toml
 [plugins.definitions.eslint]
-package_filters = ["@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc"]
+package_filters = [
+    "@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc",
+    "yaml-eslint-parser",
+]
 ```
 
 Repositories enabling the Vue layer widen the same filter further, since its plugins have to resolve inside that sandbox
@@ -197,7 +204,7 @@ too:
 [plugins.definitions.eslint]
 package_filters = [
     "@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc",
-    "eslint-plugin-vue", "vue-eslint-parser", "eslint-plugin-check-file",
+    "yaml-eslint-parser", "eslint-plugin-vue", "vue-eslint-parser", "eslint-plugin-check-file",
 ]
 ```
 
@@ -269,6 +276,7 @@ tag = "<version>"
 | `js/biome.json`                           | Biome                | JavaScript / TypeScript formatter + linter rules       |
 | `js/knip.json`                            | Knip                 | Unused-export detection rules                          |
 | `js/eslint/`                              | ESLint               | Structural, type-aware + Vue rules; runs with Biome    |
+| `js/eslint/` (YAML block)                 | ESLint               | Comment width in `.yml` / `.yaml`; yamllint owns rest  |
 | `markdown/.markdownlint.json`             | markdownlint         | Markdown linting rules                                 |
 | `yaml/.yamllint.yaml`                     | yamllint             | YAML linting rules                                     |
 | `shell/.shellcheckrc`                     | ShellCheck           | Shell script linting rules                             |
@@ -321,7 +329,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 ### ESLint rules
 
 All rules run in the base layer except `boolean-method-name`, which resolves return types and so requires the opt-in
-type-checked layer.
+type-checked layer. Every rule is scoped to `.ts`/`.js`; `comment-line-wrap` alone also runs over `.yml`/`.yaml`.
 
 | Rule                                           | Enforces                                                                            |
 |------------------------------------------------|-------------------------------------------------------------------------------------|
@@ -336,7 +344,7 @@ type-checked layer.
 | `@sinemacula/align-doc-tags`                   | `@author` and `@copyright` values line up at a single column; autofixable.          |
 | `@sinemacula/single-line-property-doc`         | A data member's documentation comment sits on one line; autofixable.                |
 | `@sinemacula/multiline-function-doc`           | A method's documentation comment spans multiple lines; autofixable.                 |
-| `@sinemacula/comment-line-wrap`                | Standalone comment prose wrapped to 80 chars; premature wraps also fixed.           |
+| `@sinemacula/comment-line-wrap`                | Standalone comment prose wrapped to 80 chars, YAML included; premature wraps too.   |
 
 `boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
 to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
@@ -348,13 +356,21 @@ signatures and class fields holding a function take several. A data comment is n
 where present; a free function keeps the freedom of either shape.
 
 `comment-line-wrap` takes `maxLength` (default 80) and is the syntax-only counterpart of the PHP
-`SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` runs and multi-line docblock prose greedily,
-reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both. Markdown
-headings, docblock tag lines, machine-parsed tool directives (`eslint`, `biome-ignore`, `@ts-`, `Stryker`, `c8`/`v8`/
-`istanbul ignore`, `@vite-ignore` and the like), fenced code, an indented code or command block, a doc-tag whose value
-opens a multi-line bracketed type (an `array{...}` shape, a `<...>` generic or a `\Closure(...)` signature), tables,
-separators, a line whose overflow is a single unbreakable token such as a long name or URL, trailing comments after code
-and compact single-line docblocks are left untouched.
+`SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` and `#` runs and multi-line docblock prose
+greedily, reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both.
+Markdown headings, docblock tag lines, machine-parsed tool directives (`eslint`, `biome-ignore`, `@ts-`, `Stryker`,
+`c8`/`v8`/`istanbul ignore`, `@vite-ignore`, `yamllint`, `yaml-language-server`, `renovate:` and the like), fenced code,
+an indented code or command block, a doc-tag whose value opens a multi-line bracketed type (an `array{...}` shape, a
+`<...>` generic or a `\Closure(...)` signature), tables, separators, a line whose overflow is a single unbreakable token
+such as a long name or URL, trailing comments after code and compact single-line docblocks are left untouched. Each
+comment token reclaims its own width from the line, so a `#` comment fills one column further than a `//` one.
+
+This is the one rule the base layer also carries over `.yml` and `.yaml`, which nothing else in the standards bounds for
+comment width: yamllint's `line-length` cannot tell a comment from a value, so it would fault `run:` commands and action
+refs nobody can shorten, and it has no autofix. The YAML block registers `yaml-eslint-parser` for its `#` comments and
+enables this rule alone - none of `eslint-plugin-yml`'s own rules are switched on, so YAML quoting, key order and
+indentation stay yamllint's business. Only standalone comments are reached: a block scalar's body is content rather
+than comment, so a shell comment inside a `run: |` step is never seen, and a comment trailing a value is not standalone.
 
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
 control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)

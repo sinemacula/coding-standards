@@ -8,6 +8,7 @@
 import path from 'node:path';
 import { RuleTester } from '@typescript-eslint/rule-tester';
 import { afterAll, describe, it } from 'vitest';
+import * as yamlParser from 'yaml-eslint-parser';
 
 // Bridge @typescript-eslint/rule-tester onto vitest's lifecycle globals.
 RuleTester.afterAll = afterAll;
@@ -33,5 +34,16 @@ export const typedRuleTester = new RuleTester({
             project: './tsconfig.json',
             tsconfigRootDir: fixtures,
         },
+    },
+});
+
+/**
+ * YAML tester. Use for the rules the base config carries over `.yml`; each case
+ * is parsed by yaml-eslint-parser, which surfaces a `#` comment as a `Block`
+ * comment rather than the `Line` a `//` comment arrives as.
+ */
+export const yamlRuleTester = new RuleTester({
+    languageOptions: {
+        parser: yamlParser,
     },
 });

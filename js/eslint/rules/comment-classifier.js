@@ -5,7 +5,10 @@
  * verbatim and acts as a paragraph boundary. Directives, docblock tags, fenced
  * or indented code, tables and rule separators are left exactly as written, so
  * a reflow never disturbs a construct whose position or spacing carries
- * meaning.
+ * meaning. The directive set spans the tools that read instructions out of a
+ * comment in any of the governed languages, YAML's included: a schema
+ * association or a Renovate manager hint is machine-read, so wrapping it would
+ * silently sever it from the key it annotates.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -18,7 +21,7 @@ const FENCE = /^(```|~~~)/;
 const TAG = new RegExp(`^@[A-Za-z][A-Za-z0-9-]*(?=${WS}|$)`);
 const LIST = new RegExp(`^${WS}*([-*+]|\\d+[.)])${WS}+`);
 const HEADING = new RegExp(`^#{1,6}${WS}`);
-const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint\b|globals?\b|exported\b|biome-ignore\b|@ts-|prettier-ignore|stylelint-|Stryker (?:disable|restore)\b|(?:c8|v8|istanbul) ignore\b|@vite-ignore\b|webpackChunkName\b|@preserve\b|@license\b|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore)/;
+const DIRECTIVE = /^(phpcs:|phpstan-ignore|@phpstan-|@psalm-|@phan-|eslint\b|globals?\b|exported\b|biome-ignore\b|@ts-|prettier-ignore|stylelint-|Stryker (?:disable|restore)\b|(?:c8|v8|istanbul) ignore\b|@vite-ignore\b|webpackChunkName\b|@preserve\b|@license\b|@codingStandards|@SuppressWarnings|NOSONAR|qlty-ignore|yamllint\b|yaml-language-server\b|renovate:)/;
 const SEPARATOR = /^[=\-~*_#.+ ]{3,}$/;
 const CODE = new RegExp(`=>|->|::|;${WS}*$|\\{${WS}*$|^\\}|^(?:if|elseif|for|foreach|while|switch|catch)${WS}*\\(|^[\\w$>[\\]'.-]+${WS}*=[^=>]|^\\$`);
 const SPAN = /`[^`]*`|\{@[^}]*\}|\[[^\]]*\]\([^)]*\)/g;

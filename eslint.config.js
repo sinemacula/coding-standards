@@ -1,10 +1,11 @@
 import base from './js/eslint/index.js';
 
 /**
- * Dogfood config: lint this package's own rule source with its own rules. The
- * base config's file scoping already covers the JavaScript implementations
- * under js/eslint and exempts the test specs from the metric rules; run it with
- * `eslint js/eslint` to bound it to the rule source.
+ * Dogfood config: lint this package's own source with its own rules. The base
+ * config's file scoping already covers the JavaScript implementations under
+ * js/eslint and exempts the test specs from the metric rules; the ignores below
+ * bound the rest, so `eslint .` reaches the rule source and this repository's
+ * own workflow YAML, whose comment width the base config now governs too.
  */
 export default [
     {

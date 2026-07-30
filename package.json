@@ -42,7 +42,7 @@
     },
     "scripts": {
         "test:js": "vitest run",
-        "lint:js": "eslint js/eslint"
+        "lint:js": "eslint ."
     },
     "devDependencies": {
         "@typescript-eslint/rule-tester": "^8.0.0",
@@ -54,7 +54,8 @@
         "typescript": "^5.0.0",
         "typescript-eslint": "^8.0.0",
         "vitest": "^3.0.0",
-        "vue-eslint-parser": "^10.0.0"
+        "vue-eslint-parser": "^10.0.0",
+        "yaml-eslint-parser": "^2.1.0"
     },
     "peerDependencies": {
         "eslint": ">=9",
@@ -63,7 +64,8 @@
         "eslint-plugin-vue": ">=10",
         "typescript": ">=4.8.4",
         "typescript-eslint": "^8",
-        "vue-eslint-parser": ">=10"
+        "vue-eslint-parser": ">=10",
+        "yaml-eslint-parser": ">=2"
     },
     "peerDependenciesMeta": {
         "eslint": {
@@ -85,6 +87,9 @@
             "optional": true
         },
         "vue-eslint-parser": {
+            "optional": true
+        },
+        "yaml-eslint-parser": {
             "optional": true
         }
     },
