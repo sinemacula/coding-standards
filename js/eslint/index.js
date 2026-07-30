@@ -1,9 +1,11 @@
 import jsdoc from 'eslint-plugin-jsdoc';
 import tseslint from 'typescript-eslint';
+import * as yamlParser from 'yaml-eslint-parser';
 import plugin from './plugin.js';
 
 const TS_FILES = ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'];
 const TS_AND_JS_FILES = [...TS_FILES, '**/*.js', '**/*.jsx', '**/*.mjs', '**/*.cjs'];
+const YAML_FILES = ['**/*.yml', '**/*.yaml'];
 
 /**
  * Base flat config: the AST-only custom rules that need no type information.
@@ -12,7 +14,9 @@ const TS_AND_JS_FILES = [...TS_FILES, '**/*.js', '**/*.jsx', '**/*.mjs', '**/*.c
  * resolves TypeScript syntax. The interface, readonly-property and enum rules
  * target TypeScript-only constructs; no-mutable-static also applies to plain
  * JavaScript (exported let/var, mutable static fields), so it runs across both.
- * The opt-in type-aware layer lives in ./type-checked.js.
+ * A final block carries the comment-wrap rule alone over YAML, which otherwise
+ * bounds nothing about a comment's width. The opt-in type-aware layer lives in
+ * ./type-checked.js.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -91,6 +95,23 @@ export default [
             'jsdoc/require-param-description': 'error',
             'jsdoc/require-returns-description': 'error',
             'jsdoc/lines-before-block': ['error', { lines: 1, ignoreSingleLines: false }],
+        },
+    },
+    {
+        // YAML carries the comment-wrap rule and nothing else. The parser is
+        // registered for its `#` comments alone, so no eslint-plugin-yml rule
+        // is enabled: pulling that plugin's own set in would fault every
+        // consumer's YAML on quoting, key order and indentation at once, none
+        // of which this package governs. yamllint keeps the rest of YAML.
+        files: YAML_FILES,
+        plugins: {
+            '@sinemacula': plugin,
+        },
+        languageOptions: {
+            parser: yamlParser,
+        },
+        rules: {
+            '@sinemacula/comment-line-wrap': 'error',
         },
     },
     {

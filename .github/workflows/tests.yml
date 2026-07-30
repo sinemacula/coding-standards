@@ -113,4 +113,4 @@ jobs:
                 run: npm run test:js
 
             -   name: ESLint dogfood
-                run: npx eslint js/eslint
+                run: npm run lint:js
