@@ -141,21 +141,35 @@ function hasImperativeTag(sourceCode, docHost, nameNode) {
 }
 
 /**
+ * Whether the name is outside the rule's reach: a magic member, a name that
+ * already reads as a predicate, a command or event handler, a well-known type
+ * accessor, or a member carrying the @imperative opt-out tag.
+ */
+function isExempt(state, nameNode, name, docHost) {
+    if (name.startsWith('__') || TYPE_ACCESSOR_NAMES.has(name)) {
+        return true;
+    }
+
+    if (isPredicate(name, state.prefixes, state.predicates)) {
+        return true;
+    }
+
+    if (isCommandVerb(name, state.commandVerbs) || isEventHandler(name)) {
+        return true;
+    }
+
+    return hasImperativeTag(state.sourceCode, docHost, nameNode);
+}
+
+/**
  * Report the name when it neither reads as a predicate nor is exempt and the
  * resolved (awaited) return type is boolean. Type-predicate guards are
  * predicates by structure and left alone.
  */
 function inspect(state, nameNode, name, fnNode, docHost) {
-    const { checker, services, context, sourceCode } = state;
+    const { checker, services, context } = state;
 
-    if (
-        name.startsWith('__')
-        || isPredicate(name, state.prefixes, state.predicates)
-        || isCommandVerb(name, state.commandVerbs)
-        || isEventHandler(name)
-        || TYPE_ACCESSOR_NAMES.has(name)
-        || hasImperativeTag(sourceCode, docHost, nameNode)
-    ) {
+    if (isExempt(state, nameNode, name, docHost)) {
         return;
     }
 

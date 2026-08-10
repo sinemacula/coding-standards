@@ -19,6 +19,8 @@ use SineMacula\CodingStandards\Comments\CommentWrapper;
  * @copyright   2026 Sine Macula Limited
  *
  * @internal
+ *
+ * @SuppressWarnings("php:S1448")
  */
 #[CoversClass(CommentWrapper::class)]
 #[CoversClass(CommentParagraph::class)]

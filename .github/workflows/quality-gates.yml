@@ -70,7 +70,7 @@ jobs:
             -   name: Install dependencies
                 run: >
                     composer update --prefer-dist --no-interaction --no-progress
-                    --with "squizlabs/php_codesniffer:^4.0"
+                    --with "squizlabs/php_codesniffer:^4.0.2"
 
             -   name: Scoped mutation gate
                 run: composer test:mutation
@@ -108,7 +108,7 @@ jobs:
             -   name: Install dependencies
                 run: >
                     composer update --prefer-dist --no-interaction --no-progress
-                    --with "squizlabs/php_codesniffer:^4.0"
+                    --with "squizlabs/php_codesniffer:^4.0.2"
 
             -   name: Full mutation suite
                 run: composer test:mutation:full

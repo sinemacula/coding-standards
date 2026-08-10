@@ -28,7 +28,8 @@
             "SineMacula\\Tests\\": "SineMacula/Tests/"
         },
         "classmap": [
-            "SineMacula/Tests/PHPStan/data/readonly-class.inc"
+            "SineMacula/Tests/PHPStan/data/readonly-class.inc",
+            "SineMacula/Tests/PHPStan/data/redundant-static-return.inc"
         ]
     },
     "extra": {
@@ -39,7 +40,7 @@
         }
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^3.13 || ^4.0",
+        "squizlabs/php_codesniffer": "^3.13.6 || ^4.0.2",
         "slevomat/coding-standard": "^8.0",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
         "infection/infection": "^0.33.2",
