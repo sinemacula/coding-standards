@@ -28,7 +28,8 @@
             "SineMacula\\Tests\\": "SineMacula/Tests/"
         },
         "classmap": [
-            "SineMacula/Tests/PHPStan/data/readonly-class.inc"
+            "SineMacula/Tests/PHPStan/data/readonly-class.inc",
+            "SineMacula/Tests/PHPStan/data/redundant-static-return.inc"
         ]
     },
     "extra": {

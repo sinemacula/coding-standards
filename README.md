@@ -321,10 +321,11 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 
 ### PHPStan rules
 
-| Identifier                         | Enforces                                                             |
-|------------------------------------|----------------------------------------------------------------------|
-| `sineMacula.mutableStaticProperty` | Static properties written at runtime; `@managed-static` opts out.    |
-| `sineMacula.readonlyClass`         | A final class with only readonly properties must be `readonly`.      |
+| Identifier                             | Enforces                                                              |
+|----------------------------------------|-----------------------------------------------------------------------|
+| `sineMacula.mutableStaticProperty`     | Static properties written at runtime; `@managed-static` opts out.     |
+| `sineMacula.readonlyClass`             | A final class with only readonly properties must be `readonly`.       |
+| `sineMacula.redundantStaticReturnType` | In a final class, a `static` return type or `@return` must be `self`. |
 
 ### ESLint rules
 
