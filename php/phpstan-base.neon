@@ -52,5 +52,6 @@ services:
 
 rules:
     - SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule
+    - SineMacula\CodingStandards\PHPStan\Rules\NoRedundantStaticReferenceRule
     - SineMacula\CodingStandards\PHPStan\Rules\NoRedundantStaticReturnTypeRule
     - SineMacula\CodingStandards\PHPStan\Rules\RequireReadonlyClassRule

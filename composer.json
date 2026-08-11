@@ -29,6 +29,7 @@
         },
         "classmap": [
             "SineMacula/Tests/PHPStan/data/readonly-class.inc",
+            "SineMacula/Tests/PHPStan/data/redundant-static-reference.inc",
             "SineMacula/Tests/PHPStan/data/redundant-static-return.inc"
         ]
     },
