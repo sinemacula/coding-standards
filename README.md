@@ -381,6 +381,47 @@ types belong in the signature) and keep a blank line above every documentation b
 type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
 `@typescript-eslint/only-throw-error`.
 
+### Methods that only throw
+
+A method that exists solely to refuse - a `__serialize()` that throws so a value holding a secret cannot reach a queue
+payload or a cache entry - returns nothing on any path, and `never` is how to say so:
+
+```php
+/**
+ * @throws \LogicException
+ *
+ * @return never
+ */
+public function __serialize(): never
+{
+    throw new LogicException('A token must not be serialised.');
+}
+```
+
+Reaching instead for the type the method would have returned had it ever returned puts the docblock at odds with the
+body. `@return` then describes a shape nothing produces, which the no-return check faults, and where that type is a
+traversable, spelling out its contained type can drag in `mixed` on top.
+
+`never` is a subtype of every return type, so narrowing to it always satisfies an inherited signature, a magic method's
+expected return included. The one place it does not fit is a method a subclass is meant to return from, because a child
+cannot widen `never` back; express that as an `abstract` method, or keep the declared type and suppress the check on
+that one method. The error is reported against the `@return` line, so the directive belongs immediately above that tag
+inside the docblock - a blank docblock line between the two, or the directive placed between the docblock and the
+signature, will not take:
+
+```php
+/**
+ * @throws \LogicException
+ *
+ * phpcs:ignore Squiz.Commenting.FunctionComment.InvalidNoReturn
+ * @return array<int, string>
+ */
+public function build(): array
+{
+    throw new LogicException('Not implemented.');
+}
+```
+
 ## Requirements
 
 - PHP ^8.3 (Composer package)
