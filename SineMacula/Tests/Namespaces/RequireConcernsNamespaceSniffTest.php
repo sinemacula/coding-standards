@@ -32,7 +32,20 @@ final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
      */
     public function testFlagsTraitsOutsideConcernsNamespace(): void
     {
-        $this->assertErrorsOnLines('RequireConcernsNamespace.inc', [5]);
+        $this->assertErrorMessagesOnLines('RequireConcernsNamespace.inc', [
+            5 => ['Trait "Invoiceable" must be declared in a "Concerns" namespace.'],
+        ]);
+    }
+
+    /**
+     * The reported code names the segment the declaration is missing, so a
+     * ruleset can silence this sniff alone without reaching for the others.
+     *
+     * @return void
+     */
+    public function testReportsItsOwnErrorCode(): void
+    {
+        $this->assertErrorCodesOnLines('RequireConcernsNamespace.inc', [5 => ['NotInConcerns']]);
     }
 
     /**

@@ -19,50 +19,15 @@ use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
  */
 final class RequireConcernsNamespaceSniff extends AbstractRequiredNamespaceSniff
 {
+    /** @var array<int, int|string> The token a trait declaration opens with. */
+    protected const array TOKENS = [T_TRAIT];
+
+    /** @var string The subject noun used in the error message. */
+    protected const string SUBJECT = 'Trait';
+
+    /** @var string The sniff error code. */
+    protected const string ERROR_CODE = 'NotInConcerns';
+
     /** @var string The namespace segment that traits must live under. */
-    public string $concernsSegment = 'Concerns';
-
-    /**
-     * Register the tokens this sniff listens for.
-     *
-     * @return array<int, int|string>
-     */
-    #[\Override]
-    public function register(): array
-    {
-        return [T_TRAIT];
-    }
-
-    /**
-     * The namespace segment traits must live under.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function segment(): string
-    {
-        return $this->concernsSegment;
-    }
-
-    /**
-     * The subject noun used in the error message.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function subject(): string
-    {
-        return 'Trait';
-    }
-
-    /**
-     * The sniff error code.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function errorCode(): string
-    {
-        return 'NotInConcerns';
-    }
+    public string $segment = 'Concerns';
 }

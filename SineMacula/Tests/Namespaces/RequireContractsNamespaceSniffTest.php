@@ -32,7 +32,20 @@ final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
      */
     public function testFlagsInterfacesOutsideContractsNamespace(): void
     {
-        $this->assertErrorsOnLines('RequireContractsNamespace.inc', [5]);
+        $this->assertErrorMessagesOnLines('RequireContractsNamespace.inc', [
+            5 => ['Interface "Invoice" must be declared in a "Contracts" namespace.'],
+        ]);
+    }
+
+    /**
+     * The reported code names the segment the declaration is missing, so a
+     * ruleset can silence this sniff alone without reaching for the others.
+     *
+     * @return void
+     */
+    public function testReportsItsOwnErrorCode(): void
+    {
+        $this->assertErrorCodesOnLines('RequireContractsNamespace.inc', [5 => ['NotInContracts']]);
     }
 
     /**
