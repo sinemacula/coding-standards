@@ -18,50 +18,15 @@ use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
  */
 final class RequireContractsNamespaceSniff extends AbstractRequiredNamespaceSniff
 {
+    /** @var array<int, int|string> The token an interface declaration opens with. */
+    protected const array TOKENS = [T_INTERFACE];
+
+    /** @var string The subject noun used in the error message. */
+    protected const string SUBJECT = 'Interface';
+
+    /** @var string The sniff error code. */
+    protected const string ERROR_CODE = 'NotInContracts';
+
     /** @var string The namespace segment that interfaces must live under. */
-    public string $contractsSegment = 'Contracts';
-
-    /**
-     * Register the tokens this sniff listens for.
-     *
-     * @return array<int, int|string>
-     */
-    #[\Override]
-    public function register(): array
-    {
-        return [T_INTERFACE];
-    }
-
-    /**
-     * The namespace segment interfaces must live under.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function segment(): string
-    {
-        return $this->contractsSegment;
-    }
-
-    /**
-     * The subject noun used in the error message.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function subject(): string
-    {
-        return 'Interface';
-    }
-
-    /**
-     * The sniff error code.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function errorCode(): string
-    {
-        return 'NotInContracts';
-    }
+    public string $segment = 'Contracts';
 }
