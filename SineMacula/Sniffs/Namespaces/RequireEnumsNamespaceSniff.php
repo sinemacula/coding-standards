@@ -18,50 +18,15 @@ use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
  */
 final class RequireEnumsNamespaceSniff extends AbstractRequiredNamespaceSniff
 {
+    /** @var array<int, int|string> The token an enum declaration opens with. */
+    protected const array TOKENS = [T_ENUM];
+
+    /** @var string The subject noun used in the error message. */
+    protected const string SUBJECT = 'Enum';
+
+    /** @var string The sniff error code. */
+    protected const string ERROR_CODE = 'NotInEnums';
+
     /** @var string The namespace segment that enums must live under. */
-    public string $enumsSegment = 'Enums';
-
-    /**
-     * Register the tokens this sniff listens for.
-     *
-     * @return array<int, int|string>
-     */
-    #[\Override]
-    public function register(): array
-    {
-        return [T_ENUM];
-    }
-
-    /**
-     * The namespace segment enums must live under.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function segment(): string
-    {
-        return $this->enumsSegment;
-    }
-
-    /**
-     * The subject noun used in the error message.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function subject(): string
-    {
-        return 'Enum';
-    }
-
-    /**
-     * The sniff error code.
-     *
-     * @return string
-     */
-    #[\Override]
-    protected function errorCode(): string
-    {
-        return 'NotInEnums';
-    }
+    public string $segment = 'Enums';
 }

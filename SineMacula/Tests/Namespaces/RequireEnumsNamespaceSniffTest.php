@@ -32,7 +32,20 @@ final class RequireEnumsNamespaceSniffTest extends AbstractSniffTestCase
      */
     public function testFlagsEnumsOutsideEnumsNamespace(): void
     {
-        $this->assertErrorsOnLines('RequireEnumsNamespace.inc', [5]);
+        $this->assertErrorMessagesOnLines('RequireEnumsNamespace.inc', [
+            5 => ['Enum "Status" must be declared in a "Enums" namespace.'],
+        ]);
+    }
+
+    /**
+     * The reported code names the segment the declaration is missing, so a
+     * ruleset can silence this sniff alone without reaching for the others.
+     *
+     * @return void
+     */
+    public function testReportsItsOwnErrorCode(): void
+    {
+        $this->assertErrorCodesOnLines('RequireEnumsNamespace.inc', [5 => ['NotInEnums']]);
     }
 
     /**
