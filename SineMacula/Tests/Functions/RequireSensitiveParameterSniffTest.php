@@ -63,6 +63,22 @@ final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
     }
 
     /**
+     * A sensitive name only counts where the declared type could carry the
+     * secret. A parameter typed solely as a class, interface, `object` or
+     * `self`, including nullable, intersection and disjunctive-normal forms,
+     * holds what the secret belongs to rather than the secret. A value type
+     * still counts wherever it appears - alone, in any case, nullable, or as
+     * one member of a union or disjunctive-normal type - as does an untyped
+     * parameter, promoted constructor properties included.
+     *
+     * @return void
+     */
+    public function testFlagsOnlyTypesThatCanCarryTheSecret(): void
+    {
+        $this->assertErrorsOnLines('RequireSensitiveParameterTypes.inc', [43, 47, 51, 55, 59, 63, 67, 71, 77]);
+    }
+
+    /**
      * The closest enclosing class decides the test exemption - a test class
      * declared inside a production class method is still exempt.
      *
