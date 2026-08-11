@@ -12,9 +12,11 @@ use SineMacula\Tests\AbstractStandardTestCase;
  *
  * A guard such as a `__serialize()` that throws, keeping a value holding a
  * secret out of a queue payload or a cache entry, returns nothing on any path.
- * Declaring it `never` says exactly that, and the standard accepts it. Reaching
- * instead for the type the method would have returned had it ever returned puts
- * two rules on the same line, which is what this pins.
+ * Declaring it `never` says exactly that. Keeping the type the method would
+ * have returned had it ever returned is equally writable, for the method a
+ * subclass is meant to return from, which cannot widen `never` back. Whether a
+ * documented return is ever produced is a question of control flow, so it is
+ * PHPStan's to answer and no sniff here asks it.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -38,35 +40,29 @@ final class AlwaysThrowingMethodTest extends AbstractStandardTestCase
     }
 
     /**
-     * Declaring the type the method would have returned is what cannot be
-     * written. The docblock has to describe a shape the method never produces,
-     * which collides with the no-return check and, for a traversable, with the
-     * mixed ban as well. Both are reported against the same line.
+     * A method a subclass is meant to return from cannot widen `never` back, so
+     * it keeps the type it declares and throws anyway. That is accepted as
+     * written, with no directive: nothing here counts return statements.
      *
      * @return void
      */
-    public function testRejectsAnAlwaysThrowingMethodDeclaredByItsUnreachableType(): void
+    public function testAcceptsAnAlwaysThrowingMethodThatKeepsItsDeclaredType(): void
     {
-        $this->assertStandardReports('AlwaysThrowingMethodTyped.inc', [
-            23 => [
-                'SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint',
-                'Squiz.Commenting.FunctionComment.InvalidNoReturn',
-            ],
-        ]);
+        $this->assertStandardReports('AlwaysThrowingMethodInherited.inc', []);
     }
 
     /**
-     * Where the declared type has to stay - a method a subclass is meant to
-     * return from, which cannot widen `never` back - the no-return check is
-     * suppressed on that one method. The error is raised against the `@return`
-     * line, so the directive only takes immediately above that tag: a blank
-     * docblock line in between leaves the error standing, and moving it out
-     * below the docblock severs the comment from the method it documents.
+     * What is still reported is the `mixed` the contained type of a documented
+     * traversable drags in, which is the mixed ban doing its own job and has
+     * its own directive. It is pinned here so that the one rule left standing
+     * on this shape stays visible, and separable from the rest.
      *
      * @return void
      */
-    public function testAcceptsTheDeclaredTypeWhereTheCheckIsSuppressedOnTheReturnTag(): void
+    public function testStillReportsTheMixedContainedTypeAndNothingElse(): void
     {
-        $this->assertStandardReports('AlwaysThrowingMethodSuppressed.inc', []);
+        $this->assertStandardReports('AlwaysThrowingMethodTyped.inc', [
+            23 => ['SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint'],
+        ]);
     }
 }

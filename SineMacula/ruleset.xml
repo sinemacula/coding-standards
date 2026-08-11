@@ -19,12 +19,23 @@
         <exclude name="Squiz.Commenting.VariableComment.IncorrectVarType"/>
     </rule>
 
+    <!--
+        InvalidNoReturn is excluded because it decides whether a function
+        returns by looking for a `return` token, so it faults a method that
+        exists only to refuse - a guard that throws on every path returns
+        nothing and needs no return statement. PHPStan answers the same
+        question from the control flow instead: return.missing reports a method
+        that documents a type and can reach its end without returning one, and
+        stays quiet where every path throws. Losing nothing but the false
+        positive is why this is dropped rather than reimplemented.
+    -->
     <rule ref="Squiz.Commenting.FunctionComment">
         <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
         <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType"/>
         <exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>
         <exclude name="Squiz.Commenting.FunctionComment.IncorrectParamVarName"/>
         <exclude name="Squiz.Commenting.FunctionComment.InvalidReturn"/>
+        <exclude name="Squiz.Commenting.FunctionComment.InvalidNoReturn"/>
         <exclude name="Squiz.Commenting.FunctionComment.IncorrectTypeHint"/>
     </rule>
 

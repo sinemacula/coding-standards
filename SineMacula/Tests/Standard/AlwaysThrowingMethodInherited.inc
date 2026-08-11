@@ -19,7 +19,6 @@ abstract class Exporter
      *
      * @throws \LogicException
      *
-     * phpcs:ignore Squiz.Commenting.FunctionComment.InvalidNoReturn
      * @return array<int, string>
      */
     public function export(): array
