@@ -1,3 +1,6 @@
+# No level is set here, and a project should not set one either: analysis runs
+# through qlty, whose phpstan driver passes --level=9 on the command line, which
+# overrides whatever a config file says.
 parameters:
     ignoreErrors:
         - identifier: argument.type

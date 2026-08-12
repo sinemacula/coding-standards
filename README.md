@@ -74,15 +74,18 @@ The `SineMacula` coding standard is auto-discovered via the `phpcodesniffer-stan
 ### PHPStan
 
 The shared PHPStan configs are auto-included via the `extra.phpstan.includes` section in `composer.json`. Your project's
-`phpstan.neon` only needs project-specific settings:
+`phpstan.neon` only needs its paths:
 
 ```neon
 parameters:
-    level: 8
     paths:
         - src
         - tests
 ```
+
+Do not set `level`. Analysis runs through qlty, whose phpstan driver passes `--level=9` on the command line, and a
+command-line level overrides the config file outright - so a level set here does nothing except mislead whoever reads
+it next.
 
 The base config enables PHPStan's checked-exception analysis: every exception a method can throw must appear in its
 `@throws` tag, except a configured set of programming-error and infrastructure exceptions that stay unchecked - the

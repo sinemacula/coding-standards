@@ -7,6 +7,9 @@ includes:
     - php/phpstan-base.neon
 
 parameters:
+    # This repo is the exception that runs PHPStan itself rather than through
+    # qlty, so it is the one config that has to state the level. 9 is what
+    # qlty's driver enforces everywhere else.
     level: 9
 
     # PHP_CodeSniffer's File API declares some returns more tightly in 4.x than
