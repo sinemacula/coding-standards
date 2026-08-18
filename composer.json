@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "friendsofphp/php-cs-fixer": "^3.0"
+        "friendsofphp/php-cs-fixer": "^3.95.19"
     },
     "suggest": {
         "phpstan/phpstan-phpunit": "PHPUnit-aware PHPStan rules: data-provider validation, setUp()/tearDown() parent calls, assertSame discipline, and @covers / mock target existence. Auto-registers via phpstan/extension-installer.",
