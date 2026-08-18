@@ -113,11 +113,15 @@ package_filters = ["slevomat", "dealerdirect"]
 [plugins.definitions.php-codesniffer.drivers.lint]
 success_codes = [0, 1, 2, 3]
 
-# Pinned: 3.90+ pulls symfony/console 8 (needs PHP 8.4.1), which qlty's PHP 8.3
-# runner cannot parse. Bump once the runner ships PHP 8.4.
+# The installed version comes from composer.json, not from `version`. With a
+# package_file and no package_filters, qlty installs that file's requirements,
+# so friendsofphp/php-cs-fixer resolves from the constraint declared there and
+# `version` only keys the tool sandbox. The two are kept in step deliberately:
+# the floor in composer.json is what guarantees the version, and moving it
+# without moving this leaves the sandbox keyed to a version nobody is running.
 [[plugin]]
 name = "php-cs-fixer"
-version = "3.89.0"
+version = "3.95.19"
 package_file = "composer.json"
 
 # phpstan is NOT wired here: it needs the project vendor (composer install) that
