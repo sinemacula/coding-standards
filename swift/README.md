@@ -12,6 +12,12 @@ SwiftLint and SwiftFormat run through Qlty CLI only on macOS. Qlty Cloud still p
 but its Linux workers cannot execute these two native plugins. A Swift repository therefore needs a macOS quality job
 that runs both `qlty fmt --all` and `qlty check --all`.
 
+The policy is not purely stock SwiftLint. Where the PHP and TypeScript standards in this repository express a house
+opinion that SwiftLint can express too, it is carried over: a required copyright header (`file_header`), documentation
+on the public surface (`missing_docs`), and comment prose held to the line limit. Opinions with no SwiftLint
+equivalent - a maximum method count per type, protocol and boolean-method naming, and a required-readonly property
+rule - are not enforced for Swift, and closing those would mean writing custom regex rules.
+
 Application-specific paths, generated-source conventions, and architectural restrictions stay in the consuming
 repository. The shared policy must remain usable by macOS apps, iOS apps, command-line tools, and Swift packages.
 

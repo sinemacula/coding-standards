@@ -1,3 +1,9 @@
+//
+//  PolicyFixture.swift
+//
+//  Copyright 2026 Sine Macula Limited
+//
+
 import Foundation
 
 struct PolicyFixture: Sendable {

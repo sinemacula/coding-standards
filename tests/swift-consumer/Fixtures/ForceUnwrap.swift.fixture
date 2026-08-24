@@ -1,3 +1,9 @@
+//
+//  ForceUnwrap.swift
+//
+//  Copyright 2026 Sine Macula Limited
+//
+
 import Foundation
 
 struct ForceUnwrapFixture {

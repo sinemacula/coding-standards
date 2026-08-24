@@ -27,6 +27,10 @@
 --semicolons never
 --self remove
 --ifdef no-indent
+
+# SwiftLint's file_header rule owns the copyright header. `ignore` leaves an
+# existing header alone rather than rewriting every file to one template, so the
+# holder and format stay the consuming project's choice.
 --header ignore
 
 # Do not rewrite public function signatures just because an implementation

@@ -481,7 +481,19 @@ The main review and hard ceilings are:
 
 SwiftFormat owns whitespace, wrapping, imports, and other mechanically correctable layout. Its configuration matches
 SwiftLint on 120-column wrapping, import ordering, and no trailing commas, and it is the only tool of the two that
-enforces four-space indentation. Rules that can alter ownership,
+enforces four-space indentation.
+
+The policy also carries over the documentation opinions the PHP and TypeScript standards enforce:
+
+- `file_header` requires a copyright header, as `RequireCopyrightTagSniff` does for PHP classes and `require-copyright`
+  does for TypeScript declarations. The pattern asserts only that the tag is present, so the holder, year and format
+  stay the consuming project's choice, and SwiftFormat's `--header ignore` leaves an existing header untouched.
+- `missing_docs` requires documentation on `open` and `public` declarations, the Swift equivalent of the PHP docblock
+  sniffs and `jsdoc/require-jsdoc`. It is scoped to the public surface deliberately: demanding a comment on every
+  internal member would generate noise the other two standards do not.
+- `line_length` holds comments to the limit rather than exempting them. SwiftFormat wraps `//` comments to 120 but
+  leaves `///` doc comments alone, so without this an over-long documentation line passes both tools - where PHP and
+  TypeScript both wrap comment prose. Rules that can alter ownership,
 control flow, explicit `Sendable` conformance, or public API shape are disabled; those changes require human review.
 
 ### Methods that only throw

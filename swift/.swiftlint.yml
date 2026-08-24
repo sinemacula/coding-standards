@@ -64,6 +64,8 @@ opt_in_rules:
   - literal_expression_end_indentation
   - local_doc_comment
   - lower_acl_than_parent
+  - file_header
+  - missing_docs
   - modifier_order
   - no_empty_block
   - non_overridable_class_declaration
@@ -147,7 +149,10 @@ line_length:
   error: 160
   ignores_urls: true
   ignores_function_declarations: false
-  ignores_comments: true
+  # SwiftFormat wraps `//` comments to this width but leaves `///` doc comments
+  # alone, so exempting comments here would let an over-long documentation line
+  # pass both tools. PHP and TypeScript hold comments to the limit too.
+  ignores_comments: false
   ignores_interpolated_strings: true
   ignores_multiline_strings: true
   ignores_regex_literals: true
@@ -180,6 +185,26 @@ type_name:
 # Match SwiftFormat's explicit no-trailing-comma policy.
 trailing_comma:
   mandatory_comma: false
+
+# The PHP standard requires an @copyright tag in every class docblock and the
+# TypeScript standard requires @copyright and @author, so a Swift file carries a
+# copyright header too. The pattern deliberately asserts only that the tag is
+# present: the holder, year and format stay the consuming project's to choose,
+# and SwiftFormat's `--header ignore` leaves an existing header untouched rather
+# than rewriting it to a template.
+file_header:
+  required_pattern: '(?:\/\/|\/\*)(?s:.)*[Cc]opyright(?s:.)*'
+
+# PHP requires a docblock on every class and method, TypeScript requires a JSDoc
+# block with a description. Swift's equivalent is held to the public surface:
+# `open` and `public` declarations are the API a consumer reads, and demanding a
+# comment on every internal member would be noise the other two standards do not
+# generate either.
+missing_docs:
+  warning: [open, public]
+  excludes_extensions: true
+  excludes_inherited_types: true
+  excludes_trivial_init: true
 
 # A discarded throwing task can silently lose an operational failure.
 unhandled_throwing_task:
