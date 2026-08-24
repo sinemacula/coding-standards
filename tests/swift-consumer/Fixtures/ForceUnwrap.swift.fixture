@@ -1,0 +1,13 @@
+//
+//  ForceUnwrap.swift
+//
+//  Copyright 2026 Sine Macula Limited
+//
+
+import Foundation
+
+struct ForceUnwrapFixture {
+    func requireValue(_ value: String?) -> String {
+        value!
+    }
+}

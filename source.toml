@@ -38,3 +38,9 @@ exported_config_paths = ["security/.gitleaks.toml"]
 
 [plugins.definitions.editorconfig-checker]
 exported_config_paths = ["editorconfig/.editorconfig-checker.json"]
+
+[plugins.definitions.swiftlint]
+exported_config_paths = ["swift/.swiftlint.yml"]
+
+[plugins.definitions.swiftformat]
+exported_config_paths = ["swift/.swiftformat"]

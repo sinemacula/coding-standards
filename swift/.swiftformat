@@ -1,0 +1,48 @@
+# Shared Swift 6 formatting policy for Sine Macula applications and packages.
+
+--swiftversion 6.0
+--indent 4
+--linebreaks lf
+--maxwidth 120
+--trim-whitespace always
+--xcode-indentation enabled
+
+# Keep multiline declarations deterministic and easy to diff.
+--wrap-arguments before-first
+--wrap-parameters before-first
+--wrap-collections before-first
+--wrap-conditions before-first
+--wrap-effects if-multiline
+--wrap-return-type if-multiline
+--closing-paren balanced
+--call-site-paren balanced
+
+# Match SwiftLint and avoid formatter/linter churn. SwiftLint's sorted_imports
+# orders imports by module name alone, while SwiftFormat defaults to grouping by
+# access level first (access-control,alpha). On a file using Swift 6 access-level
+# imports that disagreement makes `qlty fmt` emit an order `qlty check` rejects,
+# and re-running the formatter never settles it.
+--import-grouping alpha
+--trailing-commas never
+--semicolons never
+--self remove
+--ifdef no-indent
+
+# SwiftLint's file_header rule owns the copyright header. `ignore` leaves an
+# existing header alone rather than rewriting every file to one template, so the
+# holder and format stay the consuming project's choice.
+--header ignore
+
+# Do not rewrite public function signatures just because an implementation
+# does not currently use an argument. Removing unused closure arguments is
+# local and cannot alter a declared API.
+--strip-unused-args closure-only
+
+# Formatting must not change ownership, control flow, or API shape.
+--anonymous-for-each ignore
+--disable enumNamespaces,initCoderUnavailable,preferForLoop,redundantSendable,strongOutlets
+
+# Mirror the exclusions in .swiftlint.yml. SwiftFormat rewrites files in place,
+# and unlike SwiftLint's `excluded:` it honours these even when a path is passed
+# explicitly - so generated and third-party code is protected under Qlty too.
+--exclude .build,build,DerivedData,Carthage,Pods,vendor,**/Generated

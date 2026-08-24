@@ -7,6 +7,7 @@ Contributions are welcome via GitHub pull requests. This guide covers the expect
 - PHP 8.3+
 - Composer 2
 - Node.js is only needed when working on the JavaScript, Markdown, YAML or shell configs distributed via npm
+- macOS and Qlty CLI are needed when working on the SwiftLint or SwiftFormat policy
 
 ## Getting Started
 
@@ -59,6 +60,7 @@ Run the full test suite before submitting:
 ```bash
 composer test            # Run the PHPUnit sniff test suite
 composer test:coverage   # With Clover coverage report (requires Xdebug)
+bash scripts/test-swift-policy.sh # Validate Swift exports, formatting and linting on macOS
 ```
 
 Single test file or method:
@@ -72,6 +74,7 @@ vendor/bin/phpunit --filter testDetectsViolations SineMacula/Tests/<Category>/<N
 
 - New sniffs and PHPStan rules ship with tests and maintain 100% line coverage; the package's mutation-testing gate
   (`composer test:mutation`) is the enforced floor
+- Swift policy changes must pass the isolated Qlty consumer integration test on macOS
 - Full type hints on all method parameters and return types
 - PHPDoc on all classes and methods
 - Sniffs are token-based; PHPStan rules are AST/reflection-based
