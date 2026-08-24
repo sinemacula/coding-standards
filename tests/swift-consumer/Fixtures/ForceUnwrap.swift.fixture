@@ -1,0 +1,7 @@
+import Foundation
+
+struct ForceUnwrapFixture {
+    func requireValue(_ value: String?) -> String {
+        value!
+    }
+}

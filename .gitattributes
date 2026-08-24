@@ -1,5 +1,7 @@
 .github export-ignore
 SineMacula/Tests export-ignore
+tests export-ignore
+scripts export-ignore
 
 phpunit.xml.dist export-ignore
 infection.json5 export-ignore

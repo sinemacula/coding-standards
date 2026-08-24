@@ -1,0 +1,34 @@
+config_version = "0"
+
+# SwiftLint's own `excluded:` list only applies when it walks a directory. Qlty
+# passes explicit file paths, so generated and third-party sources have to be
+# excluded here or the shared policy is reported against machine-written code.
+exclude_patterns = [
+    ".build/**",
+    "build/**",
+    "DerivedData/**",
+    "Carthage/**",
+    "Pods/**",
+    "vendor/**",
+    "**/Generated/**",
+]
+
+test_patterns = [
+    "**/*Tests.swift",
+    "**/Tests/**",
+]
+
+[[source]]
+name = "default"
+default = true
+
+[[source]]
+name = "sinemacula"
+directory = "__SOURCE_DIRECTORY__"
+
+[[plugin]]
+name = "swiftlint"
+
+[[plugin]]
+name = "swiftformat"
+mode = "comment"

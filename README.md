@@ -26,8 +26,13 @@ composer require --dev sinemacula/coding-standards
 npm install --save-dev @sinemacula/coding-standards
 ```
 
-The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`). The PHP autoloaded
-code lives in the Composer package.
+The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`, `swift/`). The PHP
+autoloaded code lives in the Composer package.
+
+### Qlty (Swift-side: SwiftLint, SwiftFormat)
+
+Swift consumers do not need the Composer or npm package. Qlty fetches the shared Swift configs from this repository as
+a pinned source and installs the native tools on macOS.
 
 ## Usage
 
@@ -268,6 +273,70 @@ repository = "https://github.com/sinemacula/coding-standards"
 tag = "<version>"
 ```
 
+### Swift (SwiftLint and SwiftFormat)
+
+Swift repositories consume the shared policy through Qlty. Enable the default source for the tools, this repository
+for the exported configs, and both native plugins:
+
+```toml
+config_version = "0"
+
+# SwiftLint's own `excluded:` list only applies when it walks a directory. Qlty
+# passes explicit file paths, so generated and third-party sources have to be
+# excluded here or the shared policy is reported against machine-written code.
+exclude_patterns = [
+    ".build/**",
+    "build/**",
+    "DerivedData/**",
+    "Carthage/**",
+    "Pods/**",
+    "vendor/**",
+    "**/Generated/**",
+]
+
+test_patterns = [
+    "**/*Tests.swift",
+    "**/Tests/**",
+]
+
+[[source]]
+name = "default"
+default = true
+
+[[source]]
+name = "sinemacula"
+repository = "https://github.com/sinemacula/coding-standards"
+tag = "<version>"
+
+[[plugin]]
+name = "swiftlint"
+
+[[plugin]]
+name = "swiftformat"
+mode = "comment"
+```
+
+This is the same configuration the package's own integration test runs, so what is documented here is what CI exercises.
+
+Run formatting and linting locally:
+
+```bash
+qlty fmt --all
+qlty check --all
+```
+
+SwiftLint and SwiftFormat are native macOS plugins. Qlty Cloud's Linux workers cannot execute them, so every Swift
+consumer needs a macOS CI job that verifies formatting and runs `qlty check`. Qlty Cloud still provides its built-in
+Swift maintainability, duplication, complexity, security, and coverage capabilities.
+
+The shared policy targets Swift 6 and deliberately contains no application-specific include paths or architecture
+rules. Xcode compiler checks such as strict concurrency, warnings-as-errors, platform availability, and test builds
+remain the consuming project's responsibility.
+
+SwiftLint has no configuration inheritance. A `.swiftlint.yml` committed to a consuming repository *replaces* the
+shared policy rather than extending it, so adding one to relax a single rule silently discards the whole standard.
+Raise a pull request here instead, or copy the shared file wholesale and edit the copy.
+
 ## What's Included
 
 | Path                                      | Tool                 | Description                                            |
@@ -285,6 +354,8 @@ tag = "<version>"
 | `shell/.shellcheckrc`                     | ShellCheck           | Shell script linting rules                             |
 | `security/.gitleaks.toml`                 | Gitleaks             | Secret-detection ruleset                               |
 | `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check                |
+| `swift/.swiftlint.yml`                    | SwiftLint            | Shared Swift 6 lint, safety, concurrency, and metrics  |
+| `swift/.swiftformat`                      | SwiftFormat          | Shared deterministic Swift 6 formatting policy         |
 
 ## Rules
 
@@ -385,6 +456,34 @@ types belong in the signature) and keep a blank line above every documentation b
 type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
 `@typescript-eslint/only-throw-error`.
 
+### Swift policy
+
+SwiftLint keeps its default rule set and adds curated opt-in rules with a strong correctness, concurrency, safety,
+performance, or readability signal. The policy intentionally avoids analyzer-only rules, which need an Xcode compiler
+log and cannot run through Qlty's normal lint driver.
+
+Notable additions include checks for force-unwrapping, silently discarded throwing tasks, invalid concurrency
+annotations, unsafe optional modelling, empty XCTest methods, unbalanced access control, inefficient collection
+operations, oversized closures, and non-private SwiftUI state. A discarded throwing task is an error because it can
+silently lose an operational failure; most style and maintainability findings retain warning severity.
+
+The main review and hard ceilings are:
+
+| Metric                | Warning | Error |
+|-----------------------|--------:|------:|
+| Line length           |     120 |   160 |
+| File length           |     500 |   800 |
+| Type body length      |     300 |   500 |
+| Function body length  |      50 |    80 |
+| Closure body length   |      50 |    80 |
+| Cyclomatic complexity |      10 |    20 |
+| Function parameters   |       6 |     8 |
+
+SwiftFormat owns whitespace, wrapping, imports, and other mechanically correctable layout. Its configuration matches
+SwiftLint on 120-column wrapping, import ordering, and no trailing commas, and it is the only tool of the two that
+enforces four-space indentation. Rules that can alter ownership,
+control flow, explicit `Sendable` conformance, or public API shape are disabled; those changes require human review.
+
 ### Methods that only throw
 
 A method that exists solely to refuse - a `__serialize()` that throws so a value holding a secret cannot reach a queue
@@ -430,6 +529,7 @@ The one thing still worth knowing is that spelling out the contained type of a d
 
 - PHP ^8.3 (Composer package)
 - Node.js (npm package)
+- macOS and Qlty CLI (SwiftLint and SwiftFormat policy)
 
 ## Testing
 
@@ -442,6 +542,7 @@ composer analyse             # PHPStan static analysis
 composer check               # static analysis and lint via qlty
 composer format              # format via qlty
 composer smells              # duplication / complexity smells via qlty
+bash scripts/test-swift-policy.sh # exported Swift policy integration test (macOS)
 ```
 
 ## Changelog

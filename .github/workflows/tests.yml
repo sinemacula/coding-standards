@@ -114,3 +114,25 @@ jobs:
 
             -   name: ESLint dogfood
                 run: npm run lint:js
+
+    # ==========================================================================
+    # JOB: SWIFT POLICY INTEGRATION
+    # ==========================================================================
+    swift-policy:
+        name: Test / Swift policy exports
+        runs-on: macos-15
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Install Qlty
+                uses: qltysh/qlty-action/install@v2
+
+            # Qlty anchors configuration at a Git worktree's root. The script
+            # creates an isolated consumer that exercises this checkout just as
+            # a downstream repository would.
+            -   name: Verify Swift policy
+                run: bash scripts/test-swift-policy.sh
