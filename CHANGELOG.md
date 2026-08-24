@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.22.0](https://github.com/sinemacula/coding-standards/compare/v1.21.0...v1.22.0) (2026-08-24)
+
+
+### Features
+
+* add the shared Swift 6 static analysis policy ([#149](https://github.com/sinemacula/coding-standards/issues/149)) ([0d8be24](https://github.com/sinemacula/coding-standards/commit/0d8be2473787663b5740fdb02a7d88674f132652))
+* flag a redundant static reference in a final class ([#144](https://github.com/sinemacula/coding-standards/issues/144)) ([616b2ea](https://github.com/sinemacula/coding-standards/commit/616b2ea7e659c1bdf1b800bc870bc4742e78937e))
+* flag a redundant static return type in a final class ([#139](https://github.com/sinemacula/coding-standards/issues/139)) ([526ad28](https://github.com/sinemacula/coding-standards/commit/526ad28bf37d26274eb9f854cce729d356e8a9aa))
+
+
+### Bug Fixes
+
+* gate the sensitive-parameter attribute on the declared type ([#142](https://github.com/sinemacula/coding-standards/issues/142)) ([28df678](https://github.com/sinemacula/coding-standards/commit/28df6785abaca7ad501be87dfd2c0de1908cda0f))
+* stop documenting a PHPStan level that never applies ([#147](https://github.com/sinemacula/coding-standards/issues/147)) ([cf40428](https://github.com/sinemacula/coding-standards/commit/cf404289daf0033927af61c6ce69d63d9d1b0e65))
+* stop faulting a method that exists only to refuse ([#146](https://github.com/sinemacula/coding-standards/issues/146)) ([ab6bf3d](https://github.com/sinemacula/coding-standards/commit/ab6bf3d9b53ec475b681487f2e03a5e69f7e6d99))
+* stop stripping the only types a JavaScript file has ([#151](https://github.com/sinemacula/coding-standards/issues/151)) ([6259ef0](https://github.com/sinemacula/coding-standards/commit/6259ef03ded8d6840af893c9eef12f7d4e3440a0))
+
 ## [1.21.0](https://github.com/sinemacula/coding-standards/compare/v1.20.2...v1.21.0) (2026-07-30)
 
 
