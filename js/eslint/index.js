@@ -12,11 +12,12 @@ const YAML_FILES = ['**/*.yml', '**/*.yaml'];
  *
  * Requires no tsconfig, so it stays cheap. The typescript-eslint parser
  * resolves TypeScript syntax. The interface, readonly-property and enum rules
- * target TypeScript-only constructs; no-mutable-static also applies to plain
- * JavaScript (exported let/var, mutable static fields), so it runs across both.
- * A final block carries the comment-wrap rule alone over YAML, which otherwise
- * bounds nothing about a comment's width. The opt-in type-aware layer lives in
- * ./type-checked.js.
+ * target TypeScript-only constructs, as does jsdoc/no-types, which presumes a
+ * signature to hold the type it strips from the tag; no-mutable-static also
+ * applies to plain JavaScript (exported let/var, mutable static fields), so it
+ * runs across both. A final block carries the comment-wrap rule alone over
+ * YAML, which otherwise bounds nothing about a comment's width. The opt-in
+ * type-aware layer lives in ./type-checked.js.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -27,6 +28,7 @@ export default [
         plugins: {
             '@sinemacula': plugin,
             '@typescript-eslint': tseslint.plugin,
+            jsdoc,
         },
         languageOptions: {
             parser: tseslint.parser,
@@ -37,6 +39,14 @@ export default [
             '@sinemacula/valid-enum-member-name': 'error',
 
             '@typescript-eslint/no-explicit-any': 'error',
+
+            // A TypeScript signature already records the type, so a tag that
+            // repeats it is a second copy free to drift from the first. Plain
+            // JavaScript has no signature to hold one, which is why this rule
+            // stops at TypeScript: there the tag is the only place a type is
+            // written down, and clearing it would delete the type rather than
+            // move it to where the reader already looks.
+            'jsdoc/no-types': 'error',
         },
     },
     {
@@ -66,10 +76,11 @@ export default [
             // property carries a documentation comment describing intent, so a
             // reader meets each member's purpose before its type. Interface
             // members and class fields are held to the same bar as methods.
-            // Types live in the signature, so a tag never annotates one: the
-            // @param and @returns tags themselves are welcome, only their type
-            // forms are not. Each block stands off from the code above it,
-            // single-line blocks included.
+            // Every @param and @returns says what the value means, whether or
+            // not the tag also carries a type; the type itself is governed by
+            // no-types in the TypeScript block above, which is the only place a
+            // signature holds one. Each block stands off from the code above
+            // it, single-line blocks included.
             'jsdoc/require-jsdoc': ['error', {
                 require: {
                     ClassDeclaration: true,
@@ -91,7 +102,6 @@ export default [
                 enableFixer: false,
             }],
             'jsdoc/require-description': 'error',
-            'jsdoc/no-types': 'error',
             'jsdoc/require-param-description': 'error',
             'jsdoc/require-returns-description': 'error',
             'jsdoc/lines-before-block': ['error', { lines: 1, ignoreSingleLines: false }],

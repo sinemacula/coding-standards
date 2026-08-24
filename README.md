@@ -451,10 +451,16 @@ than comment, so a shell comment inside a `run: |` step is never seen, and a com
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
 control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)
 and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment on every declared function,
-method, class, interface member and class field, forbid types in `@param`/`@returns` (the tags themselves are welcome,
-types belong in the signature) and keep a blank line above every documentation block, single-line blocks included. The
-type-checked layer adds `@typescript-eslint/explicit-module-boundary-types` and
-`@typescript-eslint/only-throw-error`.
+method, class, interface member and class field, require a description on every `@param` and `@returns`, and keep a
+blank line above every documentation block, single-line blocks included. The type-checked layer adds
+`@typescript-eslint/explicit-module-boundary-types` and `@typescript-eslint/only-throw-error`.
+
+`jsdoc/no-types`, which forbids a type in `@param`/`@returns`, runs over `.ts`/`.tsx`/`.mts`/`.cts` alone, alongside
+`@typescript-eslint/no-explicit-any`. A TypeScript signature already records the type, so the tag would only repeat it
+and is free to drift; plain JavaScript has no signature to hold one, which makes the tag the only place a type is
+written down, and clearing it there would delete the type rather than move it. The description rules are not scoped
+that way: a tag says what a value means whether or not it also says what the value is, so `@param` and `@returns` need
+a description in both languages.
 
 ### Swift policy
 
