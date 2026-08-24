@@ -35,6 +35,7 @@
         "README.md",
         "LICENSE",
         "NOTICE",
+        "!js/eslint/__tests__",
         "!js/eslint/rules/__tests__"
     ],
     "exports": {

@@ -20,7 +20,8 @@ vendor/
 .editorconfig
 source.toml
 
-# Rule test specs and fixtures - kept in git and CI, never shipped to consumers.
+# Test specs and fixtures - kept in git and CI, never shipped to consumers.
+js/eslint/__tests__/
 js/eslint/rules/__tests__/
 tests/
 vitest.config.js
