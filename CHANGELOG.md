@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.0](https://github.com/sinemacula/coding-standards/compare/v1.22.0...v1.23.0) (2026-09-10)
+
+
+### Features
+
+* hold a spec file's helpers to the documentation source keeps ([#154](https://github.com/sinemacula/coding-standards/issues/154)) ([72a5d9f](https://github.com/sinemacula/coding-standards/commit/72a5d9fd5e55776d7d96ac62b35e9cbabc3c03b7))
+* require the file header to carry the summary its tags annotate ([#153](https://github.com/sinemacula/coding-standards/issues/153)) ([4c4389a](https://github.com/sinemacula/coding-standards/commit/4c4389a34bd84762914d661f52b7d44fbbde74f9))
+
 ## [1.22.0](https://github.com/sinemacula/coding-standards/compare/v1.21.0...v1.22.0) (2026-08-24)
 
 
