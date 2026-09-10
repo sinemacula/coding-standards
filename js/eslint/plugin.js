@@ -7,6 +7,7 @@ import noBaseError from './rules/no-base-error.js';
 import noInterfacePrefix from './rules/no-interface-prefix.js';
 import noMutableStatic from './rules/no-mutable-static.js';
 import requireCopyright from './rules/require-copyright.js';
+import requireFileDescription from './rules/require-file-description.js';
 import requireReadonlyPublicProperty from './rules/require-readonly-public-property.js';
 import singleLinePropertyDoc from './rules/single-line-property-doc.js';
 import validEnumMemberName from './rules/valid-enum-member-name.js';
@@ -34,6 +35,7 @@ export default {
         'max-methods-per-class': maxMethodsPerClass,
         'no-base-error': noBaseError,
         'require-copyright': requireCopyright,
+        'require-file-description': requireFileDescription,
         'align-doc-tags': alignDocTags,
         'single-line-property-doc': singleLinePropertyDoc,
         'multiline-function-doc': multilineFunctionDoc,
