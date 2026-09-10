@@ -461,10 +461,18 @@ than comment, so a shell comment inside a `run: |` step is never seen, and a com
 
 The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
 control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)
-and `max-depth` (4), plus `eslint-plugin-jsdoc` rules that require a documentation comment on every declared function,
-method, class, interface member and class field, require a description on every `@param` and `@returns`, and keep a
-blank line above every documentation block, single-line blocks included. The type-checked layer adds
-`@typescript-eslint/explicit-module-boundary-types` and `@typescript-eslint/only-throw-error`.
+and `max-depth` (4, test code exempt), plus `eslint-plugin-jsdoc` rules that require a documentation comment on every
+declared function, method, class, interface member and class field, require a description on every `@param` and
+`@returns`, and keep a blank line above every documentation block, single-line blocks included. The type-checked layer
+adds `@typescript-eslint/explicit-module-boundary-types` and `@typescript-eslint/only-throw-error`.
+
+Test files - `*.test.*`, `*.spec.*` and anything under `__tests__/`, `tests/` or `test-support/` - are exempt from
+`max-lines-per-function` and `max-depth` alone. A spec body is a long, deeply nested account of one scenario, and
+splitting it to satisfy a metric hides the scenario rather than simplifying it. They are not exempt from documentation:
+`jsdoc/require-jsdoc` reaches declared functions, assigned arrows and classes, which in a spec file are its helpers,
+factories and builders - the code a reader has to understand before the assertions mean anything. A test case is an
+arrow passed as a call argument, which none of the rule's contexts match, so `it('...', () => {})` is never asked to
+carry a block; a spec of test cases alone carries no documentation burden at all.
 
 `jsdoc/no-types`, which forbids a type in `@param`/`@returns`, runs over `.ts`/`.tsx`/`.mts`/`.cts` alone, alongside
 `@typescript-eslint/no-explicit-any`. A TypeScript signature already records the type, so the tag would only repeat it
