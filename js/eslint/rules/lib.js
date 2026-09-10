@@ -92,3 +92,27 @@ export function isTestClass(klass) {
 
     return parent !== null && parent.endsWith('TestCase');
 }
+
+/** A boundary-anchored matcher for a documentation tag by its bare name. */
+export function tagMatcher(tag) {
+    const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+    return new RegExp(`(?:^|[\\s*])@${escaped}(?![-\\w])`, 'i');
+}
+
+/**
+ * The file's descriptive docblock: the block comment carrying all of the given
+ * tags together, or null when no comment carries them.
+ *
+ * The block is found by its tags rather than its position, since the header
+ * need not open the file: a module documented at its export sits below the
+ * imports. Requiring one comment to carry every tag is what makes the match a
+ * single block rather than a header split across several.
+ */
+export function fileDocBlock(sourceCode, tags) {
+    const matchers = tags.map(tagMatcher);
+
+    return sourceCode.getAllComments().find(
+        comment => comment.type === 'Block' && matchers.every(matcher => matcher.test(comment.value)),
+    ) ?? null;
+}

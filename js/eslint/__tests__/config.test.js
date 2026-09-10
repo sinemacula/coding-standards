@@ -1,5 +1,5 @@
 /**
- * Tests for the file scoping of the base flat config's jsdoc rules.
+ * Tests for the file scoping of the base flat config's documentation rules.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -31,6 +31,21 @@ const TYPED_TAGS = [
 // The same function with the types stripped and the descriptions left, which is
 // what no-types asks a TypeScript file to become.
 const UNTYPED_TAGS = TYPED_TAGS.replace(/ \{number\}/g, '');
+
+// A file header in the shape the convention describes: a summary, then the tags
+// that annotate it. Stripping the summary leaves the tags-only header the
+// description rule exists to catch.
+const DESCRIBED_HEADER = [
+    '/**',
+    ' * Adds numbers, and says so.',
+    ' *',
+    ' * @author      Y',
+    ' * @copyright   2026 X',
+    ' */',
+    '',
+].join('\n');
+
+const TAGS_ONLY_HEADER = DESCRIBED_HEADER.replace(' * Adds numbers, and says so.\n *\n', '');
 
 // The same tags with the descriptions stripped and the types left, which is
 // what a plain-JavaScript codebase looks like where the tag is doing the typing
@@ -83,6 +98,29 @@ describe('jsdoc description rules', () => {
 
             expect(rules).not.toContain('jsdoc/require-param-description');
             expect(rules).not.toContain('jsdoc/require-returns-description');
+        }
+    });
+});
+
+describe('@sinemacula/require-file-description', () => {
+    it('faults a header that carries the tags and no summary', () => {
+        for (const filename of ['example.ts', 'example.js']) {
+            expect(report(TAGS_ONLY_HEADER + TYPED_TAGS, filename))
+                .toContain('@sinemacula/require-file-description');
+        }
+    });
+
+    it('holds test files to the same header as source files', () => {
+        for (const filename of ['example.spec.ts', 'example.test.js', 'src/__tests__/support.ts']) {
+            expect(report(TAGS_ONLY_HEADER + TYPED_TAGS, filename))
+                .toContain('@sinemacula/require-file-description');
+        }
+    });
+
+    it('accepts a header whose tags sit below a summary', () => {
+        for (const filename of ['example.ts', 'example.js', 'example.spec.ts']) {
+            expect(report(DESCRIBED_HEADER + TYPED_TAGS, filename))
+                .not.toContain('@sinemacula/require-file-description');
         }
     });
 });
