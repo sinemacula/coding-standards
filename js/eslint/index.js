@@ -126,11 +126,19 @@ export default [
         },
     },
     {
+        // Test code keeps the length and depth exemptions and nothing else. A
+        // spec body is a long, deeply nested account of one scenario, and
+        // splitting it to satisfy a metric hides the scenario rather than
+        // simplifying it. Documentation is a different matter: require-jsdoc's
+        // contexts reach declared functions, assigned arrows and classes, which
+        // in a spec file are its helpers, factories and builders - the code a
+        // reader has to understand before the assertions mean anything. A test
+        // case itself is an arrow passed as a call argument, which no context
+        // reaches, so `it('...', () => {})` is never asked to carry a block.
         files: ['**/*.{test,spec}.{ts,tsx,mts,cts,js,jsx,mjs,cjs}', '**/__tests__/**', '**/tests/**', '**/test-support/**'],
         rules: {
             'max-lines-per-function': 'off',
             'max-depth': 'off',
-            'jsdoc/require-jsdoc': 'off',
         },
     },
 ];
