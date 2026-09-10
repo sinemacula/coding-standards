@@ -417,19 +417,30 @@ type-checked layer. Every rule is scoped to `.ts`/`.js`; `comment-line-wrap` alo
 | `@sinemacula/max-methods-per-class`            | A single class may declare at most 20 methods; test code exempt.                    |
 | `@sinemacula/no-base-error`                    | Throw a domain-specific `Error` subclass, never the base `Error`; test code exempt. |
 | `@sinemacula/require-copyright`                | Every file must carry a documentation comment with `@copyright` and `@author`.      |
+| `@sinemacula/require-file-description`         | The same comment must open with a prose summary above those tags.                   |
 | `@sinemacula/align-doc-tags`                   | `@author` and `@copyright` values line up at a single column; autofixable.          |
 | `@sinemacula/single-line-property-doc`         | A data member's documentation comment sits on one line; autofixable.                |
 | `@sinemacula/multiline-function-doc`           | A method's documentation comment spans multiple lines; autofixable.                 |
 | `@sinemacula/comment-line-wrap`                | Standalone comment prose wrapped to 80 chars, YAML included; premature wraps too.   |
 
-`boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays)
-to widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
-`allow`, and `require-copyright` takes `tags` to adjust their defaults. `align-doc-tags` takes `tags` and `column`, the
-column counting from the `@`, so the default of 14 gives `@author` six spaces and `@copyright` three. Together
-`single-line-property-doc` and `multiline-function-doc` set a member's comment shape by its kind: data members
-(interface property signatures, enum members and data class fields) take one line, while methods, interface method
-signatures and class fields holding a function take several. A data comment is never required, only held to one line
-where present; a free function keeps the freedom of either shape.
+`boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays) to
+widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
+`allow`, and `require-copyright` and `require-file-description` each take `tags` to adjust their defaults.
+`align-doc-tags` takes `tags` and `column`, the column counting from the `@`, so the default of 14 gives `@author` six
+spaces and `@copyright` three. Together `single-line-property-doc` and `multiline-function-doc` set a member's comment
+shape by its kind: data members (interface property signatures, enum members and data class fields) take one line, while
+methods, interface method signatures and class fields holding a function take several. A data comment is never required,
+only held to one line where present; a free function keeps the freedom of either shape.
+
+`require-copyright` and `require-file-description` divide the file header between them: the first asks that a single
+block comment carry `@copyright` and `@author`, the second that the same block open with a prose summary above them,
+which is the shape the convention has always described and the half nothing enforced. Both find that block by the
+tags it carries rather than by its position, so a module documented at its export below the imports is read as the
+header exactly as a comment at the top of the file is; a project that narrows one rule's `tags` should narrow the
+other's to match. Only the block's first non-blank line is read, and only for whether it is prose rather than a tag,
+which puts the summary above the tags and stops a wrapped tag value's continuation line passing as one. What the
+summary says is the author's business. A file carrying no such block at all is left to `require-copyright`, so one
+missing header is never faulted twice.
 
 `comment-line-wrap` takes `maxLength` (default 80) and is the syntax-only counterpart of the PHP
 `SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` and `#` runs and multi-line docblock prose

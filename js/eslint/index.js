@@ -63,6 +63,7 @@ export default [
             '@sinemacula/max-methods-per-class': 'error',
             '@sinemacula/no-base-error': 'error',
             '@sinemacula/require-copyright': 'error',
+            '@sinemacula/require-file-description': 'error',
             '@sinemacula/align-doc-tags': 'error',
             '@sinemacula/single-line-property-doc': 'error',
             '@sinemacula/multiline-function-doc': 'error',

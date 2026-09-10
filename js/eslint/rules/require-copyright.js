@@ -1,13 +1,6 @@
-import { createRule } from './lib.js';
+import { createRule, fileDocBlock } from './lib.js';
 
 const DEFAULT_TAGS = ['copyright', 'author'];
-
-/** A boundary-anchored matcher for a documentation tag by its bare name. */
-function tagMatcher(tag) {
-    const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-    return new RegExp(`(?:^|[\\s*])@${escaped}(?![-\\w])`, 'i');
-}
 
 /**
  * Require a documentation comment carrying the tags every source file must
@@ -17,7 +10,9 @@ function tagMatcher(tag) {
  * sit inside the file's descriptive docblock alongside its summary rather than
  * in a separate header. Only the presence of each tag is checked, never its
  * value or alignment, which are matters of formatting. The required set is
- * configurable, so a project may drop `@author` or add tags of its own.
+ * configurable, so a project may drop `@author` or add tags of its own. The
+ * summary those tags sit beside is the separate concern of
+ * `require-file-description`, which locates the same block by the same tags.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -49,15 +44,10 @@ export default createRule({
     create(context, [options]) {
         const { sourceCode } = context;
         const required = options.tags ?? DEFAULT_TAGS;
-        const matchers = required.map(tagMatcher);
 
         return {
             Program(node) {
-                const documented = sourceCode.getAllComments().some(
-                    comment => comment.type === 'Block' && matchers.every(matcher => matcher.test(comment.value)),
-                );
-
-                if (documented) {
+                if (fileDocBlock(sourceCode, required) !== null) {
                     return;
                 }
 
