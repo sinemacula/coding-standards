@@ -113,16 +113,25 @@ package_filters = ["slevomat", "dealerdirect"]
 [plugins.definitions.php-codesniffer.drivers.lint]
 success_codes = [0, 1, 2, 3]
 
-# The installed version comes from composer.json, not from `version`. With a
-# package_file and no package_filters, qlty installs that file's requirements,
-# so friendsofphp/php-cs-fixer resolves from the constraint declared there and
-# `version` only keys the tool sandbox. The two are kept in step deliberately:
-# the floor in composer.json is what guarantees the version, and moving it
-# without moving this leaves the sandbox keyed to a version nobody is running.
+# This repo's fixer config builds its rules from the working tree rather than
+# from the installed standards package, so the sandbox needs nothing but the
+# tool itself - hence no package_file. Symfony is pinned below 8 for the reason
+# given in source.toml: the sandbox install does not honour the platform
+# requirement, and php-cs-fixer has accepted a Symfony needing PHP 8.4.1 since
+# 3.90.0. Setting package_file here would silently disable these pins.
 [[plugin]]
 name = "php-cs-fixer"
 version = "3.95.19"
-package_file = "composer.json"
+extra_packages = [
+    "symfony/console@^7.4",
+    "symfony/event-dispatcher@^7.4",
+    "symfony/filesystem@^7.4",
+    "symfony/finder@^7.4",
+    "symfony/options-resolver@^7.4",
+    "symfony/process@^7.4",
+    "symfony/stopwatch@^7.4",
+    "symfony/string@^7.4",
+]
 
 # phpstan is NOT wired here: it needs the project vendor (composer install) that
 # qlty Cloud lacks. Run it locally with `composer analyse` (phpstan.neon.dist).
