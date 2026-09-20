@@ -17,6 +17,15 @@
         },
         {
             "customType": "regex",
+            "fileMatch": ["(^|/)\\.qlty/qlty\\.toml$"],
+            "matchStrings": [
+                "\"sinemacula/coding-standards@(?<currentValue>[^\"]+)\""
+            ],
+            "depNameTemplate": "sinemacula/coding-standards",
+            "datasourceTemplate": "packagist"
+        },
+        {
+            "customType": "regex",
             "fileMatch": ["(^|/)\\.qlty/configs/biome\\.json$"],
             "matchStrings": [
                 "coding-standards/(?<currentValue>v[0-9.]+)/js/biome\\.json"
