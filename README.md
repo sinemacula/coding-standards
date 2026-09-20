@@ -53,6 +53,37 @@ return PhpCsFixerConfig::make([
 ]);
 ```
 
+Wire the qlty plugin so the tool sandbox is supplied directly, and do **not** set `package_file` or
+`package_filters` on it:
+
+```toml
+[[plugin]]
+name = "php-cs-fixer"
+extra_packages = [
+    "sinemacula/coding-standards@^1.23",
+    "symfony/console@^7.4",
+    "symfony/event-dispatcher@^7.4",
+    "symfony/filesystem@^7.4",
+    "symfony/finder@^7.4",
+    "symfony/options-resolver@^7.4",
+    "symfony/process@^7.4",
+    "symfony/stopwatch@^7.4",
+    "symfony/string@^7.4",
+]
+```
+
+`extra_packages` installs into the tool sandbox alone, so none of this reaches your own dependency graph. The first
+entry is this package, which the config above autoloads `PhpCsFixerConfig` from - the only thing `package_file` was
+doing for this plugin. The rest hold Symfony below 8: PHP CS Fixer has accepted that line since 3.90.0, it requires PHP
+8.4.1, and the sandbox install does not honour the platform requirement, so without the pins a project on 8.3 installs
+a Symfony its runner cannot parse. PHP CS Fixer then exits 255, and a tool that cannot start is reported as an errored
+build rather than as findings - arriving after a genuine pass, so a status read once looks green.
+
+Setting `package_file` makes qlty ignore `extra_packages` entirely, and silently, taking the pins with it. This cannot
+be shipped from the shared source: a `[plugins.definitions.*]` block carrying anything beyond `exported_config_paths`
+makes consumers drop every exported config from it. `php-codesniffer` and `phpstan` are unaffected and keep their
+`package_file`, their sandboxes being where the sniff and rule code comes from.
+
 You can pass rule overrides as a second argument:
 
 ```php
