@@ -99,20 +99,53 @@ final class PhpCsFixerSandboxTest extends TestCase
      * The standards entry a project adds is kept current by the shared Renovate
      * preset. It sits in a config file no dependency manager reads, so without
      * a matching rule it would be the one version in a project that nobody
-     * bumps.
+     * bumps. Matching is not enough on its own: the version has to be captured,
+     * since that is what the update is calculated from.
      *
      * @return void
      */
-    public function testRenovateKeepsTheDocumentedStandardsEntryCurrent(): void
+    public function testRenovateCapturesTheVersionFromTheDocumentedStandardsEntry(): void
     {
-        $entry   = sprintf('"sinemacula/coding-standards@%s"', $this->documented()['sinemacula/coding-standards'] ?? '');
-        $matched = false;
+        $version  = $this->documentedStandardsVersion();
+        $entry    = sprintf('"sinemacula/coding-standards@%s"', $version);
+        $captured = [];
 
         foreach ($this->renovateMatchStrings() as $pattern) {
-            $matched = $matched || preg_match('/' . str_replace('/', '\/', $pattern) . '/', $entry) === 1;
+            if (preg_match('/' . str_replace('/', '\/', $pattern) . '/', $entry, $matches) !== 1) {
+                continue;
+            }
+
+            $captured[] = $matches['currentValue'] ?? '';
         }
 
-        self::assertTrue($matched, 'No Renovate manager matches the entry the README tells a project to add.');
+        self::assertContains($version, $captured, 'No Renovate manager captures the version from the entry the README tells a project to add.');
+    }
+
+    /**
+     * The documented version is exact rather than a range. A range resolves to
+     * the newest release it already allows, which leaves nothing to raise it
+     * to, so the entry would sit at its original floor forever while appearing
+     * to be managed.
+     *
+     * @return void
+     */
+    public function testTheDocumentedStandardsEntryIsAnExactVersion(): void
+    {
+        self::assertMatchesRegularExpression(
+            '/^\d+\.\d+\.\d+$/',
+            $this->documentedStandardsVersion(),
+            'The standards entry must be an exact version; a range is never raised.',
+        );
+    }
+
+    /**
+     * The version the README tells a project to pin the standards package to.
+     *
+     * @return string
+     */
+    private function documentedStandardsVersion(): string
+    {
+        return $this->documented()['sinemacula/coding-standards'] ?? '';
     }
 
     /**

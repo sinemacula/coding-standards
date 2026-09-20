@@ -60,7 +60,7 @@ Wire the qlty plugin so the tool sandbox is supplied directly, and do **not** se
 [[plugin]]
 name = "php-cs-fixer"
 extra_packages = [
-    "sinemacula/coding-standards@^1.23",
+    "sinemacula/coding-standards@1.23.0",
     "symfony/console@^7.4",
     "symfony/event-dispatcher@^7.4",
     "symfony/filesystem@^7.4",
@@ -74,7 +74,9 @@ extra_packages = [
 
 `extra_packages` installs into the tool sandbox alone, so none of this reaches your own dependency graph. The first
 entry is this package, which the config above autoloads `PhpCsFixerConfig` from - the only thing `package_file` was
-doing for this plugin. The rest hold Symfony below 8: PHP CS Fixer has accepted that line since 3.90.0, it requires PHP
+doing for this plugin. Give it an exact version rather than a range: the shared Renovate preset raises it on each
+release, and a range is never raised, because it already allows everything published after it. The rest hold Symfony
+below 8: PHP CS Fixer has accepted that line since 3.90.0, it requires PHP
 8.4.1, and the sandbox install does not honour the platform requirement, so without the pins a project on 8.3 installs
 a Symfony its runner cannot parse. PHP CS Fixer then exits 255, and a tool that cannot start is reported as an errored
 build rather than as findings - arriving after a genuine pass, so a status read once looks green.
