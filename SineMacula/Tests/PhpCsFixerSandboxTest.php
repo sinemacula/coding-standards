@@ -96,6 +96,85 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
+     * The standards entry a project adds is kept current by the shared Renovate
+     * preset. It sits in a config file no dependency manager reads, so without
+     * a matching rule it would be the one version in a project that nobody
+     * bumps.
+     *
+     * @return void
+     */
+    public function testRenovateKeepsTheDocumentedStandardsEntryCurrent(): void
+    {
+        $entry   = sprintf('"sinemacula/coding-standards@%s"', $this->documented()['sinemacula/coding-standards'] ?? '');
+        $matched = false;
+
+        foreach ($this->renovateMatchStrings() as $pattern) {
+            $matched = $matched || preg_match('/' . str_replace('/', '\/', $pattern) . '/', $entry) === 1;
+        }
+
+        self::assertTrue($matched, 'No Renovate manager matches the entry the README tells a project to add.');
+    }
+
+    /**
+     * Every pattern the shared Renovate preset matches against.
+     *
+     * @return array<int, string>
+     */
+    private function renovateMatchStrings(): array
+    {
+        $preset   = $this->decode('default.json');
+        $managers = $preset['customManagers'] ?? [];
+        $patterns = [];
+
+        foreach (is_array($managers) ? $managers : [] as $manager) {
+            if (is_array($manager) === false) {
+                continue;
+            }
+
+            foreach ($this->stringList($manager['matchStrings'] ?? null) as $pattern) {
+                $patterns[] = $pattern;
+            }
+        }
+
+        return $patterns;
+    }
+
+    /**
+     * Keep only the string entries of a decoded list.
+     *
+     * @param  mixed  $list
+     * @return array<int, string>
+     */
+    private function stringList(mixed $list): array
+    {
+        $strings = [];
+
+        foreach (is_array($list) ? $list : [] as $entry) {
+            if (is_string($entry) === false) {
+                continue;
+            }
+
+            $strings[] = $entry;
+        }
+
+        return $strings;
+    }
+
+    /**
+     * Decode a JSON file from the repository root.
+     *
+     * @param  string  $path
+     * @return array<mixed, mixed>
+     */
+    private function decode(string $path): array
+    {
+        $contents = file_get_contents(dirname(__DIR__, 2) . '/' . $path);
+        $decoded  = json_decode($contents === false ? '' : $contents, true, 512, JSON_THROW_ON_ERROR);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
      * What this repo pins for its own sandbox.
      *
      * @return array<string, string>
