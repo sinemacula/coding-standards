@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/sinemacula/coding-standards/compare/v1.23.0...v1.23.1) (2026-09-21)
+
+
+### Bug Fixes
+
+* pin the fixer sandbox's Symfony to the declared PHP floor ([#156](https://github.com/sinemacula/coding-standards/issues/156)) ([13a6217](https://github.com/sinemacula/coding-standards/commit/13a621715cc5e56cbfcd31428d437067e1bb6782))
+
 ## [1.23.0](https://github.com/sinemacula/coding-standards/compare/v1.22.0...v1.23.0) (2026-09-10)
 
 
