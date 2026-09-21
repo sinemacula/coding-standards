@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Search;
 
+use App\Search\Concerns\Normalises;
+use App\Search\Concerns\Validates;
+
 /**
  * A term to run against the index.
  *
@@ -12,6 +15,8 @@ namespace App\Search;
  */
 final class Term
 {
+    use Normalises, Validates;
+
     /** The longest term the index will accept. */
     private const int LIMIT = 64;
 

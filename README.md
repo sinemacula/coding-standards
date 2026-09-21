@@ -403,6 +403,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | Sniff                                                      | Enforces                                                                    |
 |------------------------------------------------------------|-----------------------------------------------------------------------------|
 | `SineMacula.Attributes.DisallowToolingAttribute`           | No IDE/tooling attributes (e.g. `JetBrains\PhpStorm`).                      |
+| `SineMacula.Classes.RequireCombinedTraitImport`            | Traits must be imported in one `use` statement, not one per line.           |
 | `SineMacula.Classes.RequireFinalClass`                     | Concrete classes must be `final` or `abstract` (`@inheritable` opts out).   |
 | `SineMacula.Classes.RequireReadonlyPublicProperty`         | Public properties (declared or promoted) must be `readonly`.                |
 | `SineMacula.Commenting.CommentLineLength`                  | Standalone comment prose wrapped to 80 chars; premature wraps also fixed.   |
