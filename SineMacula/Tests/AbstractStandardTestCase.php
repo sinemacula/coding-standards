@@ -34,9 +34,24 @@ abstract class AbstractStandardTestCase extends TestCase
      */
     protected function assertStandardReports(string $fixture, array $expected): void
     {
+        $directory = dirname((new \ReflectionClass(static::class))->getFileName());
+
+        $this->assertStandardReportsFor($directory . DIRECTORY_SEPARATOR . $fixture, $expected);
+    }
+
+    /**
+     * Assert the same against a file anywhere on disk, for a fixture that is
+     * produced during the test rather than committed beside it.
+     *
+     * @param  string  $path
+     * @param  array<int, list<string>>  $expected
+     * @return void
+     */
+    protected function assertStandardReportsFor(string $path, array $expected): void
+    {
         $actual = [];
 
-        foreach ($this->process($fixture)->getErrors() as $line => $columns) {
+        foreach ($this->process($path)->getErrors() as $line => $columns) {
             foreach ($columns as $messages) {
                 foreach ($messages as $message) {
                     $actual[$line][] = $message['source'];
@@ -51,19 +66,17 @@ abstract class AbstractStandardTestCase extends TestCase
     }
 
     /**
-     * Run the whole standard over a fixture in the test's own directory.
+     * Run the whole standard over the file at the given path.
      *
-     * @param  string  $fixture
+     * @param  string  $path
      * @return \PHP_CodeSniffer\Files\LocalFile
      */
-    private function process(string $fixture): LocalFile
+    private function process(string $path): LocalFile
     {
-        $directory = dirname((new \ReflectionClass(static::class))->getFileName());
-
         $config            = new Config(['--extensions=inc,php'], false);
         $config->standards = [dirname(__DIR__) . DIRECTORY_SEPARATOR . 'ruleset.xml'];
 
-        $file = new LocalFile($directory . DIRECTORY_SEPARATOR . $fixture, new Ruleset($config), $config);
+        $file = new LocalFile($path, new Ruleset($config), $config);
         $file->process();
 
         return $file;

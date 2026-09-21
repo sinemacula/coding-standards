@@ -451,6 +451,7 @@ return [
     'phpdoc_indent'                 => true,
     'phpdoc_inline_tag_normalizer'  => true,
     'phpdoc_line_span'              => [
+        'case'     => 'single',
         'const'    => 'single',
         'property' => 'single',
         'method'   => 'multi',
