@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.2](https://github.com/sinemacula/coding-standards/compare/v1.23.1...v1.23.2) (2026-09-21)
+
+
+### Bug Fixes
+
+* hold enum case doc comments to the single-line shape the sniffs require ([#159](https://github.com/sinemacula/coding-standards/issues/159)) ([2109d00](https://github.com/sinemacula/coding-standards/commit/2109d003574d19a38c0b3a4e33f51e5630047809))
+
 ## [1.23.1](https://github.com/sinemacula/coding-standards/compare/v1.23.0...v1.23.1) (2026-09-21)
 
 
