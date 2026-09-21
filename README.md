@@ -74,17 +74,18 @@ extra_packages = [
 
 `extra_packages` installs into the tool sandbox alone, so none of this reaches your own dependency graph. The first
 entry is this package, which the config above autoloads `PhpCsFixerConfig` from - the only thing `package_file` was
-doing for this plugin. Give it an exact version rather than a range: the shared Renovate preset raises it on each
-release, and a range is never raised, because it already allows everything published after it. The rest hold Symfony
-below 8: PHP CS Fixer has accepted that line since 3.90.0, it requires PHP
-8.4.1, and the sandbox install does not honour the platform requirement, so without the pins a project on 8.3 installs
-a Symfony its runner cannot parse. PHP CS Fixer then exits 255, and a tool that cannot start is reported as an errored
-build rather than as findings - arriving after a genuine pass, so a status read once looks green.
+doing for this plugin. Give it an exact version rather than a range. This entry is raised by the shared Renovate
+preset, which resolves a constraint to the newest release it already allows, so a caret range is reported as current
+for the life of the major and silently stays at the version it was written with. The rest hold Symfony below 8: PHP CS
+Fixer has accepted that line since 3.90.0, it requires PHP 8.4.1, and the sandbox install does not honour the platform
+requirement, so without the pins a project on 8.3 installs a Symfony its runner cannot parse. PHP CS Fixer then exits
+255, and a tool that cannot start is reported as an errored build rather than as findings - arriving after a genuine
+pass, so a status read once looks green.
 
-Setting `package_file` makes qlty ignore `extra_packages` entirely, and silently, taking the pins with it. This cannot
-be shipped from the shared source: a `[plugins.definitions.*]` block carrying anything beyond `exported_config_paths`
-makes consumers drop every exported config from it. `php-codesniffer` and `phpstan` are unaffected and keep their
-`package_file`, their sandboxes being where the sniff and rule code comes from.
+Setting `package_file` makes qlty ignore `extra_packages` entirely, and silently, taking the pins with it. The entry
+naming this package stays in your own file rather than coming from the shared source, because the source is consumed
+at a tag and cannot pin the release of the package it is published alongside. `php-codesniffer` and `phpstan` are
+unaffected and keep their `package_file`, their sandboxes being where the sniff and rule code comes from.
 
 You can pass rule overrides as a second argument:
 
@@ -227,8 +228,9 @@ indent.
 
 When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
 default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install filter
-in your `.qlty/qlty.toml` so the sandbox carries them (this repository's `source.toml` exports the same override, but
-source-exported plugin definitions do not reliably propagate, so mirror it consumer-side):
+in your `.qlty/qlty.toml` so the sandbox carries them. This one override cannot come from the shared source: an
+`eslint` definitions block there carrying anything beyond `exported_config_paths` makes consumers drop every exported
+config from the source, so it is set consumer-side instead:
 
 ```toml
 [plugins.definitions.eslint]
