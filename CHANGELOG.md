@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/sinemacula/coding-standards/compare/v1.23.2...v1.24.0) (2026-09-22)
+
+
+### Features
+
+* require a class to import its traits in one statement ([#161](https://github.com/sinemacula/coding-standards/issues/161)) ([354c0f5](https://github.com/sinemacula/coding-standards/commit/354c0f51c6d76289c28c8038765afee4cc3076f7))
+
 ## [1.23.2](https://github.com/sinemacula/coding-standards/compare/v1.23.1...v1.23.2) (2026-09-21)
 
 
