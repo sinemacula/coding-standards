@@ -31,8 +31,7 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
  */
 final class RequireSensitiveParameterSniff implements Sniff
 {
-    use DetectsTestClasses;
-    use ResolvesQualifiedNames;
+    use DetectsTestClasses, ResolvesQualifiedNames;
 
     /** @var array<int, string> Declared types a secret can arrive in. */
     private const array VALUE_TYPES = ['string', 'int', 'float', 'bool', 'array', 'iterable', 'callable', 'mixed'];
