@@ -36,6 +36,9 @@ exported_config_paths = ["js/knip.json"]
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]
 
+[plugins.definitions.trivy]
+exported_config_paths = ["security/trivy.yaml"]
+
 [plugins.definitions.editorconfig-checker]
 exported_config_paths = ["editorconfig/.editorconfig-checker.json"]
 
