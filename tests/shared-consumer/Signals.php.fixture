@@ -1,0 +1,35 @@
+<?php
+
+function eightParameters($a, $b, $c, $d, $e, $f, $g, $h)
+{
+    return [$a, $b, $c, $d, $e, $f, $g, $h];
+}
+
+function sevenReturns(int $value): string
+{
+    if ($value === 1) {
+        return 'one';
+    }
+
+    if ($value === 2) {
+        return 'two';
+    }
+
+    if ($value === 3) {
+        return 'three';
+    }
+
+    if ($value === 4) {
+        return 'four';
+    }
+
+    if ($value === 5) {
+        return 'five';
+    }
+
+    if ($value === 6) {
+        return 'six';
+    }
+
+    return 'other';
+}

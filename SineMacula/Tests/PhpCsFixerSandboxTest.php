@@ -11,14 +11,15 @@ use PHPUnit\Framework\TestCase;
  * Tests that the fixer sandbox is given everything it needs, and nothing that
  * cannot run on the declared PHP floor.
  *
- * A project's php-cs-fixer sandbox is installed from the `extra_packages` on
- * its own plugin entry, not from the project's own manifest, so what is listed
- * there is the whole of what the tool gets. It needs the standards package,
- * which is what a project's fixer config autoloads its rules from, and it needs
- * Symfony held below 8: php-cs-fixer has accepted Symfony 8 since 3.90.0, that
- * line requires PHP 8.4.1, and the sandbox install does not honour the platform
- * requirement - so without a pin a project on 8.3 installs a Symfony its runner
- * cannot parse and the plugin exits before reporting anything.
+ * A project's php-cs-fixer sandbox is installed from `extra_packages`, not from
+ * the project's own manifest, so what is listed there is the whole of what the
+ * tool gets. It needs the standards package, which a project's fixer config
+ * autoloads its rules from and which each project lists on its own entry, and
+ * it needs Symfony held below 8, which the shared source lists for every
+ * project: php-cs-fixer has accepted Symfony 8 since 3.90.0, that line requires
+ * PHP 8.4.1, and the sandbox install does not honour the platform requirement -
+ * so without a pin a project on 8.3 installs a Symfony its runner cannot parse
+ * and the plugin exits before reporting anything.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -59,6 +60,17 @@ final class PhpCsFixerSandboxTest extends TestCase
         $block  = (string) preg_replace('/\n\[\[plugin\]\].*$/s', '', $block);
 
         self::assertStringNotContainsString('package_file', $block);
+    }
+
+    /**
+     * This repo lints itself without the shared source, so its own entry has to
+     * carry the same pins the source gives every project.
+     *
+     * @return void
+     */
+    public function testThisProjectPinsWhatTheSharedSourcePins(): void
+    {
+        self::assertSame($this->pinned(), $this->extraPackages('.qlty/qlty.toml', 'name = "php-cs-fixer"'));
     }
 
     /**
@@ -207,13 +219,13 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * What this repo pins for its own sandbox.
+     * What the shared source pins for every project's sandbox.
      *
      * @return array<string, string>
      */
     private function pinned(): array
     {
-        return $this->extraPackages('.qlty/qlty.toml', 'name = "php-cs-fixer"');
+        return $this->extraPackages('source.toml', '[plugins.definitions.php-cs-fixer]');
     }
 
     /**
@@ -228,7 +240,7 @@ final class PhpCsFixerSandboxTest extends TestCase
 
     /**
      * The `name@constraint` entries added to the fixer sandbox, read from the
-     * given file's php-cs-fixer block.
+     * first extra_packages list after the given marker in the given file.
      *
      * @param  string  $path
      * @param  string  $marker
@@ -237,7 +249,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     private function extraPackages(string $path, string $marker): array
     {
         $source = (string) file_get_contents(dirname(__DIR__, 2) . '/' . $path);
-        $block  = (string) preg_replace('/^.*' . preg_quote($marker, '/') . '/s', '', $source);
+        $block  = (string) preg_replace('/^.*?' . preg_quote($marker, '/') . '.*?extra_packages = \[/s', '', $source);
         $list   = (string) preg_replace('/\].*$/s', '', $block);
         $found  = preg_match_all('/"([^"@]+)@([^"]+)"/', $list, $matches, PREG_SET_ORDER);
 
