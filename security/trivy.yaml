@@ -1,0 +1,9 @@
+# qlty runs trivy over the whole checkout without its exclude patterns, so the
+# generated and installed trees are skipped here. qlty's debug output under
+# .qlty/out is never pruned and alone can push trivy past its timeout.
+scan:
+  skip-dirs:
+    - .qlty
+    - .sinemacula
+    - "**/vendor"
+    - "**/node_modules"
