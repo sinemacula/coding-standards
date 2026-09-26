@@ -30,6 +30,10 @@ threshold = 43
 [smells.file_complexity]
 threshold = 400
 
+# Every plugin definition here must carry exported_config_paths, even as an
+# empty list. qlty resolves exported paths one definition at a time, in
+# alphabetical order, and stops at the first without that key, so every plugin
+# sorted after it silently falls back to its built-in configuration.
 [plugins.definitions.markdownlint]
 exported_config_paths = ["markdown/.markdownlint.json"]
 
@@ -44,12 +48,6 @@ exported_config_paths = ["js/biome.json"]
 
 [plugins.definitions.knip]
 exported_config_paths = ["js/knip.json"]
-
-# The eslint sandbox package filters live in each consumer's own qlty.toml. An
-# eslint definitions block here that carries anything other than
-# exported_config_paths makes consumers silently drop every exported config
-# from this source, reverting markdownlint, yamllint, biome, knip, and gitleaks
-# to their built-in defaults. Other plugins are unaffected.
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]

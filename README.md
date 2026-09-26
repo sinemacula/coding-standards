@@ -228,9 +228,8 @@ indent.
 
 When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
 default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install filter
-in your `.qlty/qlty.toml` so the sandbox carries them. This one override cannot come from the shared source: an
-`eslint` definitions block there carrying anything beyond `exported_config_paths` makes consumers drop every exported
-config from the source, so it is set consumer-side instead:
+in your `.qlty/qlty.toml` so the sandbox carries them. It is set per project rather than in the shared source because
+the packages the sandbox needs differ between projects:
 
 ```toml
 [plugins.definitions.eslint]
