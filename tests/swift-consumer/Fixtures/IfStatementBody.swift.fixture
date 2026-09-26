@@ -1,0 +1,8 @@
+/// Returns the first value that is not empty.
+func firstNonEmpty(_ values: [String]) -> String? {
+    for value in values {
+        if !value.isEmpty { return value }
+    }
+
+    return nil
+}

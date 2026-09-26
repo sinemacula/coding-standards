@@ -42,6 +42,10 @@
 --anonymous-for-each ignore
 --disable enumNamespaces,initCoderUnavailable,preferForLoop,redundantSendable,strongOutlets
 
+# Single-line if bodies are wrapped, as the PHP and TypeScript standards
+# require. That rule is new in SwiftFormat 0.62 and on by default, so it is not
+# named here: a SwiftFormat older than 0.62 rejects a rule it does not know.
+
 # Mirror the exclusions in .swiftlint.yml. SwiftFormat rewrites files in place,
 # and unlike SwiftLint's `excluded:` it honours these even when a path is passed
 # explicitly - so generated and third-party code is protected under Qlty too.
