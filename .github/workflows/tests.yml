@@ -157,10 +157,10 @@ jobs:
                 run: bash scripts/test-trivy-policy.sh
 
     # ==========================================================================
-    # JOB: SMELLS POLICY INTEGRATION
+    # JOB: SHARED POLICY INTEGRATION
     # ==========================================================================
-    smells-policy:
-        name: Test / Smells policy exports
+    shared-policy:
+        name: Test / Shared policy exports
         runs-on: ubuntu-latest
 
         steps:
@@ -172,5 +172,5 @@ jobs:
             -   name: Install Qlty
                 uses: qltysh/qlty-action/install@v2
 
-            -   name: Verify smells policy
-                run: bash scripts/test-smells-policy.sh
+            -   name: Verify shared policy
+                run: bash scripts/test-shared-policy.sh

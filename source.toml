@@ -12,6 +12,60 @@ file_patterns = ["**/CHANGELOG.md"]
 plugins = ["editorconfig-checker"]
 file_patterns = [".qlty/hooks/**"]
 
+# Test code is exercised by the suite, so its smells are not reported here.
+[[exclude]]
+plugins = ["radarlint-php"]
+file_patterns = ["tests/**"]
+
+# The ESLint config lives under .qlty, and linting it would flag the file itself.
+[[exclude]]
+plugins = ["eslint"]
+file_patterns = [".qlty/**"]
+
+[runtimes.enabled]
+php = "8.3"
+
+# The plugins, versions and modes every consumer runs; a plugin with nothing to
+# lint in a repository does not run there. A consumer's own entry for the same
+# plugin falls back to the version and mode set here when it leaves them out, but
+# any list it sets, drivers included, replaces the one here rather than adding to
+# it, and an entry that sets no drivers runs all of them.
+[[plugin]]
+name = "trufflehog"
+
+[[plugin]]
+name = "markdownlint"
+mode = "comment"
+
+[[plugin]]
+name = "yamllint"
+
+[[plugin]]
+name = "actionlint"
+
+[[plugin]]
+name = "osv-scanner"
+
+[[plugin]]
+name = "trivy"
+drivers = ["config", "fs-vuln"]
+
+[[plugin]]
+name = "editorconfig-checker"
+
+[[plugin]]
+name = "php-codesniffer"
+version = "4.0.4"
+mode = "comment"
+
+[[plugin]]
+name = "php-cs-fixer"
+version = "3.95.25"
+
+[[plugin]]
+name = "radarlint-php"
+mode = "comment"
+
 # Code smells for every consumer. A threshold flags at that value or more. A
 # consumer's own qlty.toml still wins, but re-enabling a check switched off here
 # needs enabled = true there too, because the two are merged, not replaced.
@@ -45,9 +99,50 @@ exported_config_paths = ["shell/.shellcheckrc"]
 
 [plugins.definitions.biome]
 exported_config_paths = ["js/biome.json"]
+config_files = [".qlty/configs/biome.json"]
+
+[plugins.definitions.biome.drivers.format]
+script = "biome format --write ${config_script} ${target}"
+config_script = "--config-path ${config_file}"
+batch = true
+cache_results = true
+output = "rewrite"
+suggested = "targets"
+
+[plugins.definitions.biome.drivers.lint]
+script = "biome lint --reporter=json ${config_script} ${target}"
+config_script = "--config-path ${config_file}"
 
 [plugins.definitions.knip]
 exported_config_paths = ["js/knip.json"]
+
+[plugins.definitions.eslint]
+exported_config_paths = []
+config_files = [".qlty/configs/eslint.config.mjs"]
+
+# phpcs 4.x exits 3 when it reports findings, which qlty's driver treats as a
+# crash, discarding every finding.
+[plugins.definitions.php-codesniffer]
+exported_config_paths = []
+
+[plugins.definitions.php-codesniffer.drivers.lint]
+success_codes = [0, 1, 2, 3]
+
+# The sandbox install ignores the runner's PHP version, and php-cs-fixer accepts
+# a Symfony 8 that needs PHP 8.4.1, so the tree is held below 8. A consumer adds
+# only its sinemacula/coding-standards entry; the two lists are combined.
+[plugins.definitions.php-cs-fixer]
+exported_config_paths = []
+extra_packages = [
+    "symfony/console@^7.4",
+    "symfony/event-dispatcher@^7.4",
+    "symfony/filesystem@^7.4",
+    "symfony/finder@^7.4",
+    "symfony/options-resolver@^7.4",
+    "symfony/process@^7.4",
+    "symfony/stopwatch@^7.4",
+    "symfony/string@^7.4",
+]
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]
