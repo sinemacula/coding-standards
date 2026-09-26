@@ -53,39 +53,27 @@ return PhpCsFixerConfig::make([
 ]);
 ```
 
-Wire the qlty plugin so the tool sandbox is supplied directly, and do **not** set `package_file` or
-`package_filters` on it:
+Give the qlty plugin this package for its tool sandbox, and do **not** set `package_file` or `package_filters` on it:
 
 ```toml
 [[plugin]]
 name = "php-cs-fixer"
-extra_packages = [
-    "sinemacula/coding-standards@1.23.0",
-    "symfony/console@^7.4",
-    "symfony/event-dispatcher@^7.4",
-    "symfony/filesystem@^7.4",
-    "symfony/finder@^7.4",
-    "symfony/options-resolver@^7.4",
-    "symfony/process@^7.4",
-    "symfony/stopwatch@^7.4",
-    "symfony/string@^7.4",
-]
+extra_packages = ["sinemacula/coding-standards@1.23.0"]
 ```
 
-`extra_packages` installs into the tool sandbox alone, so none of this reaches your own dependency graph. The first
-entry is this package, which the config above autoloads `PhpCsFixerConfig` from - the only thing `package_file` was
-doing for this plugin. Give it an exact version rather than a range. This entry is raised by the shared Renovate
-preset, which resolves a constraint to the newest release it already allows, so a caret range is reported as current
-for the life of the major and silently stays at the version it was written with. The rest hold Symfony below 8: PHP CS
-Fixer has accepted that line since 3.90.0, it requires PHP 8.4.1, and the sandbox install does not honour the platform
-requirement, so without the pins a project on 8.3 installs a Symfony its runner cannot parse. PHP CS Fixer then exits
-255, and a tool that cannot start is reported as an errored build rather than as findings - arriving after a genuine
-pass, so a status read once looks green.
+`extra_packages` installs into the tool sandbox alone, so none of this reaches your own dependency graph. The config
+above autoloads `PhpCsFixerConfig` from this package - the only thing `package_file` was doing for this plugin. Give it
+an exact version rather than a range. This entry is raised by the shared Renovate preset, which resolves a constraint
+to the newest release it already allows, so a caret range is reported as current for the life of the major and
+silently stays at the version it was written with. The entry stays in your own file rather than coming from the shared
+source, because the source is consumed at a tag and cannot pin the release of the package it is published alongside.
 
-Setting `package_file` makes qlty ignore `extra_packages` entirely, and silently, taking the pins with it. The entry
-naming this package stays in your own file rather than coming from the shared source, because the source is consumed
-at a tag and cannot pin the release of the package it is published alongside. `php-codesniffer` and `phpstan` are
-unaffected and keep their `package_file`, their sandboxes being where the sniff and rule code comes from.
+The shared source adds the rest of the sandbox: it holds Symfony below 8, because PHP CS Fixer has accepted that line
+since 3.90.0, it requires PHP 8.4.1, and the sandbox install does not honour the platform requirement. Without the
+pins a project on 8.3 installs a Symfony its runner cannot parse, and PHP CS Fixer exits 255 - reported as an errored
+build rather than as findings, arriving after a genuine pass, so a status read once looks green. Setting
+`package_file` makes qlty ignore every `extra_packages` list, the shared one included, silently. `php-codesniffer` and
+`phpstan` are unaffected and keep their `package_file`, their sandboxes being where the sniff and rule code comes from.
 
 You can pass rule overrides as a second argument:
 
@@ -228,9 +216,8 @@ indent.
 
 When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
 default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install filter
-in your `.qlty/qlty.toml` so the sandbox carries them. This one override cannot come from the shared source: an
-`eslint` definitions block there carrying anything beyond `exported_config_paths` makes consumers drop every exported
-config from the source, so it is set consumer-side instead:
+in your `.qlty/qlty.toml` so the sandbox carries them. It is set per project rather than in the shared source because
+the packages the sandbox needs differ between projects:
 
 ```toml
 [plugins.definitions.eslint]
@@ -307,6 +294,21 @@ name = "sinemacula"
 repository = "https://github.com/sinemacula/coding-standards"
 tag = "<version>"
 ```
+
+The source enables the plugins every project runs, at the versions and modes they run with: TruffleHog, markdownlint,
+yamllint, actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP
+CS Fixer and Radarlint. A plugin with nothing to lint in a repository does not run there, so a TypeScript project is
+not charged for the PHP tools. It also sets the PHP runtime and the shared excludes, keeps PHPCS 4.x findings from
+being discarded as a crash, and supplies the ESLint and Biome wiring for projects that enable those. List a plugin in
+your own file only to change it: a version or mode you leave out is taken from the source, but any list you set, such
+as `drivers` or `extra_packages`, replaces the source's rather than adding to it. To turn a plugin off, give it
+`mode = "disabled"`.
+
+The source also sets the code smell policy: smells are reported as comments rather than failing the check, the
+parameter-count check is off, and the return-statement, function-complexity and file-complexity thresholds are raised
+(see `source.toml`). Leave `[smells]` out of your own `.qlty/qlty.toml` so these apply. To change one for a single
+project, set it there; to turn back on a check the source switches off, set `enabled = true` alongside the threshold,
+because the two files are merged rather than replaced.
 
 ### Swift (SwiftLint and SwiftFormat)
 
