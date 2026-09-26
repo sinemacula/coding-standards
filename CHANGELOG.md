@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.1](https://github.com/sinemacula/coding-standards/compare/v1.24.0...v1.24.1) (2026-09-26)
+
+
+### Bug Fixes
+
+* stop trivy walking generated and installed trees ([#164](https://github.com/sinemacula/coding-standards/issues/164)) ([3590371](https://github.com/sinemacula/coding-standards/commit/3590371a4fc5ed2cafe39521c7914cbfe260be07))
+
 ## [1.24.0](https://github.com/sinemacula/coding-standards/compare/v1.23.2...v1.24.0) (2026-09-22)
 
 
