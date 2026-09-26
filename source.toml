@@ -12,6 +12,24 @@ file_patterns = ["**/CHANGELOG.md"]
 plugins = ["editorconfig-checker"]
 file_patterns = [".qlty/hooks/**"]
 
+# Code smells for every consumer. A threshold flags at that value or more. A
+# consumer's own qlty.toml still wins, but re-enabling a check switched off here
+# needs enabled = true there too, because the two are merged, not replaced.
+[smells]
+mode = "comment"
+
+[smells.function_parameters]
+enabled = false
+
+[smells.return_statements]
+threshold = 9
+
+[smells.function_complexity]
+threshold = 43
+
+[smells.file_complexity]
+threshold = 400
+
 [plugins.definitions.markdownlint]
 exported_config_paths = ["markdown/.markdownlint.json"]
 

@@ -308,6 +308,12 @@ repository = "https://github.com/sinemacula/coding-standards"
 tag = "<version>"
 ```
 
+The source also sets the code smell policy: smells are reported as comments rather than failing the check, the
+parameter-count check is off, and the return-statement, function-complexity and file-complexity thresholds are raised
+(see `source.toml`). Leave `[smells]` out of your own `.qlty/qlty.toml` so these apply. To change one for a single
+project, set it there; to turn back on a check the source switches off, set `enabled = true` alongside the threshold,
+because the two files are merged rather than replaced.
+
 ### Swift (SwiftLint and SwiftFormat)
 
 Swift repositories consume the shared policy through Qlty. Enable the default source for the tools, this repository

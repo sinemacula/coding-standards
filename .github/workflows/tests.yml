@@ -155,3 +155,22 @@ jobs:
 
             -   name: Verify Trivy policy
                 run: bash scripts/test-trivy-policy.sh
+
+    # ==========================================================================
+    # JOB: SMELLS POLICY INTEGRATION
+    # ==========================================================================
+    smells-policy:
+        name: Test / Smells policy exports
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Install Qlty
+                uses: qltysh/qlty-action/install@v2
+
+            -   name: Verify smells policy
+                run: bash scripts/test-smells-policy.sh
