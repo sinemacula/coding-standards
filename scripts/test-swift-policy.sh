@@ -52,3 +52,15 @@ if [[ ${lint_output} != *"force_unwrapping"* ]]; then
     echo "${lint_output}"
     exit 1
 fi
+
+# A single-line if body is wrapped, as the PHP and TypeScript standards require,
+# so this line must not survive formatting under the shared policy.
+cp "${repository_root}/tests/swift-consumer/Fixtures/IfStatementBody.swift.fixture" \
+    Sources/IfStatementBody.swift
+qlty fmt Sources/IfStatementBody.swift
+
+if grep -qF '{ return value }' Sources/IfStatementBody.swift; then
+    echo "Expected the shared SwiftFormat policy to wrap a single-line if body."
+    cat Sources/IfStatementBody.swift
+    exit 1
+fi
