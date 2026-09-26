@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/sinemacula/coding-standards/compare/v1.24.1...v1.25.0) (2026-09-26)
+
+
+### Features
+
+* set the shared qlty policy centrally ([#167](https://github.com/sinemacula/coding-standards/issues/167)) ([dbf60c5](https://github.com/sinemacula/coding-standards/commit/dbf60c5917192264534a018561177a1ec6c0ffe0))
+
 ## [1.24.1](https://github.com/sinemacula/coding-standards/compare/v1.24.0...v1.24.1) (2026-09-26)
 
 
