@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.26.0](https://github.com/sinemacula/coding-standards/compare/v1.25.0...v1.26.0) (2026-09-30)
+
+
+### Features
+
+* raise workflow action updates and pin third-party actions to a digest ([#169](https://github.com/sinemacula/coding-standards/issues/169)) ([b16540c](https://github.com/sinemacula/coding-standards/commit/b16540c94b3812a043ff493903fd32873712ab76))
+* ship a shared zizmor policy for workflow audits ([#170](https://github.com/sinemacula/coding-standards/issues/170)) ([8c60df1](https://github.com/sinemacula/coding-standards/commit/8c60df1bcadf372141380775d961bf698e6d153e))
+
 ## [1.25.0](https://github.com/sinemacula/coding-standards/compare/v1.24.1...v1.25.0) (2026-09-26)
 
 
