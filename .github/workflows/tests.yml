@@ -157,6 +157,25 @@ jobs:
                 run: bash scripts/test-trivy-policy.sh
 
     # ==========================================================================
+    # JOB: ZIZMOR POLICY INTEGRATION
+    # ==========================================================================
+    zizmor-policy:
+        name: Test / Zizmor policy exports
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Install Qlty
+                uses: qltysh/qlty-action/install@v2
+
+            -   name: Verify Zizmor policy
+                run: bash scripts/test-zizmor-policy.sh
+
+    # ==========================================================================
     # JOB: SHARED POLICY INTEGRATION
     # ==========================================================================
     shared-policy:

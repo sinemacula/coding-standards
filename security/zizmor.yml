@@ -1,0 +1,20 @@
+# Workflow security audit. Actions from GitHub and from this organization may
+# stay on a version tag; every other action is pinned to a full commit SHA with
+# the tag in a trailing comment, because a third party can move its tags.
+rules:
+    unpinned-uses:
+        config:
+            policies:
+                actions/*: ref-pin
+                github/*: ref-pin
+                sinemacula/*: ref-pin
+                '*': hash-pin
+
+    # Flags every checkout that keeps its token, which the release and deploy
+    # jobs need; the risk it targets is artifacts uploaded from the workspace.
+    artipacked:
+        disable: true
+
+    # Only suggests the `$/` spelling for a repository's own reusable workflows.
+    self-repository:
+        disable: true
