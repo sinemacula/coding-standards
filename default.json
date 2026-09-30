@@ -1,6 +1,6 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "enabledManagers": ["custom.regex", "composer", "npm"],
+    "enabledManagers": ["custom.regex", "composer", "npm", "github-actions"],
     "semanticCommits": "enabled",
     "semanticCommitType": "chore",
     "semanticCommitScope": "deps",
@@ -39,6 +39,13 @@
             "description": "Manage only sinemacula/coding-standards itself; ignore everything else",
             "matchPackageNames": ["!sinemacula/coding-standards", "!@sinemacula/coding-standards", "!sinemacula/coding-standards-laravel"],
             "enabled": false
+        },
+        {
+            "description": "Keep workflow actions and reusable workflows pinned to a commit digest, with the tag in a trailing comment",
+            "matchManagers": ["github-actions"],
+            "enabled": true,
+            "pinDigests": true,
+            "groupName": "GitHub Actions"
         },
         {
             "description": "Group the qlty tag, composer and npm bumps into one PR; auto-merge minor and patch",
