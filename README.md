@@ -391,6 +391,7 @@ Raise a pull request here instead, or copy the shared file wholesale and edit th
 | `shell/.shellcheckrc`                     | ShellCheck           | Shell script linting rules                             |
 | `security/.gitleaks.toml`                 | Gitleaks             | Secret-detection ruleset                               |
 | `security/trivy.yaml`                     | Trivy                | Skips generated and installed trees when scanning      |
+| `security/zizmor.yml`                     | zizmor               | SHA-pins third-party actions; two noisy audits off     |
 | `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check                |
 | `swift/.swiftlint.yml`                    | SwiftLint            | Shared Swift 6 lint, safety, concurrency, and metrics  |
 | `swift/.swiftformat`                      | SwiftFormat          | Shared deterministic Swift 6 formatting policy         |
