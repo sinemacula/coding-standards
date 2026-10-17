@@ -13,6 +13,10 @@ description on every output, and the standard module structure, with variables i
 `outputs.tf`. Documentation on the public surface is the same house opinion the PHP and Swift standards hold. No rule
 is switched off.
 
+TFLint also reports a module that lacks `main.tf`, `variables.tf` or `outputs.tf`, but it places that finding on the
+missing file, and Qlty drops findings on files that do not exist. Through Qlty, the rule therefore enforces where
+variables and outputs live, not that the three files exist.
+
 Qlty stages the configuration at the repository root but runs TFLint from each module's directory, where TFLint would
 not find it. The source therefore passes it with `--config`, so a nested module gets the same policy as the root.
 
