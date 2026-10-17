@@ -385,10 +385,10 @@ Raise a pull request here instead, or copy the shared file wholesale and edit th
 
 ### Terraform (Terraform and TFLint)
 
-The Qlty source is all a Terraform repository needs: it runs `terraform fmt` at Terraform 1.16.5 and TFLint 0.64.0
-with the shared `.tflint.hcl`. Keep `.terraform-version` at the same release. To change the version, give the
-`terraform` plugin a `version` in your own `.qlty/qlty.toml` and repeat `drivers = ["format"]`, because an entry
-without drivers runs all of them, including a validate driver that cannot pass without `terraform init`.
+The Qlty source is all a Terraform repository needs: it runs `terraform fmt` and TFLint, at the versions it pins, with
+the shared `.tflint.hcl`. Keep `.terraform-version` at the pinned Terraform release. To change the version, give the
+`terraform` plugin a `version` in your own `.qlty/qlty.toml` and repeat `drivers = ["format"]`, because an entry without
+drivers runs all of them, including a validate driver that cannot pass without `terraform init`.
 
 Validate in CI with the reusable workflow, which initialises without a backend and runs `terraform validate`:
 

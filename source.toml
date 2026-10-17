@@ -22,6 +22,11 @@ file_patterns = ["tests/**"]
 plugins = ["eslint"]
 file_patterns = [".qlty/**"]
 
+# terraform init downloads modules into .terraform; that code is not ours to lint.
+[[exclude]]
+plugins = ["terraform", "tflint"]
+file_patterns = ["**/.terraform/**"]
+
 [runtimes.enabled]
 php = "8.3"
 
@@ -172,9 +177,6 @@ exported_config_paths = ["swift/.swiftlint.yml"]
 
 [plugins.definitions.swiftformat]
 exported_config_paths = ["swift/.swiftformat"]
-
-[plugins.definitions.terraform]
-exported_config_paths = []
 
 # The config is staged at the repository root, but TFLint runs from each
 # module's directory and reads .tflint.hcl only from there, so without --config

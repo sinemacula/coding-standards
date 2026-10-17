@@ -5,8 +5,8 @@ The shared Terraform policy consists of:
 - `.tflint.hcl` for TFLint's bundled Terraform ruleset at the `all` preset.
 
 Both tools are provided by Qlty's default source. The Sine Macula source enables and pins them for every consumer:
-Terraform 1.16.5 with only its format driver, and TFLint 0.64.0 with this configuration. A repository with no
-Terraform files runs neither.
+Terraform with only its format driver, and TFLint with this configuration. A repository with no Terraform files runs
+neither.
 
 The `all` preset adds to the recommended rules: snake_case names, a type and a description on every variable, a
 description on every output, and the standard module structure, with variables in `variables.tf` and outputs in

@@ -29,9 +29,17 @@ sed "s|__SOURCE_DIRECTORY__|${repository_root}|g" \
 
 git -C "${terraform_consumer_dir}" init --quiet --initial-branch=master
 
+# Modules that terraform init downloads would fail both tools; the source
+# excludes them, so they must come through formatting and linting untouched.
+vendored_dir="${terraform_consumer_dir}/.terraform/modules/vendored"
+mkdir -p "${vendored_dir}"
+cp "${repository_root}/tests/terraform-consumer/Fixtures/undocumented.tf.fixture" "${vendored_dir}/main.tf"
+cp "${repository_root}/tests/terraform-consumer/Fixtures/unaligned.tf.fixture" "${vendored_dir}/unaligned.tf"
+
 cd "${terraform_consumer_dir}"
 qlty fmt --all
 diff -ru "${repository_root}/tests/terraform-consumer/modules" modules
+cmp "${repository_root}/tests/terraform-consumer/Fixtures/unaligned.tf.fixture" "${vendored_dir}/unaligned.tf"
 qlty check --all --no-cache --no-formatters
 
 # Undocumented variables are reported only at the "all" preset, and TFLint runs
