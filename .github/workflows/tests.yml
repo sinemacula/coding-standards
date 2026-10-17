@@ -176,6 +176,25 @@ jobs:
                 run: bash scripts/test-zizmor-policy.sh
 
     # ==========================================================================
+    # JOB: TERRAFORM POLICY INTEGRATION
+    # ==========================================================================
+    terraform-policy:
+        name: Test / Terraform policy exports
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Install Qlty
+                uses: qltysh/qlty-action/install@v2
+
+            -   name: Verify Terraform policy
+                run: bash scripts/test-terraform-policy.sh
+
+    # ==========================================================================
     # JOB: SHARED POLICY INTEGRATION
     # ==========================================================================
     shared-policy:

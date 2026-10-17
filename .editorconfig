@@ -14,3 +14,6 @@ indent_size = unset
 
 [*.{yml,yaml}]
 indent_size = 2
+
+[*.{tf,tfvars,hcl,tf.fixture}]
+indent_size = 2

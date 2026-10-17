@@ -30,13 +30,18 @@ composer require --dev sinemacula/coding-standards
 npm install --save-dev @sinemacula/coding-standards
 ```
 
-The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`, `swift/`). The PHP
-autoloaded code lives in the Composer package.
+The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`, `swift/`,
+`terraform/`). The PHP autoloaded code lives in the Composer package.
 
 ### Qlty (Swift-side: SwiftLint, SwiftFormat)
 
 Swift consumers do not need the Composer or npm package. Qlty fetches the shared Swift configs from this repository as
 a pinned source and installs the native tools on macOS.
+
+### Qlty (Terraform-side: Terraform, TFLint)
+
+Terraform consumers do not need the Composer or npm package either. The Qlty source enables and pins both tools and
+supplies the shared TFLint config.
 
 ## Usage
 
@@ -300,13 +305,13 @@ tag = "<version>"
 ```
 
 The source enables the plugins every project runs, at the versions and modes they run with: TruffleHog, markdownlint,
-yamllint, actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP
-CS Fixer and Radarlint. A plugin with nothing to lint in a repository does not run there, so a TypeScript project is
-not charged for the PHP tools. It also sets the PHP runtime and the shared excludes, keeps PHPCS 4.x findings from
-being discarded as a crash, and supplies the ESLint and Biome wiring for projects that enable those. List a plugin in
-your own file only to change it: a version or mode you leave out is taken from the source, but any list you set, such
-as `drivers` or `extra_packages`, replaces the source's rather than adding to it. To turn a plugin off, give it
-`mode = "disabled"`.
+yamllint, actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP CS
+Fixer, Radarlint, Terraform (formatting only) and TFLint. A plugin with nothing to lint in a repository does not run
+there, so a TypeScript project is not charged for the PHP tools. It also sets the PHP runtime and the shared excludes,
+keeps PHPCS 4.x findings from being discarded as a crash, and supplies the ESLint and Biome wiring for projects that
+enable those. List a plugin in your own file only to change it: a version or mode you leave out is taken from the
+source, but any list you set, such as `drivers` or `extra_packages`, replaces the source's rather than adding to it. To
+turn a plugin off, give it `mode = "disabled"`.
 
 The source also sets the code smell policy: smells are reported as comments rather than failing the check, the
 parameter-count check is off, and the return-statement, function-complexity and file-complexity thresholds are raised
@@ -378,6 +383,33 @@ SwiftLint has no configuration inheritance. A `.swiftlint.yml` committed to a co
 shared policy rather than extending it, so adding one to relax a single rule silently discards the whole standard.
 Raise a pull request here instead, or copy the shared file wholesale and edit the copy.
 
+### Terraform (Terraform and TFLint)
+
+The Qlty source is all a Terraform repository needs: it runs `terraform fmt` at Terraform 1.16.5 and TFLint 0.64.0
+with the shared `.tflint.hcl`. Keep `.terraform-version` at the same release. To change the version, give the
+`terraform` plugin a `version` in your own `.qlty/qlty.toml` and repeat `drivers = ["format"]`, because an entry
+without drivers runs all of them, including a validate driver that cannot pass without `terraform init`.
+
+Validate in CI with the reusable workflow, which initialises without a backend and runs `terraform validate`:
+
+```yaml
+jobs:
+    terraform:
+        uses: sinemacula/.github/.github/workflows/terraform-tests.yml@<version>
+        permissions:
+            contents: read
+```
+
+`terraform fmt` indents with two spaces. Add a section for it to your `.editorconfig`:
+
+```ini
+[*.{tf,tfvars,hcl}]
+indent_size = 2
+```
+
+A `.tflint.hcl` committed to a consuming repository replaces the shared policy rather than extending it. Raise a
+pull request here instead.
+
 ## What's Included
 
 | Path                                      | Tool                 | Description                                            |
@@ -399,6 +431,7 @@ Raise a pull request here instead, or copy the shared file wholesale and edit th
 | `editorconfig/.editorconfig-checker.json` | editorconfig-checker | Disables only the max-line-length check                |
 | `swift/.swiftlint.yml`                    | SwiftLint            | Shared Swift 6 lint, safety, concurrency, and metrics  |
 | `swift/.swiftformat`                      | SwiftFormat          | Shared deterministic Swift 6 formatting policy         |
+| `terraform/.tflint.hcl`                   | TFLint               | Bundled Terraform ruleset at the `all` preset          |
 
 ## Rules
 
@@ -624,6 +657,7 @@ composer check               # static analysis and lint via qlty
 composer format              # format via qlty
 composer smells              # duplication / complexity smells via qlty
 bash scripts/test-swift-policy.sh # exported Swift policy integration test (macOS)
+bash scripts/test-terraform-policy.sh # exported Terraform policy integration test
 ```
 
 ## Changelog

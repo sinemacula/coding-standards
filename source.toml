@@ -66,6 +66,17 @@ version = "3.95.25"
 name = "radarlint-php"
 mode = "comment"
 
+# Qlty's validate driver runs without terraform init and cannot pass, so only
+# the formatter runs; validation belongs in the repository's own CI.
+[[plugin]]
+name = "terraform"
+version = "1.16.5"
+drivers = ["format"]
+
+[[plugin]]
+name = "tflint"
+version = "0.64.0"
+
 # Code smells for every consumer. A threshold flags at that value or more. A
 # consumer's own qlty.toml still wins, but re-enabling a check switched off here
 # needs enabled = true there too, because the two are merged, not replaced.
@@ -161,3 +172,16 @@ exported_config_paths = ["swift/.swiftlint.yml"]
 
 [plugins.definitions.swiftformat]
 exported_config_paths = ["swift/.swiftformat"]
+
+[plugins.definitions.terraform]
+exported_config_paths = []
+
+# The config is staged at the repository root, but TFLint runs from each
+# module's directory and reads .tflint.hcl only from there, so without --config
+# a nested module silently falls back to TFLint's default preset.
+[plugins.definitions.tflint]
+exported_config_paths = ["terraform/.tflint.hcl"]
+
+[plugins.definitions.tflint.drivers.lint]
+script = "tflint --format=sarif --force ${config_script}"
+config_script = "--config=${config_file}"
