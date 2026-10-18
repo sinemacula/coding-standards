@@ -146,7 +146,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     {
         return ($rule['depNameTemplate'] ?? null)    === self::PACKAGE
             && ($rule['datasourceTemplate'] ?? null) === 'packagist'
-            && $this->selects((array) ($rule['fileMatch'] ?? []), '.qlty/qlty.toml');
+            && $this->selects((array) ($rule['managerFilePatterns'] ?? []), '.qlty/qlty.toml');
     }
 
     /**
@@ -173,7 +173,9 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * Whether any of the given patterns selects the given path.
+     * Whether any of the given file patterns selects the given path. Renovate
+     * reads a pattern between slashes as a regex and anything else as a glob;
+     * the preset uses only regexes, so a glob selects nothing here.
      *
      * @param  array<mixed, mixed>  $patterns
      * @param  string  $path
@@ -182,7 +184,11 @@ final class PhpCsFixerSandboxTest extends TestCase
     private function selects(array $patterns, string $path): bool
     {
         foreach ($patterns as $pattern) {
-            if (preg_match($this->delimited($pattern), $path) === 1) {
+            if (preg_match('/^\/(.+)\/$/s', is_string($pattern) ? $pattern : '', $regex) !== 1) {
+                continue;
+            }
+
+            if (preg_match($this->delimited($regex[1]), $path) === 1) {
                 return true;
             }
         }
@@ -191,8 +197,9 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * A pattern from the preset, delimited for use here. The preset stores it
-     * bare, as the tool that consumes it takes no delimiters.
+     * A pattern from the preset, delimited for use here. Match strings are
+     * stored bare and file patterns arrive with their own slashes removed, as
+     * neither is a PHP pattern.
      *
      * @param  mixed  $pattern
      * @return string

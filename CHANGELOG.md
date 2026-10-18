@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.27.0](https://github.com/sinemacula/coding-standards/compare/v1.26.0...v1.27.0) (2026-10-17)
+
+
+### Features
+
+* add the shared Terraform policy ([#175](https://github.com/sinemacula/coding-standards/issues/175)) ([e7252fa](https://github.com/sinemacula/coding-standards/commit/e7252fa611c8ef9e0a56631c3f27bf640f751037))
+
+
+### Bug Fixes
+
+* select the Renovate preset's files with managerFilePatterns ([#176](https://github.com/sinemacula/coding-standards/issues/176)) ([dbece09](https://github.com/sinemacula/coding-standards/commit/dbece094973c2db2f4daa11739362e089b7b2703))
+
 ## [1.26.0](https://github.com/sinemacula/coding-standards/compare/v1.25.0...v1.26.0) (2026-09-30)
 
 

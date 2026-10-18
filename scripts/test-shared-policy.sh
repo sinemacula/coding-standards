@@ -83,7 +83,14 @@ expect_entry php-codesniffer '^  mode: comment$'
 expect_entry php-cs-fixer '^  version: 3\.95\.25$'
 expect_entry radarlint-php '^  mode: comment$'
 expect_entry trivy '^  - fs-vuln$'
+expect_entry terraform '^  version: 1\.16\.5$'
+expect_entry terraform '^  - format$'
+expect_entry tflint '^  version: 0\.64\.0$'
 
 if grep -qE '^  - ALL$' <<< "$(plugin_entry trivy)"; then
     fail "Expected every consumer to run only the chosen Trivy scanners."
+fi
+
+if grep -qE '^  - (ALL|lint)$' <<< "$(plugin_entry terraform)"; then
+    fail "Expected every consumer to run only the Terraform formatter."
 fi
