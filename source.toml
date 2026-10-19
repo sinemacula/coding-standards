@@ -113,6 +113,15 @@ exported_config_paths = ["yaml/.yamllint.yaml"]
 [plugins.definitions.shellcheck]
 exported_config_paths = ["shell/.shellcheckrc"]
 
+# actionlint knows no ubuntu-26.04 runner label in any release yet
+# (rhysd/actionlint#682), so a workflow that runs on one fails on its runs-on
+# line. Remove the -ignore once a release adds the label.
+[plugins.definitions.actionlint]
+exported_config_paths = []
+
+[plugins.definitions.actionlint.drivers.lint]
+script = "actionlint -ignore 'label .ubuntu-26\\.04(-arm)?. is unknown' -format \"{{json .}}\" ${target}"
+
 [plugins.definitions.biome]
 exported_config_paths = ["js/biome.json"]
 config_files = [".qlty/configs/biome.json"]
