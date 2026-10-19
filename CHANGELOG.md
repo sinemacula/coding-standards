@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.1](https://github.com/sinemacula/coding-standards/compare/v1.27.0...v1.27.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* accept the ubuntu-26.04 runner label in actionlint ([#179](https://github.com/sinemacula/coding-standards/issues/179)) ([418ab92](https://github.com/sinemacula/coding-standards/commit/418ab92efa52d331a8d604c57b7fa1b6446bd5f3))
+
 ## [1.27.0](https://github.com/sinemacula/coding-standards/compare/v1.26.0...v1.27.0) (2026-10-17)
 
 
