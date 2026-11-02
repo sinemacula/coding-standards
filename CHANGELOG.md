@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://github.com/sinemacula/coding-standards/compare/v1.27.1...v1.28.0) (2026-11-02)
+
+
+### Features
+
+* flag a null coalesce whose fallback a concatenation makes unreachable ([#184](https://github.com/sinemacula/coding-standards/issues/184)) ([92c0912](https://github.com/sinemacula/coding-standards/commit/92c091251af92fd2ca4b2871b5b042874917ec36))
+
 ## [1.27.1](https://github.com/sinemacula/coding-standards/compare/v1.27.0...v1.27.1) (2026-10-19)
 
 
