@@ -34,7 +34,7 @@ abstract class AbstractStandardTestCase extends TestCase
      */
     protected function assertStandardReports(string $fixture, array $expected): void
     {
-        $directory = dirname((new \ReflectionClass(static::class))->getFileName());
+        $directory = dirname($this->testFile());
 
         $this->assertStandardReportsFor($directory . DIRECTORY_SEPARATOR . $fixture, $expected);
     }
@@ -78,6 +78,24 @@ abstract class AbstractStandardTestCase extends TestCase
 
         $file = new LocalFile($path, new Ruleset($config), $config);
         $file->process();
+
+        return $file;
+    }
+
+    /**
+     * Resolve the absolute path of the concrete test class.
+     *
+     * @return string
+     *
+     * @throws \LogicException
+     */
+    private function testFile(): string
+    {
+        $file = (new \ReflectionClass(static::class))->getFileName();
+
+        if ($file === false) {
+            throw new \LogicException(sprintf('Test class %s is not declared in a file.', static::class));
+        }
 
         return $file;
     }

@@ -279,7 +279,7 @@ final class CommentParagraph
     /**
      * The length of the longest token.
      *
-     * @param  list<string>  $tokens
+     * @param  non-empty-list<string>  $tokens
      * @return int
      */
     private function longestToken(array $tokens): int

@@ -3,7 +3,6 @@
 # overrides whatever a config file says.
 parameters:
     ignoreErrors:
-        - identifier: argument.type
         - identifier: ternary.shortNotAllowed
         - identifier: booleanAnd.leftNotBoolean
         - identifier: booleanNot.exprNotBoolean

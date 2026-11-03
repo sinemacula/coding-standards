@@ -67,7 +67,9 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
         $count = 0;
 
         for ($i = $tokens[$stackPtr]['scope_opener'] + 1; $i < $tokens[$stackPtr]['scope_closer']; $i++) {
-            if ($tokens[$i]['code'] !== T_FUNCTION || array_key_last($tokens[$i]['conditions']) !== $stackPtr) {
+            $conditions = $tokens[$i]['conditions'];
+
+            if ($tokens[$i]['code'] !== T_FUNCTION || !is_array($conditions) || array_key_last($conditions) !== $stackPtr) {
                 continue;
             }
 

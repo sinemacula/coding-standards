@@ -23,6 +23,9 @@ use SineMacula\CodingStandards\Comments\CommentWrapper;
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
+ *
+ * @phpstan-type DocBlock array{first: int, last: int, content: list<string>, ptrs: list<int>, margin: int, kind: 'doc', indent: string}
+ * @phpstan-type SlashBlock array{first: int, last: int, content: list<string>, ptrs: list<int>, margin: int, kind: 'slash', indent: string, trailingEol: bool}
  */
 final class CommentLineLengthSniff implements Sniff
 {
@@ -71,7 +74,7 @@ final class CommentLineLengthSniff implements Sniff
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
-     * @return array<string, mixed>|null
+     * @return DocBlock|SlashBlock|null
      */
     private function resolveBlock(File $phpcsFile, int $stackPtr): ?array
     {
@@ -87,7 +90,7 @@ final class CommentLineLengthSniff implements Sniff
      * fixer is running.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  array<string, mixed>  $block
+     * @param  DocBlock|SlashBlock  $block
      * @return void
      */
     private function handle(File $phpcsFile, array $block): void
@@ -112,7 +115,7 @@ final class CommentLineLengthSniff implements Sniff
      * @imperative
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  array<string, mixed>  $block
+     * @param  DocBlock|SlashBlock  $block
      * @param  array{lines: list<string>, long: list<int>, premature: list<int>}  $result
      * @return bool
      */
@@ -138,7 +141,7 @@ final class CommentLineLengthSniff implements Sniff
      * a block that has a fault, so the text always differs from the original.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  array<string, mixed>  $block
+     * @param  DocBlock|SlashBlock  $block
      * @param  string  $text
      * @return void
      */
@@ -158,7 +161,7 @@ final class CommentLineLengthSniff implements Sniff
      * Rebuild a block's source from its reflowed content lines.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
-     * @param  array<string, mixed>  $block
+     * @param  DocBlock|SlashBlock  $block
      * @param  list<string>  $lines
      * @return string
      */
@@ -188,7 +191,7 @@ final class CommentLineLengthSniff implements Sniff
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $openPtr
-     * @return array<string, mixed>|null
+     * @return DocBlock|null
      */
     private function docBlock(File $phpcsFile, int $openPtr): ?array
     {
@@ -202,30 +205,29 @@ final class CommentLineLengthSniff implements Sniff
             return null;
         }
 
-        $content = $this->docContent($lines, $openLine, $closeLine, $indent);
+        $interior = $this->docContent($lines, $openLine, $closeLine);
 
-        return $content === null ? null : [
+        return $interior === null ? null : [
             'first'   => $openPtr,
             'last'    => $closePtr,
-            'content' => $content,
+            'content' => $interior['content'],
             'ptrs'    => $this->lineMap($phpcsFile, $openPtr, $closePtr, $openLine + 1),
-            'margin'  => mb_strlen((string) $indent) + 2,
+            'margin'  => mb_strlen($interior['indent']) + 2,
             'kind'    => 'doc',
-            'indent'  => $indent,
+            'indent'  => $interior['indent'],
         ];
     }
 
     /**
-     * Extract the margin-stripped content of a docblock's interior lines,
-     * binding the shared indent, or null when a line breaks the plain shape.
+     * Extract the margin-stripped content of a docblock's interior lines with
+     * their shared indent, or null when a line breaks the plain shape.
      *
      * @param  array<int, string>  $lines
      * @param  int  $openLine
      * @param  int  $closeLine
-     * @param  string|null  $indent
-     * @return list<string>|null
+     * @return array{indent: string, content: list<string>}|null
      */
-    private function docContent(array $lines, int $openLine, int $closeLine, ?string &$indent): ?array
+    private function docContent(array $lines, int $openLine, int $closeLine): ?array
     {
         $indent  = null;
         $content = [];
@@ -244,7 +246,7 @@ final class CommentLineLengthSniff implements Sniff
             $content[] = $match[3];
         }
 
-        return $content === [] ? null : $content;
+        return $indent === null ? null : ['indent' => $indent, 'content' => $content];
     }
 
     /**
@@ -252,7 +254,7 @@ final class CommentLineLengthSniff implements Sniff
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $firstPtr
-     * @return array<string, mixed>
+     * @return SlashBlock
      */
     private function slashBlock(File $phpcsFile, int $firstPtr): array
     {

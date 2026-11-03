@@ -66,7 +66,7 @@ final class PromotedConstructorSpacingSniff implements Sniff
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $opener
      * @param  int  $closer
-     * @param  array<int, array<string, mixed>>  $params
+     * @param  array<int, array{name: string, token: int, comma_token: false|int, property_visibility?: string}>  $params
      * @return void
      */
     private function checkParameterSpacing(File $phpcsFile, int $opener, int $closer, array $params): void
@@ -130,7 +130,7 @@ final class PromotedConstructorSpacingSniff implements Sniff
     /**
      * Determine whether any parameter is a promoted property.
      *
-     * @param  array<int, array<string, mixed>>  $params
+     * @param  array<int, array{name: string, token: int, comma_token: false|int, property_visibility?: string}>  $params
      * @return bool
      */
     private function hasPromotedProperty(array $params): bool

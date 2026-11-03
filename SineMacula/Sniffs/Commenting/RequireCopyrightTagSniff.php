@@ -44,10 +44,9 @@ final class RequireCopyrightTagSniff implements Sniff
     #[\Override]
     public function process(File $phpcsFile, $stackPtr): void
     {
-        $tokens = $phpcsFile->getTokens();
         $closer = $this->docCommentCloser($phpcsFile, $stackPtr, [T_ABSTRACT, T_FINAL, T_READONLY]);
 
-        if ($closer === null || $this->hasCopyrightTag($tokens, $closer)) {
+        if ($closer === null || $this->hasCopyrightTag($phpcsFile, $closer)) {
             return;
         }
 
@@ -62,12 +61,14 @@ final class RequireCopyrightTagSniff implements Sniff
     /**
      * Determine whether the docblock carries an @copyright tag.
      *
-     * @param  array<int, array<string, mixed>>  $tokens
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $closer
      * @return bool
      */
-    private function hasCopyrightTag(array $tokens, int $closer): bool
+    private function hasCopyrightTag(File $phpcsFile, int $closer): bool
     {
+        $tokens = $phpcsFile->getTokens();
+
         for ($i = $tokens[$closer]['comment_opener']; $i < $closer; $i++) {
             if (
                 $tokens[$i]['code']                   === T_DOC_COMMENT_TAG

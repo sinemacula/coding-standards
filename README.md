@@ -130,6 +130,12 @@ The base config enables PHPStan's checked-exception analysis: every exception a 
 `LogicException`, `RuntimeException` and `Error` families among them (see `php/phpstan-base.neon` for the full list).
 Suppress a deliberate case with `@phpstan-ignore missingType.checkedException`.
 
+The base config also reports `argument.type`. The shared PHP CS Fixer rules declare `strict_types` and add native types
+from docblocks, so passing an argument of the wrong type - a string where an int is expected, null to an internal
+function, a `Stringable` where a string is expected - is a `TypeError` at runtime rather than a silent coercion. Fix a
+finding by narrowing the value where it is read (`$request->integer('limit')`, `Config::integer(...)`, an explicit null
+check) or, where the conversion is intended, with an explicit cast.
+
 #### Laravel projects
 
 For Laravel projects, also install

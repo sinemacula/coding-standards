@@ -150,13 +150,31 @@ final class DisallowToolingAttributeSniff implements Sniff
         $next   = $phpcsFile->findNext(T_WHITESPACE, $usePtr + 1, null, true);
         $end    = $phpcsFile->findNext(T_SEMICOLON, $usePtr + 1);
 
+        if ($next === false) {
+            return null; // @codeCoverageIgnore
+        }
+
         // Skip malformed statements, function/const imports and closure binds.
         if ($end === false || in_array($tokens[$next]['code'], [T_OPEN_PARENTHESIS, T_FUNCTION, T_CONST], true)) {
             return null; // @codeCoverageIgnore
         }
 
-        $i    = $next;
-        $name = ltrim($this->readName($tokens, $i, $end), '\\');
+        return $this->readImport($phpcsFile, $next, $end);
+    }
+
+    /**
+     * Read the imported name from its first token, with its alias, or null when
+     * the statement carries no name.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $i
+     * @param  int  $end
+     * @return array{0: string, 1: string}|null
+     */
+    private function readImport(File $phpcsFile, int $i, int $end): ?array
+    {
+        $tokens = $phpcsFile->getTokens();
+        $name   = ltrim($this->readName($tokens, $i, $end), '\\');
 
         if ($name === '') {
             return null; // @codeCoverageIgnore
