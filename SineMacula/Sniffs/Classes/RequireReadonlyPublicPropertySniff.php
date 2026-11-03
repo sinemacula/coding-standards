@@ -16,7 +16,9 @@ use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
  * Mutable public state breaks encapsulation; the legitimate data-holder case is
  * expressed with `public readonly`. Static properties are left to the mutable
  * static state rule, and non-public properties are unaffected. Test classes are
- * exempt (recording spies and fakes legitimately hold mutable public state).
+ * exempt (recording spies and fakes legitimately hold mutable public state), as
+ * are the properties $ignoredInterfaceProperties lists for an interface the
+ * class implements.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -27,6 +29,9 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
 
     /** @var array<int, string> Parent classes whose subclasses are exempt. */
     public array $ignoredParentClasses = [];
+
+    /** @var array<string, string> Interface short names mapped to comma-separated exempt property names. */
+    public array $ignoredInterfaceProperties = [];
 
     /**
      * Register the tokens this sniff listens for.
@@ -101,6 +106,58 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
+     * Whether the property is exempt through an interface its class implements.
+     *
+     * Framework contracts such as Laravel's ShouldQueue read configuration from
+     * public properties (tries, timeout, ...) that need defaults and so cannot
+     * be readonly. Only an interface named in the implements clause of the
+     * property's own class, named or anonymous, counts. Both the clause and the
+     * configured keys are matched case-insensitively on their short name, so an
+     * imported and a fully qualified reference behave alike.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @param  string  $property
+     * @return bool
+     */
+    private function isIgnoredInterfaceProperty(File $phpcsFile, int $stackPtr, string $property): bool
+    {
+        $conditions = $phpcsFile->getTokens()[$stackPtr]['conditions'];
+        $interfaces = in_array(end($conditions), [T_CLASS, T_ANON_CLASS], true)
+            ? $phpcsFile->findImplementedInterfaceNames((int) key($conditions))
+            : false;
+
+        if ($interfaces === false) {
+            return false;
+        }
+
+        $implemented = array_map($this->shortName(...), $interfaces);
+
+        foreach ($this->ignoredInterfaceProperties as $interface => $properties) {
+            if (
+                in_array($this->shortName((string) $interface), $implemented, true)
+                && in_array(ltrim($property, '$'), array_map(trim(...), explode(',', $properties)), true)
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * The lowercased last namespace segment of a class-like name, keeping its
+     * leading backslash.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    private function shortName(string $name): string
+    {
+        return strtolower((string) strrchr('\\' . $name, '\\'));
+    }
+
+    /**
      * Whether the token sits in a test class, where mutable public recording
      * state (spies, fakes) is legitimate rather than a smell.
      *
@@ -135,6 +192,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
             $properties['is_static']      !== false
             || $properties['scope']       !== 'public'
             || $properties['is_readonly'] !== false
+            || $this->isIgnoredInterfaceProperty($phpcsFile, $stackPtr, $phpcsFile->getTokens()[$stackPtr]['content'])
         ) {
             return;
         }
@@ -166,6 +224,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
             if (
                 ($parameter['property_visibility'] ?? null)   !== 'public'
                 || ($parameter['property_readonly'] ?? false) !== false
+                || $this->isIgnoredInterfaceProperty($phpcsFile, $stackPtr, $parameter['name'])
             ) {
                 continue;
             }

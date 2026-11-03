@@ -75,6 +75,12 @@ jobs:
                     composer update --prefer-dist --no-interaction --no-progress
                     --with "squizlabs/php_codesniffer:${{ matrix.constraint }}"
 
+            # Analysed on the PHP floor only: newer versions ask for attributes,
+            # such as #[\Override] on a property, that the floor cannot parse.
+            -   name: PHPStan
+                if: ${{ matrix.php == '8.3' }}
+                run: composer analyse
+
             -   name: PHPUnit
                 run: composer test:coverage
 
