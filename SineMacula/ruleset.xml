@@ -28,8 +28,31 @@
         that documents a type and can reach its end without returning one, and
         stays quiet where every path throws. Losing nothing but the false
         positive is why this is dropped rather than reimplemented.
+
+        The sniff also reads an @param tag from its first line only, so a type
+        that spans lines, such as an array shape written one key to a line,
+        loses its variable, and a callable type that names its own parameter
+        there lends the tag that name. The checks of the tag's variable are
+        excluded for that and made by SineMacula.Commenting.RequireParamTag,
+        which follows the type to its close and reports the same codes:
+        MissingParamName, MissingParamTag and the two name mismatches misfire,
+        while ExtraParamComment and ParamNameUnexpectedAmpersandPrefix go quiet
+        on a tag whose variable they cannot find. ParamCommentNotCapital,
+        ParamCommentFullStop and SpacingAfterParamName misread the same way and
+        are dropped rather than reimplemented, since they judge a description
+        and SineMacula.Commenting.DisallowTagDescription reports any description
+        at all.
     -->
     <rule ref="Squiz.Commenting.FunctionComment">
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamName"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamNameNoMatch"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamNameNoCaseMatch"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ExtraParamComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamNameUnexpectedAmpersandPrefix"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentNotCapital"/>
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+        <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamName"/>
         <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
         <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType"/>
         <exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>

@@ -471,6 +471,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Commenting.RequireConstantComment`             | Every class/interface/enum/trait constant needs a doc comment.              |
 | `SineMacula.Commenting.RequireCopyrightTag`                | Class/interface/enum/trait docblocks must carry an `@copyright` tag.        |
 | `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment.                       |
+| `SineMacula.Commenting.RequireParamTag`                    | Each parameter needs an `@param` tag naming it; the type may span lines.    |
 | `SineMacula.Commenting.RequirePromotedPropertyComment`     | Every constructor-promoted property needs a doc comment.                    |
 | `SineMacula.Commenting.RequireThrowsTag`                   | Each exception thrown in a function body needs its own `@throws` tag.       |
 | `SineMacula.Commenting.SingleLineMemberComment`            | A property, constant or enum-case doc comment sits on one line.             |
@@ -494,6 +495,15 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 wants one capitalised and closed with a full stop, while PHP CS Fixer lowercases it, strips the full stop and pads it
 again. A bare tag, `@param  int  $count` or `@throws \RuntimeException`, is the one shape both accept, so the fixer
 removes the description, continuation lines included.
+
+`RequireParamTag` makes the function comment sniff's checks of an `@param` tag's variable, under the same codes and
+messages, because that sniff reads a tag from its first line only: a type that spans lines, such as an array shape
+written one key to a line, loses its variable there, and a callable type that names its own parameter on that line lends
+the tag its name. A `// phpcs:ignore` of one of those codes now names `SineMacula.Commenting.RequireParamTag` in place
+of `Squiz.Commenting.FunctionComment`. Two misreadings of a single-line tag go with it: a literal type holding a dot,
+such as `'a.b'` or `1.5`, keeps its variable, and a tag typed `$this` documents the variable after it. PHP CS Fixer
+misreads a callable type that names its own parameters, on one line or several or inside an array shape, and adds a
+second `@param` for the parameter, so leave a callable type's parameters unnamed.
 
 Two sniffs take properties that exempt framework code whose names and shapes are fixed by convention.
 `BooleanMethodName` takes `ignoredClassSuffixes`, a list of suffixes: the methods of a named class, interface, trait or

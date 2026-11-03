@@ -68,3 +68,10 @@ $bare = static function (int $value): void {
 function selfish(\Closure $callback, $other, $self, int $thisValue): void
 {
 }
+
+/**
+ * @param  '('|'['  $opener
+ */
+function opens(string $opener): void
+{
+}

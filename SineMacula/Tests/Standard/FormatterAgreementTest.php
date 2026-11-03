@@ -94,6 +94,23 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
+     * An @param type written across lines is a shape both sides accept: the
+     * formatter leaves it as written, and the sniffs follow the type to its
+     * close to find the variable, where reading the tag's first line alone
+     * finds none.
+     *
+     * @return void
+     */
+    public function testBothSidesAcceptAParamTypeAcrossLines(): void
+    {
+        $formatted = $this->format('FormatterAgreementParamTag.inc');
+
+        self::assertFileEquals(__DIR__ . '/FormatterAgreementParamTag.inc', $formatted);
+
+        $this->assertStandardReportsFor($formatted, []);
+    }
+
+    /**
      * An assignment a @var tag names is kept, not folded into the return that
      * reads it, since folding it leaves the tag naming a variable that no
      * longer exists, which PHPStan reports.

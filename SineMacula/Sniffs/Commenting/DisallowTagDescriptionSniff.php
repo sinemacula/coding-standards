@@ -6,6 +6,7 @@ namespace SineMacula\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
+use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesTagHead;
 
 /**
  * Tag description sniff.
@@ -22,6 +23,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  */
 final class DisallowTagDescriptionSniff implements Sniff
 {
+    use ResolvesTagHead;
+
     /** @var array<string, string> The error code reported for each governed tag. */
     private const array CODES = [
         '@param'  => 'ParamFound',
@@ -38,18 +41,6 @@ final class DisallowTagDescriptionSniff implements Sniff
     private const array HEAD_ENDS = [
         'ParamFound'  => '/\G\$(?!this(?![A-Za-z0-9_\x80-\xff]))[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*/',
         'ThrowsFound' => '/\G(?<![\s|&])(?=\s)(?!\s*[|&])/',
-    ];
-
-    /** @var array<string, int> How far each bracket moves the nesting depth of a type. */
-    private const array BRACKETS = [
-        '<' => 1,
-        '(' => 1,
-        '{' => 1,
-        '[' => 1,
-        '>' => -1,
-        ')' => -1,
-        '}' => -1,
-        ']' => -1,
     ];
 
     /**
@@ -133,23 +124,6 @@ final class DisallowTagDescriptionSniff implements Sniff
     }
 
     /**
-     * The text tokens that belong to the tag at the pointer, from the tag up to
-     * the next tag or the end of the comment.
-     *
-     * @param  array<int, array<string, mixed>>  $tokens
-     * @param  int  $tag
-     * @param  int  $bound
-     * @return list<int>
-     */
-    private function tagStrings(array $tokens, int $tag, int $bound): array
-    {
-        return array_values(array_filter(
-            range($tag, $bound),
-            static fn (int $ptr): bool => $tokens[$ptr]['code'] === T_DOC_COMMENT_STRING,
-        ));
-    }
-
-    /**
      * Where the part of the tag that is not description ends, as the text token
      * it ends in and the offset within it, or null when it never ends. The text
      * is read as one run, a line break standing between each token, so a type
@@ -162,12 +136,14 @@ final class DisallowTagDescriptionSniff implements Sniff
      */
     private function headEnd(File $phpcsFile, array $strings, string $pattern): ?array
     {
-        $lines = array_map(static fn (int $ptr): string => $phpcsFile->getTokensAsString($ptr, 1), $strings);
-        $end   = $this->outsideBrackets(implode("\n", $lines), $pattern);
+        $lines = $this->tagLines($phpcsFile, $strings);
+        $match = $this->matchOutsideBrackets($lines, $pattern);
 
-        if ($end === null) {
+        if ($match === null) {
             return null;
         }
+
+        $end = $match[0] + strlen($match[1]);
 
         foreach ($lines as $index => $line) {
             if ($end <= strlen($line)) {
@@ -175,29 +151,6 @@ final class DisallowTagDescriptionSniff implements Sniff
             }
 
             $end -= strlen($line) + 1;
-        }
-
-        return null;
-    }
-
-    /**
-     * The offset just past the first match of the pattern that starts outside
-     * every bracket, or null when there is none.
-     *
-     * @param  string  $text
-     * @param  string  $pattern
-     * @return int|null
-     */
-    private function outsideBrackets(string $text, string $pattern): ?int
-    {
-        $depth = 0;
-
-        for ($offset = 0, $length = strlen($text); $offset < $length; $offset++) {
-            $depth += self::BRACKETS[$text[$offset]] ?? 0;
-
-            if ($depth <= 0 && preg_match($pattern, $text, $match, 0, $offset) === 1) {
-                return $offset + strlen($match[0]);
-            }
         }
 
         return null;
