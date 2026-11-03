@@ -74,3 +74,10 @@ $job = new class (1) implements ShouldQueue {
     {
     }
 };
+
+class BroadcastQueued implements ShouldQueue, ShouldBroadcast
+{
+    public int $timeout = 30;
+
+    public string $connection = 'redis';
+}
