@@ -18,7 +18,8 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
  * succeeded, failed, expired). An imperative command verb (execute, persist,
  * guard, ...) that returns a result bool is exempt via $commandVerbs, which a
  * consuming ruleset can extend. A method may also opt out with an @imperative
- * docblock tag. Magic methods are exempt.
+ * docblock tag. Magic methods are exempt, as are the methods of a named class,
+ * interface, trait or enum whose name ends with one of $ignoredClassSuffixes.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -46,6 +47,9 @@ final class BooleanMethodNameSniff implements Sniff
         'assert', 'register', 'boot', 'build', 'make', 'resolve', 'render',
         'compute', 'calculate', 'expose', 'parse', 'format', 'transform', 'toggle',
     ];
+
+    /** @var array<int, string> Class name suffixes whose methods are exempt (e.g. Policy). */
+    public array $ignoredClassSuffixes = [];
 
     /**
      * Register the tokens this sniff listens for.
@@ -81,7 +85,8 @@ final class BooleanMethodNameSniff implements Sniff
         }
 
         if (
-            $this->isMarkedImperative($phpcsFile, $stackPtr)
+            $this->isInIgnoredClass($phpcsFile, $stackPtr)
+            || $this->isMarkedImperative($phpcsFile, $stackPtr)
             || $this->isCommandVerb($name)
             || $this->isPredicate($name)
         ) {
@@ -134,6 +139,37 @@ final class BooleanMethodNameSniff implements Sniff
             || in_array($first, $this->allowedPredicates, true)
             || str_ends_with($first, 's')
             || str_ends_with($first, 'ed');
+    }
+
+    /**
+     * Whether the function is a method of a named class, interface, trait or
+     * enum whose name ends with a configured suffix.
+     *
+     * Methods whose names a framework resolves by convention (e.g. the ability
+     * methods of a Laravel policy) cannot be renamed into predicates. An
+     * anonymous class has no name and so is never exempt.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isInIgnoredClass(File $phpcsFile, int $stackPtr): bool
+    {
+        $conditions = $phpcsFile->getTokens()[$stackPtr]['conditions'];
+
+        if (!in_array(end($conditions), [T_CLASS, T_INTERFACE, T_TRAIT, T_ENUM], true)) {
+            return false;
+        }
+
+        $name = $phpcsFile->getDeclarationName((int) key($conditions));
+
+        foreach ($this->ignoredClassSuffixes as $suffix) {
+            if ($suffix !== '' && str_ends_with($name, $suffix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
