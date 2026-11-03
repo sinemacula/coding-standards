@@ -323,6 +323,12 @@ parameter-count check is off, and the return-statement, function-complexity and 
 project, set it there; to turn back on a check the source switches off, set `enabled = true` alongside the threshold,
 because the two files are merged rather than replaced.
 
+The source also drops Radarlint's function naming rule, `php:S100`, through a `[[triage]]` entry. Its pattern wants
+camelCase on every function, which rejects the snake_case global functions
+`SineMacula.NamingConventions.ValidGlobalFunctionName` requires, while methods are already held to camelCase by PSR1.
+A `[[triage]]` entry in your own file is added alongside the source's rather than replacing it, so nothing needs
+repeating there.
+
 ### Swift (SwiftLint and SwiftFormat)
 
 Swift repositories consume the shared policy through Qlty. Enable the default source for the tools, this repository
