@@ -11,10 +11,11 @@ use SineMacula\Tests\AbstractStandardTestCase;
  * Tests that the @throws tags PHPStan asks for are tags the sniffs accept.
  *
  * PHPStan requires every checked exception a method can throw to be declared,
- * those its callees propagate included, while the throw tag sniff counts only
- * the exceptions thrown in the body itself. A method that both throws and
- * propagates needs more tags than that count, so the count is not held against
- * it; an exception thrown in the body without a tag is still reported.
+ * those its callees propagate included, while the throw tag sniff sees only the
+ * exceptions thrown in the body itself. A method that both throws and
+ * propagates needs more tags than the body throws, so the count is not held
+ * against it; an exception thrown in the body without a tag is still reported,
+ * however many other tags there are.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -43,7 +44,20 @@ final class ThrowsTagTest extends AbstractStandardTestCase
     public function testStillReportsAThrownExceptionWithoutATag(): void
     {
         $this->assertStandardReports('ThrowsUndeclared.inc', [
-            20 => ['Squiz.Commenting.FunctionCommentThrowTag.Missing'],
+            20 => ['SineMacula.Commenting.RequireThrowsTag.Missing'],
+        ]);
+    }
+
+    /**
+     * An exception thrown in the body is reported when other tags are present
+     * but none declares it.
+     *
+     * @return void
+     */
+    public function testReportsAThrownExceptionAmongOtherTags(): void
+    {
+        $this->assertStandardReports('ThrowsPartlyDeclared.inc', [
+            22 => ['SineMacula.Commenting.RequireThrowsTag.Missing'],
         ]);
     }
 }
