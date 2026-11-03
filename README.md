@@ -128,7 +128,9 @@ it next.
 The base config enables PHPStan's checked-exception analysis: every exception a method can throw must appear in its
 `@throws` tag, except a configured set of programming-error and infrastructure exceptions that stay unchecked - the
 `LogicException`, `RuntimeException` and `Error` families among them (see `php/phpstan-base.neon` for the full list).
-Suppress a deliberate case with `@phpstan-ignore missingType.checkedException`.
+Suppress a deliberate case with `@phpstan-ignore missingType.checkedException`. The PHPCS standard does not count a
+method's `@throws` tags against the exceptions thrown in its body, so a tag for an exception a callee propagates is
+accepted there too; PHPStan's `tooWideThrowType` still reports a tag for an exception nothing can throw.
 
 #### Laravel projects
 

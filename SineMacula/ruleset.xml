@@ -161,9 +161,16 @@
     </rule>
 
     <!--
-        Require an @throws tag for every exception thrown in a function body
+        Require an @throws tag for every exception thrown in a function body.
+        WrongNumber is excluded because it wants the tags to match the
+        exceptions thrown in the body exactly, while PHPStan also requires the
+        checked exceptions a callee propagates to be declared, so a method that
+        both throws and propagates cannot satisfy both. PHPStan's
+        tooWideThrowType still reports a tag nothing can throw.
     -->
-    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag">
+        <exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
+    </rule>
 
     <!--
         Inline comments: enforce // style and spacing, with three sub-rules
