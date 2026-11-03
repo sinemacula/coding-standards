@@ -239,9 +239,11 @@
     <!--
         Disallow the `mixed` type hint (all-or-nothing; there is no "except at
         boundaries" option). Suppress with
-        `// phpcs:ignore SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`
-        at genuine boundaries (external input, JSON) or where an overridden
-        signature forces it.
+        `@phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`
+        in the docblock that carries the type, at genuine boundaries (external
+        input, JSON) or where an overridden signature forces it. A
+        `// phpcs:ignore` line cannot reach a type inside a docblock, such as
+        array<string, mixed>, and above a signature it detaches the docblock.
     -->
     <rule ref="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint"/>
 
