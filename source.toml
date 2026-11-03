@@ -27,6 +27,13 @@ file_patterns = [".qlty/**"]
 plugins = ["terraform", "tflint"]
 file_patterns = ["**/.terraform/**"]
 
+# Radarlint's function naming rule wants camelCase everywhere, but a global
+# function is snake_case under the ValidGlobalFunctionName sniff, and a method
+# is already held to camelCase by PSR1, so the rule can only conflict.
+[[triage]]
+match.rules = ["radarlint-php:php:S100"]
+set.ignored = true
+
 [runtimes.enabled]
 php = "8.3"
 

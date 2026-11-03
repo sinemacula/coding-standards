@@ -510,8 +510,11 @@ return [
     | Return notation rules
     |---------------------------------------------------------------------------
     */
-    'no_useless_return'      => true,
-    'return_assignment'      => true,
+    'no_useless_return' => true,
+    // Off because folding `/** @var T $x */ $x = expr; return $x;` into a
+    // return leaves the @var naming a variable that no longer exists, which
+    // PHPStan reports as varTag.variableNotFound.
+    'return_assignment'      => false,
     'simplified_null_return' => true,
 
     /*

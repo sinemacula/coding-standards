@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * Summary prose that mentions @param and @throws stays.
+ *
+ * A long description stays too.
+ *
+ * @param  array{
+ *     id: int,
+ *     name: string,
+ * }  $row
+ * @param  callable(int $value): void  $callback
+ * @param  $untyped
+ * @param  int  &...$refs
+ * @param  int
+ * @param  int  $bare
+ * @return int The count.
+ *
+ * @throws \Foo<int, string>
+ * @throws \Bar|\Baz
+ * @throws
+ * @see Something else entirely.
+ */
+function edges(array $row, callable $callback, $untyped, int &...$refs): int
+{
+    return 0;
+}
+
+/** @param  int  $value */
+$closure = static function (int $value): void {
+};
+
+/** @throws \RuntimeException */
+$thrower = static fn (): never => throw new \RuntimeException();
+
+/** @var int $count The count. */
+$count = 1;
+
+/**
+ * @param  int  $value
+ *
+ * @return void
+ */
+function spaced(int $value): void
+{
+}
+
+/**
+ * @throws \RuntimeException */
+function closing(): void
+{
+}
+
+/** @param  int  $value */
+$bare = static function (int $value): void {
+};
+
+/**
+ * @param  \Closure(): $this  $callback
+ * @param  $this  $other
+ * @param  $this|null  $self
+ * @param  int  $thisValue
+ * @return void
+ *
+ * @throws \FooException | \BarException
+ * @throws \FooException | \BarException
+ */
+function selfish(\Closure $callback, $other, $self, int $thisValue): void
+{
+}

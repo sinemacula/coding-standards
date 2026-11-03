@@ -1,0 +1,95 @@
+<?php
+
+declare(strict_types = 1);
+
+namespace App\Services;
+
+/**
+ * Keeps a running count for the tag description fixture.
+ *
+ * @author      Ben Carey <bdmc@sinemacula.co.uk>
+ * @copyright   2026 Sine Macula Limited
+ */
+final class Counter
+{
+    /** @var array<int, string> The names seen so far. */
+    private array $names = [];
+
+    /**
+     * Add to the count, refusing a negative amount.
+     *
+     * @param  int  $count The amount to add.
+     * @param  string  $name The name to record, which may run on
+     *     past the end of the first line.
+     * @return void
+     *
+     * @throws \InvalidArgumentException When the count is negative.
+     */
+    public function add(int $count, string $name): void
+    {
+        if ($count < 0) {
+            throw new \InvalidArgumentException('The count must not be negative.');
+        }
+
+        $this->names[] = $name;
+    }
+
+    /**
+     * Sum the given values.
+     *
+     * @param  int  ...$values The values to sum.
+     * @return int
+     */
+    public function sum(int ...$values): int
+    {
+        return array_sum($values);
+    }
+
+    /**
+     * Extend the given items with the names seen so far.
+     *
+     * @param  array<int, string>  &$items The items to extend.
+     * @return void
+     */
+    public function extend(array &$items): void
+    {
+        $items = [...$items, ...$this->names];
+    }
+
+    /**
+     * Store a row, refusing one without a name.
+     *
+     * @param  array{id: int, name: string}  $row
+     *     The row to store, keyed by column.
+     * @param  int  $limit
+     * @return void
+     *
+     * @throws \RuntimeException
+     *     When the row has no name.
+     */
+    public function store(array $row, int $limit): void
+    {
+        if ($row['name'] === '' || $limit < 1) {
+            throw new \RuntimeException('The row must have a name.');
+        }
+
+        $this->names[] = $row['name'];
+    }
+
+    /**
+     * Read a name back, refusing an unknown index.
+     *
+     * @param  int  $index
+     * @return string
+     *
+     * @throws \OutOfBoundsException
+     */
+    public function name(int $index): string
+    {
+        if (!isset($this->names[$index])) {
+            throw new \OutOfBoundsException('No name is recorded at that index.');
+        }
+
+        return $this->names[$index];
+    }
+}
