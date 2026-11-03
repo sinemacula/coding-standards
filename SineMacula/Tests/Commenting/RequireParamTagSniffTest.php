@@ -25,6 +25,9 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
     /** @var string The message rendered when the parameter has no tag. */
     private const string MISSING_ROW = 'Doc comment for parameter "$row" missing';
 
+    /** @var string The message rendered when the parameter has no tag. */
+    private const string MISSING_COUNT = 'Doc comment for parameter "$count" missing';
+
     /** @var string The message rendered for a tag that names no variable. */
     private const string UNNAMED = 'Missing parameter name';
 
@@ -130,6 +133,28 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
             24 => ['Doc comment for parameter $wrong does not match actual variable name $value'],
             28 => ['Doc comment for parameter "$Total" missing'],
             29 => ['Doc comment for parameter $total does not match case of actual variable name $Total'],
+        ]);
+    }
+
+    /**
+     * A bracket inside a quoted literal type opens nothing, so the variable
+     * after it is still found. A type closed at the end of a line ends there
+     * unless the next line carries on its union or intersection, so a variable
+     * on a later line is not read as the tag's.
+     *
+     * @return void
+     */
+    public function testEndsTheTypeWhereTheTagDoes(): void
+    {
+        $this->assertErrorMessagesOnLines('RequireParamTagTypeEnd.inc', [
+            10 => ['Doc comment for parameter "$open" missing'],
+            11 => ['Doc comment for parameter $wrong does not match actual variable name $open'],
+            15 => [self::MISSING_COUNT],
+            16 => [self::UNNAMED],
+            21 => [self::MISSING_COUNT],
+            22 => [self::UNNAMED],
+            27 => ['Doc comment for parameter "$callback" missing'],
+            28 => [self::UNNAMED],
         ]);
     }
 }

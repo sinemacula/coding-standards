@@ -120,11 +120,11 @@ abstract class Fixture
      *     int $value,
      *     string $label
      * ): bool  $filter
-     * @param  callable(int $value, string $label):
-     *     bool  $callback
+     * @param  callable(int $value, string $label): bool
+     *     |null  $callback
      * @param  callable(int $value): void  $listener
      */
-    public function namesCallablesThatNameTheirOwn(callable $filter, callable $callback, callable $listener): void {}
+    public function namesCallablesThatNameTheirOwn(callable $filter, ?callable $callback, callable $listener): void {}
 
     /**
      * @param  array{

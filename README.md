@@ -500,8 +500,10 @@ removes the description, continuation lines included.
 messages, because that sniff reads a tag from its first line only: a type that spans lines, such as an array shape
 written one key to a line, loses its variable there, and a callable type that names its own parameter on that line lends
 the tag its name. A `// phpcs:ignore` of one of those codes now names `SineMacula.Commenting.RequireParamTag` in place
-of `Squiz.Commenting.FunctionComment`. PHP CS Fixer reads neither a callable type that spans lines nor one that names
-its own parameters, so keep a callable type on one line with its parameters unnamed.
+of `Squiz.Commenting.FunctionComment`. Two misreadings of a single-line tag go with it: a literal type holding a dot,
+such as `'a.b'` or `1.5`, keeps its variable, and a tag typed `$this` documents the variable after it. PHP CS Fixer
+misreads a callable type that names its own parameters, on one line or several or inside an array shape, and adds a
+second `@param` for the parameter, so leave a callable type's parameters unnamed.
 
 Two sniffs take properties that exempt framework code whose names and shapes are fixed by convention.
 `BooleanMethodName` takes `ignoredClassSuffixes`, a list of suffixes: the methods of a named class, interface, trait or

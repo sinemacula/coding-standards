@@ -59,4 +59,17 @@ final class ReportBuilder
     {
         return $item['label'];
     }
+
+    /**
+     * Whether the key names the given opening bracket.
+     *
+     * @param  '('|'['|'{'  $opener
+     * @param  int
+     *     |string  $key
+     * @return bool
+     */
+    public function opens(string $opener, int|string $key): bool
+    {
+        return $opener === (string) $key;
+    }
 }
