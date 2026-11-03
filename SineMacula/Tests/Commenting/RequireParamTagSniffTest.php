@@ -114,7 +114,8 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
      * An ampersand is reported only on a tag that otherwise names the
      * parameter, and is not counted against the name it prefixes. A name that
      * starts with `this` is a variable, not a type, and a line comment is not
-     * read as a doc comment.
+     * read as a doc comment. A tag after another kind of tag is still checked,
+     * and a difference of case alone is told apart whichever side is capital.
      *
      * @return void
      */
@@ -125,6 +126,10 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
             4  => ['Doc comment for parameter $other does not match actual variable name $value'],
             9  => ['Doc comment for parameter $value is prefixed with "&" but parameter is not passed by reference'],
             10 => [self::SURPLUS],
+            22 => [self::MISSING_VALUE],
+            24 => ['Doc comment for parameter $wrong does not match actual variable name $value'],
+            28 => ['Doc comment for parameter "$Total" missing'],
+            29 => ['Doc comment for parameter $total does not match case of actual variable name $Total'],
         ]);
     }
 }
