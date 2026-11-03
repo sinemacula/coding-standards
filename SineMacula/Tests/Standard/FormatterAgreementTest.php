@@ -75,6 +75,18 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
+     * An assignment a @var tag names is kept, not folded into the return that
+     * reads it, since folding it leaves the tag naming a variable that no
+     * longer exists, which PHPStan reports.
+     *
+     * @return void
+     */
+    public function testTheFormatterKeepsTheVariableAVarTagNames(): void
+    {
+        self::assertFileEquals(__DIR__ . '/FormatterAgreementVarTag.inc', $this->format('FormatterAgreementVarTag.inc'));
+    }
+
+    /**
      * Run the shipped formatter rules over a fixture and write the result where
      * the sniffs can read it, returning that path.
      *
