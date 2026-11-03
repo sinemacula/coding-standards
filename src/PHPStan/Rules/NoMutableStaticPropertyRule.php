@@ -28,7 +28,7 @@ use SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyWriteCollector;
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  *
- * @phpstan-type StaticPropertyDeclaration array<string, int|string>
+ * @phpstan-type StaticPropertyDeclaration array{key: string, name: string, line: int, file: string}
  *
  * @implements \PHPStan\Rules\Rule<\PHPStan\Node\CollectedDataNode>
  */

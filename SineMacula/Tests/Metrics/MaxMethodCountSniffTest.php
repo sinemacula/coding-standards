@@ -48,6 +48,17 @@ final class MaxMethodCountSniffTest extends AbstractSniffTestCase
     }
 
     /**
+     * A method declared on a nested anonymous class counts toward that class,
+     * not toward the structure enclosing it.
+     *
+     * @return void
+     */
+    public function testIgnoresMethodsOfNestedStructures(): void
+    {
+        $this->assertErrorsOnLines('MaxMethodCountNested.inc', []);
+    }
+
+    /**
      * Lower the limit so the fixture stays small.
      *
      * @return array<string, mixed>

@@ -24,7 +24,7 @@ use PHPStan\Collectors\Collector;
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  *
- * @implements \PHPStan\Collectors\Collector<\PhpParser\Node\Stmt\ClassLike, array<int, array<string, int|string>>>
+ * @implements \PHPStan\Collectors\Collector<\PhpParser\Node\Stmt\ClassLike, list<array{key: string, name: string, line: int}>>
  */
 final class StaticPropertyDeclarationCollector implements Collector
 {
@@ -44,7 +44,7 @@ final class StaticPropertyDeclarationCollector implements Collector
      *
      * @param  \PhpParser\Node\Stmt\ClassLike  $node
      * @param  \PHPStan\Analyser\Scope  $scope
-     * @return array<int, array<string, int|string>>|null
+     * @return list<array{key: string, name: string, line: int}>|null
      */
     #[\Override]
     public function processNode(Node $node, Scope $scope): ?array
@@ -85,7 +85,7 @@ final class StaticPropertyDeclarationCollector implements Collector
      * @param  \PhpParser\Node\Stmt\Property  $property
      * @param  string  $class
      * @param  bool  $classManaged
-     * @return array<int, array<string, int|string>>
+     * @return list<array{key: string, name: string, line: int}>
      */
     private function collectFromProperty(Property $property, string $class, bool $classManaged): array
     {
