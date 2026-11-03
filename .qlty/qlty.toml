@@ -154,3 +154,10 @@ file_patterns = ["**/CHANGELOG.md"]
 [[exclude]]
 plugins = ["editorconfig-checker"]
 file_patterns = [".qlty/hooks/**"]
+
+# Radarlint's function naming rule fights the snake_case global functions the
+# standard requires; mirrors the source.toml triage, which this repo does not
+# consume.
+[[triage]]
+match.rules = ["radarlint-php:php:S100"]
+set.ignored = true

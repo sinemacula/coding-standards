@@ -128,7 +128,10 @@ it next.
 The base config enables PHPStan's checked-exception analysis: every exception a method can throw must appear in its
 `@throws` tag, except a configured set of programming-error and infrastructure exceptions that stay unchecked - the
 `LogicException`, `RuntimeException` and `Error` families among them (see `php/phpstan-base.neon` for the full list).
-Suppress a deliberate case with `@phpstan-ignore missingType.checkedException`.
+Suppress a deliberate case with `@phpstan-ignore missingType.checkedException`. The PHPCS standard asks for a
+`@throws` tag for each exception thrown in a method's body, checked or not, but does not count the tags against those
+exceptions, so a tag for an exception a callee propagates is accepted there too; PHPStan's `tooWideThrowType` still
+reports a tag for an exception nothing can throw.
 
 #### Laravel projects
 
@@ -321,6 +324,12 @@ parameter-count check is off, and the return-statement, function-complexity and 
 project, set it there; to turn back on a check the source switches off, set `enabled = true` alongside the threshold,
 because the two files are merged rather than replaced.
 
+The source also drops Radarlint's function naming rule, `php:S100`, through a `[[triage]]` entry. Its pattern wants
+camelCase on every function, which rejects the snake_case global functions
+`SineMacula.NamingConventions.ValidGlobalFunctionName` requires, while methods are already held to camelCase by PSR1.
+A `[[triage]]` entry in your own file is added alongside the source's rather than replacing it, so nothing needs
+repeating there.
+
 ### Swift (SwiftLint and SwiftFormat)
 
 Swift repositories consume the shared policy through Qlty. Enable the default source for the tools, this repository
@@ -451,11 +460,13 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Classes.RequireReadonlyPublicProperty`         | Public properties (declared or promoted) must be `readonly`.                |
 | `SineMacula.Commenting.CommentLineLength`                  | Standalone comment prose wrapped to 80 chars; premature wraps also fixed.   |
 | `SineMacula.Commenting.ConsistentEnumCaseComments`         | Enum case docs are all-or-nothing within an enum.                           |
+| `SineMacula.Commenting.DisallowTagDescription`             | `@param` and `@throws` tags carry no description; autofixable.              |
 | `SineMacula.Commenting.MultilineMethodComment`             | A method's doc comment must span multiple lines.                            |
 | `SineMacula.Commenting.RequireConstantComment`             | Every class/interface/enum/trait constant needs a doc comment.              |
 | `SineMacula.Commenting.RequireCopyrightTag`                | Class/interface/enum/trait docblocks must carry an `@copyright` tag.        |
 | `SineMacula.Commenting.RequireNonPromotedParameterComment` | Plain params mixed with promoted ones need a comment.                       |
 | `SineMacula.Commenting.RequirePromotedPropertyComment`     | Every constructor-promoted property needs a doc comment.                    |
+| `SineMacula.Commenting.RequireThrowsTag`                   | Each exception thrown in a function body needs its own `@throws` tag.       |
 | `SineMacula.Commenting.SingleLineMemberComment`            | A property, constant or enum-case doc comment sits on one line.             |
 | `SineMacula.Exceptions.DisallowBaseException`              | No throwing the base `\Exception`; throw a domain exception.                |
 | `SineMacula.Exceptions.RequireEmptyCatchComment`           | An empty catch block must comment its intentional swallow.                  |
@@ -472,6 +483,11 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Operators.DisallowCoalesceAfterConcat`         | No `??` after a bare concatenation, whose fallback can never run.           |
 | `SineMacula.TypeHints.RequireConstantType`                 | Class/interface/enum/trait constants must declare a native type.            |
 | `SineMacula.WhiteSpace.PromotedConstructorSpacing`         | Blank line above each promoted-constructor parameter.                       |
+
+`DisallowTagDescription` exists because no description on those tags satisfies both tools: the function comment sniff
+wants one capitalised and closed with a full stop, while PHP CS Fixer lowercases it, strips the full stop and pads it
+again. A bare tag, `@param  int  $count` or `@throws \RuntimeException`, is the one shape both accept, so the fixer
+removes the description, continuation lines included.
 
 ### PHPStan rules
 
@@ -640,7 +656,10 @@ guard above. PHPStan's `return.missing` answers it properly: it reports a method
 returning the type it documents, and stays quiet where every path throws.
 
 The one thing still worth knowing is that spelling out the contained type of a documented traversable can drag in
-`mixed`, which the mixed ban faults on its own footing and which has its own directive.
+`mixed`, which the mixed ban faults on its own footing. In a function's docblock, suppress it with
+`@phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`: a `// phpcs:ignore` line cannot reach a type
+further down a multi-line docblock, and placed above the signature it detaches the docblock. A property or constant's
+single-line docblock does not allow that tag, so there the `// phpcs:ignore` line goes directly above the docblock.
 
 ## Requirements
 

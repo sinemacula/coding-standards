@@ -55,6 +55,17 @@ if ! awk '/^smells:/ { in_smells = 1; next } in_smells && /^[^ ]/ { exit } in_sm
     fail "Expected the shared policy to report smells as comments."
 fi
 
+if ! awk '
+    /^triage:/ { in_triage = 1; next }
+    in_triage && /^[^ -]/ { exit }
+    in_triage && /^- match:$/ { rule = 0 }
+    in_triage && /^    - radarlint-php:php:S100$/ { rule = 1 }
+    in_triage && rule && /^    ignored: true$/ { found = 1 }
+    END { exit !found }
+' <<< "${config_output}"; then
+    fail "Expected the shared policy to ignore radarlint's function naming rule."
+fi
+
 # Prints the given plugin's entry from the merged config, one key per line.
 plugin_entry() {
     awk -v name="$1" '
