@@ -18,7 +18,7 @@ use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
  * static state rule, and non-public properties are unaffected. Test classes are
  * exempt (recording spies and fakes legitimately hold mutable public state), as
  * are the properties $ignoredInterfaceProperties lists for an interface the
- * class implements.
+ * class implements and $ignoredParentClassProperties lists for its parent.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -32,6 +32,9 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
 
     /** @var array<string, string> Interface short names mapped to comma-separated exempt property names. */
     public array $ignoredInterfaceProperties = [];
+
+    /** @var array<string, string> Parent class short names mapped to comma-separated exempt property names. */
+    public array $ignoredParentClassProperties = [];
 
     /**
      * Register the tokens this sniff listens for.
@@ -106,43 +109,64 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * Whether the property is exempt through an interface its class implements.
+     * Whether the property is exempt through an interface its class implements
+     * or the parent it extends.
      *
      * Framework contracts such as Laravel's ShouldQueue read configuration from
      * public properties (tries, timeout, ...) that need defaults and so cannot
-     * be readonly. Only an interface named in the implements clause of the
-     * property's own class, named or anonymous, counts. Both the clause and the
-     * configured keys are matched case-insensitively on their short name, so an
-     * imported and a fully qualified reference behave alike.
+     * be readonly. Only an interface named in the implements clause, or the
+     * parent named in the extends clause, of the property's own class, named or
+     * anonymous, counts; a project whose jobs extend a base that implements the
+     * contract names that base. Both the clauses and the configured keys are
+     * matched case-insensitively on their short name, so an imported and a
+     * fully qualified reference behave alike.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
      * @param  string  $property
      * @return bool
      */
-    private function isIgnoredInterfaceProperty(File $phpcsFile, int $stackPtr, string $property): bool
+    private function isIgnoredProperty(File $phpcsFile, int $stackPtr, string $property): bool
     {
         $conditions = $phpcsFile->getTokens()[$stackPtr]['conditions'];
-        $interfaces = in_array(end($conditions), [T_CLASS, T_ANON_CLASS], true)
-            ? $phpcsFile->findImplementedInterfaceNames((int) key($conditions))
-            : false;
 
-        if ($interfaces === false) {
+        if (!in_array(end($conditions), [T_CLASS, T_ANON_CLASS], true)) {
             return false;
         }
 
-        $implemented = array_map($this->shortName(...), $interfaces);
+        $classPtr   = (int) key($conditions);
+        $interfaces = $phpcsFile->findImplementedInterfaceNames($classPtr);
+        $parent     = $phpcsFile->findExtendedClassName($classPtr);
 
-        foreach ($this->ignoredInterfaceProperties as $interface => $properties) {
-            if (
-                in_array($this->shortName((string) $interface), $implemented, true)
-                && in_array(ltrim($property, '$'), array_map(trim(...), explode(',', $properties)), true)
-            ) {
-                return true;
+        $exempt = [
+            ...$this->exemptProperties($this->ignoredInterfaceProperties, $interfaces === false ? [] : $interfaces),
+            ...$this->exemptProperties($this->ignoredParentClassProperties, $parent === false ? [] : [$parent]),
+        ];
+
+        return in_array(ltrim($property, '$'), $exempt, true);
+    }
+
+    /**
+     * The property names a keyed exemption list grants to the given names.
+     *
+     * @param  array<string, string>  $exemptions
+     * @param  array<int, string>  $names
+     * @return array<int, string>
+     */
+    private function exemptProperties(array $exemptions, array $names): array
+    {
+        $names  = array_map($this->shortName(...), $names);
+        $exempt = [];
+
+        foreach ($exemptions as $name => $properties) {
+            if (!in_array($this->shortName((string) $name), $names, true)) {
+                continue;
             }
+
+            $exempt = [...$exempt, ...array_map(trim(...), explode(',', $properties))];
         }
 
-        return false;
+        return $exempt;
     }
 
     /**
@@ -192,7 +216,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
             $properties['is_static']      !== false
             || $properties['scope']       !== 'public'
             || $properties['is_readonly'] !== false
-            || $this->isIgnoredInterfaceProperty($phpcsFile, $stackPtr, $phpcsFile->getTokens()[$stackPtr]['content'])
+            || $this->isIgnoredProperty($phpcsFile, $stackPtr, $phpcsFile->getTokens()[$stackPtr]['content'])
         ) {
             return;
         }
@@ -224,7 +248,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
             if (
                 ($parameter['property_visibility'] ?? null)   !== 'public'
                 || ($parameter['property_readonly'] ?? false) !== false
-                || $this->isIgnoredInterfaceProperty($phpcsFile, $stackPtr, $parameter['name'])
+                || $this->isIgnoredProperty($phpcsFile, $stackPtr, $parameter['name'])
             ) {
                 continue;
             }

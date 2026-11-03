@@ -504,8 +504,10 @@ enum whose name ends with one are not checked, which suits a Laravel policy, who
 named or anonymous, whose own `implements` clause names it, which suits a queued job's `tries`, `timeout` and the like,
 each of which needs a default. Interfaces match case-insensitively on their short name, so a key of `ShouldQueue` or
 `\Illuminate\Contracts\Queue\ShouldQueue` matches whether the clause imports it or names it fully qualified; an import
-aliased with `as` matches only a key of its alias. Only the listed properties are exempt; every other public property in
-the class is still checked.
+aliased with `as` matches only a key of its alias. `ignoredParentClassProperties` does the same for the parent a class's
+own `extends` clause names, for a project whose jobs extend a base that implements the contract, since the sniff cannot
+see what a parent implements; a class matching both gets both lists. Only the listed properties are exempt; every other
+public property in the class is still checked.
 
 ```xml
 <rule ref="SineMacula.NamingConventions.BooleanMethodName">
@@ -519,6 +521,9 @@ the class is still checked.
     <properties>
         <property name="ignoredInterfaceProperties" type="array">
             <element key="ShouldQueue" value="tries,timeout,backoff,maxExceptions,queue,connection,delay"/>
+        </property>
+        <property name="ignoredParentClassProperties" type="array">
+            <element key="Job" value="tries,timeout,backoff,maxExceptions,queue,connection,delay"/>
         </property>
     </properties>
 </rule>
