@@ -34,3 +34,14 @@ class OuterSpyTest
         }
     }
 }
+
+class OuterJob implements ShouldQueue
+{
+    public function boot(): void
+    {
+        class InnerOfJob
+        {
+            public int $tries = 0;
+        }
+    }
+}

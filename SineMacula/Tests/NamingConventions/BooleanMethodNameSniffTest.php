@@ -61,14 +61,33 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
+     * Methods of a named class, interface, trait or enum whose name ends with
+     * an ignored suffix are exempt. An anonymous class and a function declared
+     * inside such a method are not its methods and are still checked, as are a
+     * class carrying the suffix elsewhere in its name, a class matching it only
+     * case-insensitively, and a global function. An empty configured suffix
+     * exempts nothing.
+     *
+     * @return void
+     */
+    public function testExemptsMethodsOfClassesWithAnIgnoredSuffix(): void
+    {
+        $this->assertErrorsOnLines('BooleanMethodNameIgnoredClass.inc', [15, 21, 53, 61, 67]);
+    }
+
+    /**
      * Extend the built-in command verbs with a project-supplied one, mirroring
-     * a consumer ruleset's property override with extend set.
+     * a consumer ruleset's property override with extend set, and exempt the
+     * fixture's policy classes by suffix.
      *
      * @return array<string, mixed>
      */
     #[\Override]
     protected function sniffProperties(): array
     {
-        return ['commandVerbs' => [...(new BooleanMethodNameSniff)->commandVerbs, 'frobnicate']];
+        return [
+            'commandVerbs'         => [...(new BooleanMethodNameSniff)->commandVerbs, 'frobnicate'],
+            'ignoredClassSuffixes' => ['', 'Policy'],
+        ];
     }
 }
