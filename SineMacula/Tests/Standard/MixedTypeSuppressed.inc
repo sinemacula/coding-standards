@@ -12,6 +12,14 @@ namespace App\Payloads;
  */
 final class Payload
 {
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint
+    /** @var array<string, mixed> The values a payload falls back to. */
+    private const array DEFAULTS = [];
+
+    // phpcs:ignore SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint
+    /** @var array<string, mixed> The values last decoded. */
+    private array $values = self::DEFAULTS;
+
     /**
      * Decode the given JSON, whose values are whatever the sender sent.
      *
@@ -24,6 +32,8 @@ final class Payload
      */
     public function decode(string $json): array
     {
-        return (array) json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        $this->values = (array) json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
+        return $this->values;
     }
 }

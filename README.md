@@ -654,9 +654,10 @@ guard above. PHPStan's `return.missing` answers it properly: it reports a method
 returning the type it documents, and stays quiet where every path throws.
 
 The one thing still worth knowing is that spelling out the contained type of a documented traversable can drag in
-`mixed`, which the mixed ban faults on its own footing. Suppress it with
-`@phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint` in that same docblock: a `// phpcs:ignore` line
-cannot reach a type written inside a docblock, and placed above the signature it detaches the docblock.
+`mixed`, which the mixed ban faults on its own footing. In a function's docblock, suppress it with
+`@phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`: a `// phpcs:ignore` line cannot reach a type
+further down a multi-line docblock, and placed above the signature it detaches the docblock. A property or constant's
+single-line docblock does not allow that tag, so there the `// phpcs:ignore` line goes directly above the docblock.
 
 ## Requirements
 
