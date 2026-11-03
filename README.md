@@ -451,6 +451,7 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Classes.RequireReadonlyPublicProperty`         | Public properties (declared or promoted) must be `readonly`.                |
 | `SineMacula.Commenting.CommentLineLength`                  | Standalone comment prose wrapped to 80 chars; premature wraps also fixed.   |
 | `SineMacula.Commenting.ConsistentEnumCaseComments`         | Enum case docs are all-or-nothing within an enum.                           |
+| `SineMacula.Commenting.DisallowTagDescription`             | `@param` and `@throws` tags carry no description; autofixable.              |
 | `SineMacula.Commenting.MultilineMethodComment`             | A method's doc comment must span multiple lines.                            |
 | `SineMacula.Commenting.RequireConstantComment`             | Every class/interface/enum/trait constant needs a doc comment.              |
 | `SineMacula.Commenting.RequireCopyrightTag`                | Class/interface/enum/trait docblocks must carry an `@copyright` tag.        |
@@ -472,6 +473,11 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.Operators.DisallowCoalesceAfterConcat`         | No `??` after a bare concatenation, whose fallback can never run.           |
 | `SineMacula.TypeHints.RequireConstantType`                 | Class/interface/enum/trait constants must declare a native type.            |
 | `SineMacula.WhiteSpace.PromotedConstructorSpacing`         | Blank line above each promoted-constructor parameter.                       |
+
+`DisallowTagDescription` exists because no description on those tags satisfies both tools: the function comment sniff
+wants one capitalised and closed with a full stop, while PHP CS Fixer lowercases it, strips the full stop and pads it
+again. A bare tag, `@param  int  $count` or `@throws \RuntimeException`, is the one shape both accept, so the fixer
+removes the description, continuation lines included.
 
 ### PHPStan rules
 

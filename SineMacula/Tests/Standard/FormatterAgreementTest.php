@@ -75,6 +75,25 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
+     * A tag left bare by the description sniff is a shape both sides accept:
+     * the formatter leaves it exactly as the fixer wrote it and the sniffs
+     * report nothing. A described tag has no such shape, since the formatter
+     * lowercases the description and strips its full stop while the sniffs ask
+     * for both.
+     *
+     * @return void
+     */
+    public function testTheFormatterKeepsTheBareTagsTheFixerWrites(): void
+    {
+        $fixed     = dirname(__DIR__) . '/Commenting/DisallowTagDescription.inc.fixed';
+        $formatted = $this->format('../Commenting/DisallowTagDescription.inc.fixed');
+
+        self::assertFileEquals($fixed, $formatted);
+
+        $this->assertStandardReportsFor($formatted, []);
+    }
+
+    /**
      * An assignment a @var tag names is kept, not folded into the return that
      * reads it, since folding it leaves the tag naming a variable that no
      * longer exists, which PHPStan reports.
@@ -99,7 +118,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
         $rules  = require dirname(__DIR__, 3) . '/php/.php-cs-fixer.rules.php';
         $tokens = Tokens::fromCode($code);
 
-        $this->formatted = sys_get_temp_dir() . '/' . $fixture . '.formatted.php';
+        $this->formatted = sys_get_temp_dir() . '/' . basename($fixture) . '.formatted.php';
 
         $file = new \SplFileInfo($this->formatted);
 
