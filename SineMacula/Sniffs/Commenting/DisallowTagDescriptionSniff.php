@@ -36,8 +36,8 @@ final class DisallowTagDescriptionSniff implements Sniff
 
     /** @var array<string, string> What ends the part of each tag that is not description. */
     private const array HEAD_ENDS = [
-        'ParamFound'  => '/\G\$[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*/',
-        'ThrowsFound' => '/\G(?=\s)/',
+        'ParamFound'  => '/\G\$(?!this(?![A-Za-z0-9_\x80-\xff]))[A-Za-z_\x80-\xff][A-Za-z0-9_\x80-\xff]*/',
+        'ThrowsFound' => '/\G(?<![\s|&])(?=\s)(?!\s*[|&])/',
     ];
 
     /** @var array<string, int> How far each bracket moves the nesting depth of a type. */

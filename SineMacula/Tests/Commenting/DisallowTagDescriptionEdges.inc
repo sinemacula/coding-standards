@@ -58,3 +58,17 @@ function closing(): void
 /** @param  int  $value */
 $bare = static function (int $value): void {
 };
+
+/**
+ * @param  \Closure(): $this  $callback
+ * @param  $this  $other
+ * @param  $this|null  $self The self.
+ * @param  int  $thisValue The value.
+ * @return void
+ *
+ * @throws \FooException | \BarException When either fails.
+ * @throws \FooException | \BarException
+ */
+function selfish(\Closure $callback, $other, $self, int $thisValue): void
+{
+}

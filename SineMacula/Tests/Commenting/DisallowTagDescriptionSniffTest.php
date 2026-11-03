@@ -58,11 +58,11 @@ final class DisallowTagDescriptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A type that spans lines or holds a variable of its own is read to the
-     * parameter it types, an untyped parameter and a union are still found, and
-     * a tag in any doc comment is governed. A tag with no variable or no type,
-     * a bare tag closing a single-line comment, and every other tag, are left
-     * alone.
+     * A type that spans lines, holds a variable of its own or is $this is read
+     * to the parameter it types, an untyped parameter and a union, spaced or
+     * not, are still found, and a tag in any doc comment is governed. A tag
+     * with no variable or no type, a bare tag closing a single-line comment,
+     * and every other tag, are left alone.
      *
      * @return void
      */
@@ -79,6 +79,9 @@ final class DisallowTagDescriptionSniffTest extends AbstractSniffTestCase
             33 => ['ThrowsFound'],
             40 => ['ParamFound'],
             52 => ['ThrowsFound'],
+            65 => ['ParamFound'],
+            66 => ['ParamFound'],
+            69 => ['ThrowsFound'],
         ]);
     }
 
