@@ -163,12 +163,8 @@ final class BooleanMethodNameSniff implements Sniff
 
         $name = $phpcsFile->getDeclarationName((int) key($conditions));
 
-        if ($name === null) {
-            return false;
-        }
-
         foreach ($this->ignoredClassSuffixes as $suffix) {
-            if ($suffix !== '' && str_ends_with($name, $suffix)) {
+            if ($name !== null && $suffix !== '' && str_ends_with($name, $suffix)) {
                 return true;
             }
         }

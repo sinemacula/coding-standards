@@ -84,6 +84,20 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
     }
 
     /**
+     * The properties listed for a parent are exempt, declared or promoted, in a
+     * named or anonymous class whose extends clause names it by short or fully
+     * qualified name in any case, together with those listed for an interface
+     * the class implements. Unlisted properties, a grandchild of the listed
+     * parent and a parent sharing only a prefix with it are still flagged.
+     *
+     * @return void
+     */
+    public function testExemptsPropertiesListedForTheExtendedParent(): void
+    {
+        $this->assertErrorsOnLines('RequireReadonlyPublicPropertyParent.inc', [13, 17, 38, 43, 48, 54]);
+    }
+
+    /**
      * Test doubles under a tests/ directory are exempt whatever their name.
      *
      * @return void
@@ -95,7 +109,8 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
 
     /**
      * Exempt classes extending the fixture's mutable entity bases, and the
-     * fixture's queued-job and broadcast configuration properties.
+     * fixture's queued-job and broadcast configuration properties, the latter
+     * also through a job base.
      *
      * @return array<string, mixed>
      */
@@ -107,6 +122,9 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
             'ignoredInterfaceProperties' => [
                 'ShouldQueue'                                        => ' tries, timeout ,backoff,,maxExceptions',
                 '\Illuminate\Contracts\Broadcasting\ShouldBroadcast' => 'connection',
+            ],
+            'ignoredParentClassProperties' => [
+                'Job' => 'tries, timeout,backoff',
             ],
         ];
     }
