@@ -55,20 +55,22 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
 
     /**
      * Exemption is decided by the innermost enclosing class: a mutable public
-     * property in a plain class declared inside a method of a readonly,
-     * ignored-parent, test-named or ignored-interface class is still flagged.
+     * property in a plain or anonymous class declared inside a method of a
+     * readonly, ignored-parent, test-named or ignored-interface class is still
+     * flagged.
      *
      * @return void
      */
     public function testDecidesExemptionsByInnermostEnclosingClass(): void
     {
-        $this->assertErrorsOnLines('RequireReadonlyPublicPropertyNested.inc', [11, 22, 33, 44]);
+        $this->assertErrorsOnLines('RequireReadonlyPublicPropertyNested.inc', [11, 22, 33, 44, 54, 56]);
     }
 
     /**
      * The properties listed for an interface are exempt, declared or promoted,
-     * in a class whose implements clause names it by short or fully qualified
-     * name, alone or among others; names are trimmed and empty entries skipped.
+     * in a named or anonymous class whose implements clause names it by short
+     * or fully qualified name in any case, alone or among others. A key given
+     * fully qualified matches too; names are trimmed and empty entries skipped.
      * Unlisted properties of the same class, a listed name used as a prefix, a
      * property listed only for another interface, an unlisted interface, a
      * subclass inheriting the interface, an interface sharing only a prefix
@@ -78,7 +80,7 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
      */
     public function testExemptsPropertiesListedForAnImplementedInterface(): void
     {
-        $this->assertErrorsOnLines('RequireReadonlyPublicPropertyInterface.inc', [15, 17, 21, 40, 45, 50, 55, 60]);
+        $this->assertErrorsOnLines('RequireReadonlyPublicPropertyInterface.inc', [15, 17, 21, 40, 45, 50, 55, 60, 71]);
     }
 
     /**
@@ -103,8 +105,8 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
         return [
             'ignoredParentClasses'       => ['Model', 'Base'],
             'ignoredInterfaceProperties' => [
-                'ShouldQueue'     => ' tries, timeout ,backoff,,maxExceptions',
-                'ShouldBroadcast' => 'connection',
+                'ShouldQueue'                                        => ' tries, timeout ,backoff,,maxExceptions',
+                '\Illuminate\Contracts\Broadcasting\ShouldBroadcast' => 'connection',
             ],
         ];
     }

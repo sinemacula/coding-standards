@@ -110,9 +110,10 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
      *
      * Framework contracts such as Laravel's ShouldQueue read configuration from
      * public properties (tries, timeout, ...) that need defaults and so cannot
-     * be readonly. Only an interface named in the class's own implements clause
-     * counts, matched on its short name, so an imported and a fully qualified
-     * reference behave alike.
+     * be readonly. Only an interface named in the implements clause of the
+     * property's own class, named or anonymous, counts. Both the clause and the
+     * configured keys are matched case-insensitively on their short name, so an
+     * imported and a fully qualified reference behave alike.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -121,8 +122,10 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
      */
     private function isIgnoredInterfaceProperty(File $phpcsFile, int $stackPtr, string $property): bool
     {
-        $classPtr   = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
-        $interfaces = $classPtr === false ? false : $phpcsFile->findImplementedInterfaceNames($classPtr);
+        $conditions = $phpcsFile->getTokens()[$stackPtr]['conditions'];
+        $interfaces = in_array(end($conditions), [T_CLASS, T_ANON_CLASS], true)
+            ? $phpcsFile->findImplementedInterfaceNames((int) key($conditions))
+            : false;
 
         if ($interfaces === false) {
             return false;
@@ -132,7 +135,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
 
         foreach ($this->ignoredInterfaceProperties as $interface => $properties) {
             if (
-                in_array($interface, $implemented, true)
+                in_array($this->shortName((string) $interface), $implemented, true)
                 && in_array(ltrim($property, '$'), array_map(trim(...), explode(',', $properties)), true)
             ) {
                 return true;
@@ -143,14 +146,15 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * The last namespace segment of a class-like name.
+     * The lowercased last namespace segment of a class-like name, keeping its
+     * leading backslash.
      *
      * @param  string  $name
      * @return string
      */
     private function shortName(string $name): string
     {
-        return substr((string) strrchr('\\' . $name, '\\'), 1);
+        return strtolower((string) strrchr('\\' . $name, '\\'));
     }
 
     /**

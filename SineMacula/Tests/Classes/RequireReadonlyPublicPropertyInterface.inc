@@ -59,3 +59,18 @@ trait RetriesJobs
 {
     public int $tries = 1;
 }
+
+class ArchiveLogs implements shouldqueue
+{
+    public int $tries = 1;
+}
+
+$job = new class (1) implements ShouldQueue {
+    public int $timeout = 30;
+
+    public int $attempts = 0;
+
+    public function __construct(public int $tries)
+    {
+    }
+};
