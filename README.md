@@ -509,6 +509,13 @@ such as `'a.b'` or `1.5`, keeps its variable, and a tag typed `$this` documents 
 misreads a callable type that names its own parameters, on one line or several or inside an array shape, and adds a
 second `@param` for the parameter, so leave a callable type's parameters unnamed.
 
+Slevomat's fully qualified annotation sniff does not yet know a local type alias used inside another alias's definition
+on the class docblock: in `@phpstan-type Rows list<Row>`, it reports `Row` as a class and its fixer rewrites it to
+`\App\Row`, a class that does not exist. The same happens to an alias brought in with `@phpstan-import-type`. A
+suppression inside the docblock does not reach it, so until a fixed release ships, write a local alias's shape out in
+full, `@phpstan-type Rows list<array{id: string}>`, and use an imported alias directly in `@param`, `@return` or `@var`,
+where it is recognised.
+
 Two sniffs take properties that exempt framework code whose names and shapes are fixed by convention.
 `BooleanMethodName` takes `ignoredClassSuffixes`, a list of suffixes: the methods of a named class, interface, trait or
 enum whose name ends with one are not checked, which suits a Laravel policy, whose ability methods (`view`, `update`,
