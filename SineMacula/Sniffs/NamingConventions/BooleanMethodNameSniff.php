@@ -51,6 +51,7 @@ final class BooleanMethodNameSniff implements Sniff
         'emit', 'apply', 'guard', 'validate', 'verify', 'authorize', 'ensure',
         'assert', 'register', 'boot', 'build', 'make', 'resolve', 'render',
         'compute', 'calculate', 'expose', 'parse', 'format', 'transform', 'toggle',
+        'rotate',
     ];
 
     /** @var array<int, string> Class name suffixes whose methods are exempt (e.g. Policy). */

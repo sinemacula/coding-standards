@@ -178,4 +178,9 @@ class Example
     {
         return true;
     }
+
+    public function rotateKey(): bool
+    {
+        return true;
+    }
 }
