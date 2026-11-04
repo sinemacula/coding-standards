@@ -30,6 +30,13 @@ typedRuleTester.run('boolean-method-name', rule, {
         'function confirm(): boolean { return true; }',
         'function copyToClipboard(): boolean { return true; }',
         'function attemptLogin(): boolean { return true; }',
+        'function rotateKeys(): boolean { return true; }',
+
+        // An overriding member's name is set by the parent it overrides.
+        'class Base { /** @imperative */ valid(): boolean { return true; } } class C extends Base { override valid(): boolean { return false; } }',
+        'abstract class Base { /** @imperative */ abstract valid(): boolean; } class C extends Base { override valid(): boolean { return true; } }',
+        'abstract class Base { /** @imperative */ abstract valid(): boolean; } abstract class C extends Base { abstract override valid(): boolean; }',
+        'class Base { /** @imperative */ valid = (): boolean => true; } class C extends Base { override valid = (): boolean => false; }',
 
         // on* event-handler callbacks read as handlers, not predicates.
         'const o = { onUnauthorized(): boolean { return true; } };',
@@ -138,6 +145,12 @@ typedRuleTester.run('boolean-method-name', rule, {
         },
         {
             code:   'class C { valid(): boolean { return true; } }',
+            errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
+        },
+        {
+            // Only the overriding member is exempt; the parent's own name is
+            // still checked where it is declared.
+            code:   'class Base { valid(): boolean { return true; } } class C extends Base { override valid(): boolean { return false; } }',
             errors: [{ messageId: 'notPredicate', data: { name: 'valid' } }],
         },
         {

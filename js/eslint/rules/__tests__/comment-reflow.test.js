@@ -228,6 +228,40 @@ describe('reflow', () => {
     });
 });
 
+const TITLE = 'Section title';
+
+const capitalCases = [
+    { name: 'a title stays apart', lines: [TITLE, 'A sentence that follows the title as a separate note.'], expected: null, premature: [] },
+    { name: 'a finished sentence stays apart', lines: ['A finished sentence.', 'Another sentence on its own line.'], expected: null, premature: [] },
+    { name: 'a word ending in an article stays apart', lines: ['Wraps after Santa', 'Claus arrives.'], expected: null, premature: [] },
+    { name: 'a function word mid-line stays apart', lines: ['Reads the title here', 'Next comes a separate note.'], expected: null, premature: [] },
+    { name: 'an accented capital stays apart', lines: [TITLE, 'État follows.'], expected: null, premature: [] },
+    { name: 'a comma continues', lines: ['Once loaded,', 'Values are cached.'], expected: ['Once loaded, Values are cached.'], premature: [0] },
+    { name: 'an open parenthesis continues', lines: ['Reads the file (', 'JSON or YAML) first.'], expected: ['Reads the file ( JSON or YAML) first.'], premature: [0] },
+    { name: 'a function word continues', lines: ['Read straight from the', 'Server runtime.'], expected: ['Read straight from the Server runtime.'], premature: [0] },
+    { name: 'a function word before a space continues', lines: ['Read straight from the ', 'Server runtime.'], expected: ['Read straight from the Server runtime.'], premature: [0] },
+    { name: 'a conjunction continues', lines: ['Wait until', 'Cache has flushed.'], expected: ['Wait until Cache has flushed.'], premature: [0] },
+    { name: 'a dash continues', lines: ['Handled by the runner -', 'Mail then sends it.'], expected: ['Handled by the runner - Mail then sends it.'], premature: [0] },
+    { name: 'a lowercase line with a capital continues', lines: [TITLE, 'then a Sentence follows.'], expected: [`${TITLE} then a Sentence follows.`], premature: [0] },
+    { name: 'a lowercase accented line continues', lines: [TITLE, 'été follows.'], expected: [`${TITLE} été follows.`], premature: [0] },
+];
+
+describe('reflow with a capital opening a paragraph', () => {
+    it.each(capitalCases)('$name', ({ lines, expected, premature }) => {
+        const result = reflow(lines, 3, 80, true);
+
+        expect(result.lines).toEqual(expected ?? lines);
+        expect(result.premature).toEqual(premature);
+    });
+
+    it('merges a capital into the line above by default', () => {
+        const result = reflow([TITLE, 'A sentence that follows the title.'], 3, 80);
+
+        expect(result.lines).toEqual([`${TITLE} A sentence that follows the title.`]);
+        expect(result.premature).toEqual([0]);
+    });
+});
+
 describe('tokenize', () => {
     it('keeps inline code, link tags and Markdown links whole', () => {
         expect(tokenize('a `b c` d')).toEqual(['a', '`b c`', 'd']);

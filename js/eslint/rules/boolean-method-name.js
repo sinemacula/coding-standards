@@ -20,7 +20,7 @@ const COMMAND_VERBS = new Set([
     'emit', 'apply', 'guard', 'validate', 'verify', 'authorize', 'ensure',
     'assert', 'register', 'boot', 'build', 'make', 'resolve', 'render',
     'compute', 'calculate', 'expose', 'parse', 'format', 'transform', 'toggle',
-    'submit', 'confirm', 'copy', 'attempt',
+    'submit', 'confirm', 'copy', 'attempt', 'rotate',
 ]);
 
 /** Method names that are a primitive type keyword: typed accessors, not predicates. */
@@ -143,10 +143,11 @@ function hasImperativeTag(sourceCode, docHost, nameNode) {
 /**
  * Whether the name is outside the rule's reach: a magic member, a name that
  * already reads as a predicate, a command or event handler, a well-known type
- * accessor, or a member carrying the @imperative opt-out tag.
+ * accessor, a member whose name is set by the parent it overrides, or a member
+ * carrying the @imperative opt-out tag.
  */
 function isExempt(state, nameNode, name, docHost) {
-    if (name.startsWith('__') || TYPE_ACCESSOR_NAMES.has(name)) {
+    if (name.startsWith('__') || TYPE_ACCESSOR_NAMES.has(name) || docHost.override === true) {
         return true;
     }
 
@@ -293,11 +294,13 @@ function buildListeners(state) {
  * may also opt out with an
  * @imperative docblock tag. An on* event-handler callback (onError) and a
  * method named after a primitive type (a typed accessor such as boolean()) are
- * exempt, as are accessors, the constructor, computed names, magic names and
- * type-predicate guards (x is T). The return type is resolved from type
- * information - inferred booleans and awaited Promise<boolean> included - so
- * the rule degrades to a no-op when no type information is available. The
- * accepted vocabulary can be widened per consumer through the rule options.
+ * exempt, as is a member carrying the override modifier, whose name is set by
+ * the parent it overrides and is checked where that declares it, and so are
+ * accessors, the constructor, computed names, magic names and type-predicate
+ * guards (x is T). The return type is resolved from type information - inferred
+ * booleans and awaited Promise<boolean> included - so the rule degrades to a
+ * no-op when no type information is available. The accepted vocabulary can be
+ * widened per consumer through the rule options.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
