@@ -208,8 +208,16 @@
         <exclude name="Squiz.Commenting.InlineComment.DocBlock"/>
     </rule>
 
-    <!-- Warn on commented-out code -->
-    <rule ref="Squiz.PHP.CommentedOutCode"/>
+    <!--
+        Warn on commented-out code. Above the default 35% so that prose with a
+        colon or brackets, such as a step label with its limits, is not taken
+        for code; commented-out statements and calls still score higher.
+    -->
+    <rule ref="Squiz.PHP.CommentedOutCode">
+        <properties>
+            <property name="maxPercentage" value="45"/>
+        </properties>
+    </rule>
 
     <!--
         Nesting depth: 3 is the maximum allowed. The sniff fires when nesting
