@@ -94,7 +94,8 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
      *
      * Standards layered on top of this one (e.g. a framework standard) can set
      * $ignoredParentClasses to exempt mutable entity bases such as Eloquent's
-     * Model, where the readonly contract does not apply.
+     * Model, where the readonly contract does not apply. Names match
+     * case-insensitively on their short name, as the property exemptions do.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -105,7 +106,8 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
         $classPtr = $phpcsFile->getCondition($stackPtr, T_CLASS, false);
         $parent   = $classPtr === false ? false : $phpcsFile->findExtendedClassName($classPtr);
 
-        return $parent !== false && in_array($parent, $this->ignoredParentClasses, true);
+        return $parent !== false
+            && in_array($this->shortName($parent), array_map($this->shortName(...), $this->ignoredParentClasses), true);
     }
 
     /**
