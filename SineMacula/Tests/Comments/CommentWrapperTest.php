@@ -46,6 +46,9 @@ final class CommentWrapperTest extends TestCase
     /** @var string A four-letter filler word with its trailing space. */
     private const string FILLER_WORD = 'aaaa ';
 
+    /** @var string A short title line that ends no sentence. */
+    private const string TITLE = 'Section title';
+
     /**
      * Cases exercising overflow, premature wrapping, atoms, lists and the
      * verbatim kinds, each with its expected canonical lines and fault indices.
@@ -774,6 +777,67 @@ final class CommentWrapperTest extends TestCase
         self::assertSame(CommentLineClassifier::PROSE, (new CommentLineClassifier)->classify("\u{00a0}", false));
         self::assertSame([0, 1], $result['premature']);
         self::assertCount(2, $result['lines']);
+    }
+
+    /**
+     * Cases for a wrapper that lets a capital open a paragraph, each with its
+     * expected lines and premature indices.
+     *
+     * @return iterable<string, array{list<string>, list<string>, list<int>}>
+     */
+    public static function capitalParagraphCases(): iterable
+    {
+        $title    = [self::TITLE, 'A sentence that follows the title as a separate note.'];
+        $finished = ['A finished sentence.', 'Another sentence on its own line.'];
+        $partWord = ['Wraps after Santa', 'Claus arrives.'];
+        $midLine  = ['Reads the title here', 'Next comes a separate note.'];
+
+        yield from [
+            'a title stays apart'                       => [$title, $title, []],
+            'a finished sentence stays apart'           => [$finished, $finished, []],
+            'a word ending in an article stays apart'   => [$partWord, $partWord, []],
+            'a function word mid-line stays apart'      => [$midLine, $midLine, []],
+            'a comma continues'                         => [['Once loaded,', 'Values are cached.'], ['Once loaded, Values are cached.'], [0]],
+            'an open parenthesis continues'             => [['Reads the file (', 'JSON or YAML) first.'], ['Reads the file ( JSON or YAML) first.'], [0]],
+            'a function word continues'                 => [['Read straight from the', 'PHP runtime.'], ['Read straight from the PHP runtime.'], [0]],
+            'a function word before a space continues'  => [['Read straight from the ', 'PHP runtime.'], ['Read straight from the PHP runtime.'], [0]],
+            'a lowercase line with a capital continues' => [[self::TITLE, 'then a Sentence follows.'], [self::TITLE . ' then a Sentence follows.'], [0]],
+            'a lowercase accented line continues'       => [[self::TITLE, 'été follows.'], [self::TITLE . ' été follows.'], [0]],
+        ];
+    }
+
+    /**
+     * A wrapper asked to let a capital open a paragraph keeps a line that opens
+     * with a capital apart from a line above that does not end mid-sentence,
+     * and still merges it into one ending in a comma, an open parenthesis or a
+     * function word, or one it continues in lowercase.
+     *
+     * @param  list<string>  $lines
+     * @param  list<string>  $expected
+     * @param  list<int>  $premature
+     * @return void
+     */
+    #[DataProvider('capitalParagraphCases')]
+    public function testOpensAParagraphAtACapitalWhenAsked(array $lines, array $expected, array $premature): void
+    {
+        $result = (new CommentWrapper(80, true))->wrap($lines, 3);
+
+        self::assertSame($expected, $result['lines']);
+        self::assertSame($premature, $result['premature']);
+    }
+
+    /**
+     * A wrapper not asked to let a capital open a paragraph merges a title into
+     * the sentence below it.
+     *
+     * @return void
+     */
+    public function testMergesACapitalIntoTheLineAboveByDefault(): void
+    {
+        $result = (new CommentWrapper)->wrap([self::TITLE, 'A sentence that follows the title.'], 3);
+
+        self::assertSame([self::TITLE . ' A sentence that follows the title.'], $result['lines']);
+        self::assertSame([0], $result['premature']);
     }
 
     /**

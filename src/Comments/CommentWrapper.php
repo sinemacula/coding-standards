@@ -13,13 +13,18 @@ namespace SineMacula\CodingStandards\Comments;
  * the canonical lines and the indices of the input lines that overflow or wrap
  * prematurely. Anything that is not plain prose - a tag, a directive, fenced or
  * indented code, a table, a separator - is left verbatim and bounds the
- * paragraph around it.
+ * paragraph around it. When asked to, a line opening with a capital letter
+ * begins a paragraph of its own unless the line above ends mid-sentence, so a
+ * short standalone note such as a title is not merged into the sentence below.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 final class CommentWrapper
 {
+    /** @var string The end of a line that leaves its sentence open: a comma, an open parenthesis or a function word. */
+    private const string OPEN_ENDING_PATTERN = '/(?:[,(]|\b(?:a|an|the|and|or|but|nor|of|to|in|on|for|with|by|from|as|at|into|than|that|which|when|if|via|per|is|are|be|not))$/';
+
     /** @var \SineMacula\CodingStandards\Comments\CommentLineClassifier The line classifier. */
     private CommentLineClassifier $classifier;
 
@@ -28,10 +33,17 @@ final class CommentWrapper
 
     /**
      * @param  int  $maxLength
+     * @param  bool  $capitalOpensParagraph
      * @return void
      */
-    public function __construct(int $maxLength = 80)
-    {
+    public function __construct(
+
+        // Only handed on to the paragraph reflow, which keeps it.
+        int $maxLength = 80,
+
+        /** @var bool Whether a capitalised line after a finished one opens a new paragraph. */
+        private bool $capitalOpensParagraph = false,
+    ) {
         $this->classifier = new CommentLineClassifier;
         $this->paragraphs = new CommentParagraph($maxLength);
     }
@@ -182,10 +194,29 @@ final class CommentWrapper
         $end = $from;
 
         while ($end < count($lines) && $this->classifier->classify($lines[$end], false) === CommentLineClassifier::PROSE && !$this->classifier->indented($lines[$end])) {
+            if ($end > $from && $this->opensParagraph($lines[$end - 1], $lines[$end])) {
+                break;
+            }
+
             $end++;
         }
 
         return $end;
+    }
+
+    /**
+     * Whether the line opens a paragraph of its own: it begins with a capital
+     * letter and the line above does not end mid-sentence.
+     *
+     * @param  string  $previous
+     * @param  string  $line
+     * @return bool
+     */
+    private function opensParagraph(string $previous, string $line): bool
+    {
+        return $this->capitalOpensParagraph
+            && preg_match('/^\p{Lu}/u', $line) === 1
+            && preg_match(self::OPEN_ENDING_PATTERN, rtrim($previous)) !== 1;
     }
 
     /**

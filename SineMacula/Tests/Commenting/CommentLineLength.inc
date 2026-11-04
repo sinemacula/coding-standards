@@ -43,3 +43,14 @@ class Example
         $result = $this->compute($argument); // a trailing comment that pushes this code line beyond eighty chars
     }
 }
+
+// Values are read straight from the
+// PHP runtime configuration.
+
+/**
+ * Runs the task.
+ * Reports what it found.
+ */
+function report(): void
+{
+}

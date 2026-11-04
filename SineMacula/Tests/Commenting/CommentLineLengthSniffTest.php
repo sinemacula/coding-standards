@@ -23,7 +23,9 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
      * Overflowing prose reports TooLong and prematurely wrapped prose reports
      * PrematurelyWrapped, each on its own line, across `//` runs and docblocks,
      * while exempt lines (tags, directives, code, tables, separators, URLs,
-     * single-line docblocks and trailing comments) report nothing.
+     * single-line docblocks and trailing comments) report nothing. A `//` line
+     * opening with a capital still continues a line that ends mid-sentence, and
+     * a docblock sentence on a line of its own is still merged.
      *
      * @return void
      */
@@ -37,6 +39,8 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
             26 => ['PrematurelyWrapped'],
             27 => ['PrematurelyWrapped'],
             30 => ['TooLong'],
+            47 => ['PrematurelyWrapped'],
+            51 => ['PrematurelyWrapped'],
         ]);
     }
 
@@ -54,7 +58,8 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
 
     /**
      * Comments that are already canonical, or exempt from reflow, report no
-     * faults at all.
+     * faults at all, including a `//` line that opens with a capital after a
+     * title or a finished sentence.
      *
      * @return void
      */
@@ -107,6 +112,8 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
             26 => [$premature],
             27 => [$premature],
             30 => [$tooLong],
+            47 => [$premature],
+            51 => [$premature],
         ]);
     }
 
