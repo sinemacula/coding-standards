@@ -63,6 +63,12 @@ ruleTester.run('comment-line-wrap', rule, {
         '/**\n * a docblock whose interior lines carry inconsistent indentation before the star\n  * so the whole block is left untouched however far beyond eighty the lines run on now\n */\nconst a = 1;',
         // An empty docblock has no prose to reflow.
         '/**\n *\n */\nconst a = 1;',
+        // A capitalised line after a finished one opens a paragraph of its own.
+        '// Section title\n// A sentence that follows the title as a separate note.\nconst x = 1;',
+        '// A finished sentence.\n// Another sentence on its own line.\nconst x = 1;',
+        // A word that merely ends in a joining word does not hold the sentence
+        // open.
+        '// Wraps after Santa\n// Claus arrives.\nconst x = 1;',
     ],
     invalid: [
         {
@@ -109,6 +115,42 @@ ruleTester.run('comment-line-wrap', rule, {
             output: '// Short comment at column one that fits within the width comfortably here now.\n    // A deeper indented standalone comment that runs on well beyond the eighty\n    // character limit for sure.\nconst value = 1;',
             errors: [{ messageId: 'tooLong' }],
         },
+        {
+            // A comma holds the sentence open, so a capital still continues it.
+            code: '// Once loaded,\n// Values are cached.\nconst x = 1;',
+            output: '// Once loaded, Values are cached.\nconst x = 1;',
+            errors: [{ messageId: 'prematureWrap' }],
+        },
+        {
+            // An open parenthesis holds the sentence open.
+            code: '// Reads the file (\n// Either format) first.\nconst x = 1;',
+            output: '// Reads the file ( Either format) first.\nconst x = 1;',
+            errors: [{ messageId: 'prematureWrap' }],
+        },
+        {
+            // A trailing dash holds the sentence open.
+            code: '// Handled by the runner -\n// Mail then sends it.\nconst x = 1;',
+            output: '// Handled by the runner - Mail then sends it.\nconst x = 1;',
+            errors: [{ messageId: 'prematureWrap' }],
+        },
+        {
+            // A joining word holds the sentence open.
+            code: '// Wait until\n// Cache has flushed.\nconst x = 1;',
+            output: '// Wait until Cache has flushed.\nconst x = 1;',
+            errors: [{ messageId: 'prematureWrap' }],
+        },
+        {
+            // A lowercase line continues the paragraph whatever it holds.
+            code: '// Section title\n// then a Sentence follows.\nconst x = 1;',
+            output: '// Section title then a Sentence follows.\nconst x = 1;',
+            errors: [{ messageId: 'prematureWrap' }],
+        },
+        {
+            // A docblock keeps merging a capitalised line into the one above.
+            code: '/**\n * Section title\n * A sentence that follows the title.\n */\nexport const a = 1;',
+            output: '/**\n * Section title A sentence that follows the title.\n */\nexport const a = 1;',
+            errors: [{ messageId: 'prematureWrap' }],
+        },
     ],
 });
 
@@ -144,6 +186,8 @@ yamlRuleTester.run('comment-line-wrap (yaml)', rule, {
         '## A section banner that is intentionally written to run beyond the eighty character mark\nname: CI\n',
         // A rule separator is preserved exactly as written.
         '# ------------------------------------------------------------------------------\nname: CI\n',
+        // A capitalised `#` line after a finished one opens its own paragraph.
+        '# Section title\n# A sentence that follows the title as a separate note.\nname: CI\n',
     ],
     invalid: [
         {

@@ -90,6 +90,7 @@ function lineDescriptor(run, sourceCode, eol) {
         marginWidth: indent.length + token.length + 1,
         locs: comments.map(comment => comment.loc),
         range: [comments[0].range[0], comments[comments.length - 1].range[1]],
+        capitalOpensParagraph: true,
         rebuild: lines => lines.map((line, offset) => `${offset === 0 ? '' : indent}${token}${line === '' ? '' : ` ${line}`}`).join(eol),
     };
 }
@@ -148,7 +149,7 @@ function docDescriptor(comment, sourceCode, eol) {
 
 /** Reflow a block and report each overflowing and prematurely wrapped line. */
 function enforce(context, descriptor, maxLength) {
-    const result = reflow(descriptor.content, descriptor.marginWidth, maxLength);
+    const result = reflow(descriptor.content, descriptor.marginWidth, maxLength, descriptor.capitalOpensParagraph ?? false);
 
     if (result.long.length === 0 && result.premature.length === 0) {
         return;
@@ -175,8 +176,11 @@ function enforce(context, descriptor, maxLength) {
  * fenced or indented code, tables, separators and trailing comments after code
  * are left untouched, as is a line whose overflow is a single unbreakable token
  * such as a long name or URL, and a compact single-line docblock, which the
- * single-line property rule governs. The fix reflows each faulted paragraph to
- * its greedy canonical form and is idempotent.
+ * single-line property rule governs. In a line-comment run, a line opening with
+ * a capital letter starts a paragraph of its own unless the line above ends
+ * mid-sentence, so a title or a one-line note is not merged into the sentence
+ * below it. The fix reflows each faulted paragraph to its greedy canonical form
+ * and is idempotent.
  *
  * The `#` token carries the rule into YAML through yaml-eslint-parser, where it
  * reaches only standalone comments: block-scalar bodies are content rather than
