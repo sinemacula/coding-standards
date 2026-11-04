@@ -76,6 +76,21 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
+     * A method carrying an Override attribute is exempt, written qualified or
+     * imported, in any case, alone or grouped with others whose arguments hold
+     * commas, in any of the method's attribute groups and flush against the
+     * function keyword; the interface declaring the name is still checked.
+     * Another attribute, an Override named only in an argument or under another
+     * namespace, and one on the property above are not.
+     *
+     * @return void
+     */
+    public function testExemptsMethodsCarryingAnOverrideAttribute(): void
+    {
+        $this->assertErrorsOnLines('BooleanMethodNameOverride.inc', [9, 46, 52, 58, 66]);
+    }
+
+    /**
      * Extend the built-in command verbs with a project-supplied one, mirroring
      * a consumer ruleset's property override with extend set, and exempt the
      * fixture's policy classes by suffix.

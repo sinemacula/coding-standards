@@ -19,7 +19,9 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
  * guard, ...) that returns a result bool is exempt via $commandVerbs, which a
  * consuming ruleset can extend. A method may also opt out with an @imperative
  * docblock tag. Magic methods are exempt, as are the methods of a named class,
- * interface, trait or enum whose name ends with one of $ignoredClassSuffixes.
+ * interface, trait or enum whose name ends with one of $ignoredClassSuffixes,
+ * and a method carrying an Override attribute, whose name is set by the parent
+ * or interface it overrides and is checked where that declares it.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -27,6 +29,9 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 final class BooleanMethodNameSniff implements Sniff
 {
     use ResolvesDocComment;
+
+    /** @var array<int, int|string> Function modifiers a doc comment or attribute sits above. */
+    private const array MODIFIERS = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_STATIC, T_ABSTRACT, T_FINAL];
 
     /** @var array<int, string> Copular and modal prefixes that read as predicates. */
     public array $allowedPrefixes = [
@@ -46,6 +51,7 @@ final class BooleanMethodNameSniff implements Sniff
         'emit', 'apply', 'guard', 'validate', 'verify', 'authorize', 'ensure',
         'assert', 'register', 'boot', 'build', 'make', 'resolve', 'render',
         'compute', 'calculate', 'expose', 'parse', 'format', 'transform', 'toggle',
+        'rotate',
     ];
 
     /** @var array<int, string> Class name suffixes whose methods are exempt (e.g. Policy). */
@@ -84,12 +90,7 @@ final class BooleanMethodNameSniff implements Sniff
             return;
         }
 
-        if (
-            $this->isInIgnoredClass($phpcsFile, $stackPtr)
-            || $this->isMarkedImperative($phpcsFile, $stackPtr)
-            || $this->isCommandVerb($name)
-            || $this->isPredicate($name)
-        ) {
+        if ($this->isExempt($phpcsFile, $stackPtr) || $this->isCommandVerb($name) || $this->isPredicate($name)) {
             return;
         }
 
@@ -142,6 +143,21 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
+     * Whether the method is exempt whatever its name: it belongs to an ignored
+     * class, overrides a parent or interface method, or opts out by tag.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isExempt(File $phpcsFile, int $stackPtr): bool
+    {
+        return $this->isInIgnoredClass($phpcsFile, $stackPtr)
+            || $this->isOverride($phpcsFile, $stackPtr)
+            || $this->isMarkedImperative($phpcsFile, $stackPtr);
+    }
+
+    /**
      * Whether the function is a method of a named class, interface, trait or
      * enum whose name ends with a configured suffix.
      *
@@ -173,6 +189,54 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
+     * Whether the method carries an Override attribute, its name being set by
+     * the parent or interface it overrides.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $stackPtr
+     * @return bool
+     */
+    private function isOverride(File $phpcsFile, int $stackPtr): bool
+    {
+        $tokens = $phpcsFile->getTokens();
+        $ptr    = $stackPtr - 1;
+
+        while (
+            ($closer = $phpcsFile->findPrevious([T_WHITESPACE, ...self::MODIFIERS], $ptr, null, true)) !== false
+            && $tokens[$closer]['code'] === T_ATTRIBUTE_END
+        ) {
+            $ptr = $tokens[$closer]['attribute_opener'];
+
+            if (in_array('override', $this->attributeNames($phpcsFile, $ptr, $closer), true)) {
+                return true;
+            }
+
+            $ptr--;
+        }
+
+        return false;
+    }
+
+    /**
+     * The lowercased names of the attributes in the group between the brackets,
+     * without a leading separator or their arguments.
+     *
+     * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
+     * @param  int  $opener
+     * @param  int  $closer
+     * @return list<string>
+     *
+     * @SuppressWarnings("php:S5842")
+     */
+    private function attributeNames(File $phpcsFile, int $opener, int $closer): array
+    {
+        $group = $phpcsFile->getTokensAsString($opener + 1, $closer - $opener - 1);
+        $names = explode(',', (string) preg_replace('/\((?:[^()]++|(?R))*\)/', '', $group));
+
+        return array_map(static fn (string $name): string => strtolower(ltrim(trim($name), '\\')), $names);
+    }
+
+    /**
      * Whether the method docblock carries an @imperative opt-out tag.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
@@ -182,11 +246,7 @@ final class BooleanMethodNameSniff implements Sniff
     private function isMarkedImperative(File $phpcsFile, int $stackPtr): bool
     {
         $tokens = $phpcsFile->getTokens();
-        $closer = $this->docCommentCloser(
-            $phpcsFile,
-            $stackPtr,
-            [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_STATIC, T_ABSTRACT, T_FINAL],
-        );
+        $closer = $this->docCommentCloser($phpcsFile, $stackPtr, self::MODIFIERS);
 
         if ($closer === null) {
             return false;

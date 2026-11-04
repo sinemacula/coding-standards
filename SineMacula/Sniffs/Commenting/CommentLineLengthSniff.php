@@ -19,7 +19,9 @@ use SineMacula\CodingStandards\Comments\CommentWrapper;
  * code, tables, separators and trailing comments after code are left untouched,
  * as is a line whose overflow is a single unbreakable token such as a long name
  * or URL, and a compact single-line docblock, which the single-line member
- * rules already govern.
+ * rules already govern. In a `//` run, a line opening with a capital letter
+ * starts a paragraph of its own unless the line above ends mid-sentence, so a
+ * title or a one-line note is not merged into the sentence below it.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -95,7 +97,7 @@ final class CommentLineLengthSniff implements Sniff
      */
     private function handle(File $phpcsFile, array $block): void
     {
-        $result = (new CommentWrapper($this->maxLength))->wrap($block['content'], $block['margin']);
+        $result = (new CommentWrapper($this->maxLength, $block['kind'] === 'slash'))->wrap($block['content'], $block['margin']);
 
         if ($result['long'] === [] && $result['premature'] === []) {
             return;

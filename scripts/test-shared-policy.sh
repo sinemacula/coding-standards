@@ -55,15 +55,29 @@ if ! awk '/^smells:/ { in_smells = 1; next } in_smells && /^[^ ]/ { exit } in_sm
     fail "Expected the shared policy to report smells as comments."
 fi
 
-if ! awk '
-    /^triage:/ { in_triage = 1; next }
-    in_triage && /^[^ -]/ { exit }
-    in_triage && /^- match:$/ { rule = 0 }
-    in_triage && /^    - radarlint-php:php:S100$/ { rule = 1 }
-    in_triage && rule && /^    ignored: true$/ { found = 1 }
-    END { exit !found }
-' <<< "${config_output}"; then
+# Succeeds when the merged config carries a triage entry ignoring the given
+# radarlint rule.
+ignores_rule() {
+    awk -v rule="    - radarlint-php:$1" '
+        /^triage:/ { in_triage = 1; next }
+        in_triage && /^[^ -]/ { exit }
+        in_triage && /^- match:$/ { matched = 0 }
+        in_triage && $0 == rule { matched = 1 }
+        in_triage && matched && /^    ignored: true$/ { found = 1 }
+        END { exit !found }
+    ' <<< "${config_output}"
+}
+
+if ! ignores_rule php:S100; then
     fail "Expected the shared policy to ignore radarlint's function naming rule."
+fi
+
+if ! ignores_rule php:S1144; then
+    fail "Expected the shared policy to ignore radarlint's unused private method rule."
+fi
+
+if ! ignores_rule php:S1172; then
+    fail "Expected the shared policy to ignore radarlint's unused parameter rule."
 fi
 
 # Prints the given plugin's entry from the merged config, one key per line.

@@ -34,6 +34,20 @@ file_patterns = ["**/.terraform/**"]
 match.rules = ["radarlint-php:php:S100"]
 set.ignored = true
 
+# Radarlint's unused private method rule cannot see a call from a used trait or
+# a first-class callable such as `self::method(...)`, and PHPStan already
+# reports a private method nothing calls.
+[[triage]]
+match.rules = ["radarlint-php:php:S1144"]
+set.ignored = true
+
+# Radarlint's unused parameter rule flags the positional parameters a framework
+# callback must declare to reach a later one, the case the phpcs ruleset leaves
+# its own unused parameter sniff off for.
+[[triage]]
+match.rules = ["radarlint-php:php:S1172"]
+set.ignored = true
+
 [runtimes.enabled]
 php = "8.3"
 

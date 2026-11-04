@@ -49,9 +49,36 @@ abstract class AbstractStandardTestCase extends TestCase
      */
     protected function assertStandardReportsFor(string $path, array $expected): void
     {
+        static::assertSame($this->sorted($expected), $this->sources($this->process($path)->getErrors()));
+    }
+
+    /**
+     * Assert that the standard warns with exactly the given sources against a
+     * fixture, as a map of line number to the full dotted code of each warning
+     * on it.
+     *
+     * @param  string  $fixture
+     * @param  array<int, list<string>>  $expected
+     * @return void
+     */
+    protected function assertStandardWarns(string $fixture, array $expected): void
+    {
+        $path = dirname($this->testFile()) . DIRECTORY_SEPARATOR . $fixture;
+
+        static::assertSame($this->sorted($expected), $this->sources($this->process($path)->getWarnings()));
+    }
+
+    /**
+     * The source of each reported message, keyed by line in line order.
+     *
+     * @param  array<int, array<int, list<array{source: string}>>>  $reports
+     * @return array<int, list<string>>
+     */
+    private function sources(array $reports): array
+    {
         $actual = [];
 
-        foreach ($this->process($path)->getErrors() as $line => $columns) {
+        foreach ($reports as $line => $columns) {
             foreach ($columns as $messages) {
                 foreach ($messages as $message) {
                     $actual[$line][] = $message['source'];
@@ -59,10 +86,20 @@ abstract class AbstractStandardTestCase extends TestCase
             }
         }
 
-        ksort($actual);
-        ksort($expected);
+        return $this->sorted($actual);
+    }
 
-        static::assertSame($expected, $actual);
+    /**
+     * The map sorted by line.
+     *
+     * @param  array<int, list<string>>  $map
+     * @return array<int, list<string>>
+     */
+    private function sorted(array $map): array
+    {
+        ksort($map);
+
+        return $map;
     }
 
     /**

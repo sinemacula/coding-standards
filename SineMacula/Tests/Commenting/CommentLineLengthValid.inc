@@ -7,6 +7,12 @@ namespace App;
 // A longer standalone comment that has already been wrapped greedily so that
 // every one of its lines is filled as far as the width will allow it to be.
 
+// Section title
+// A sentence that follows the title as a separate note.
+
+// A finished sentence on a line of its own.
+// Another sentence that starts a new paragraph.
+
 // See https://example.com/a/very/long/path/that/keeps/going/well/past/the/eighty/character/limit/ok
 
 //ThisIsASingleVeryLongCommentTokenWithoutAnySpacesThatExceedsTheEightyCharacterLimitForSureXX
