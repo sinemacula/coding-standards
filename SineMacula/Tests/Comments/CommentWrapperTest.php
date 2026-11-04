@@ -801,6 +801,8 @@ final class CommentWrapperTest extends TestCase
             'an open parenthesis continues'             => [['Reads the file (', 'JSON or YAML) first.'], ['Reads the file ( JSON or YAML) first.'], [0]],
             'a function word continues'                 => [['Read straight from the', 'PHP runtime.'], ['Read straight from the PHP runtime.'], [0]],
             'a function word before a space continues'  => [['Read straight from the ', 'PHP runtime.'], ['Read straight from the PHP runtime.'], [0]],
+            'a conjunction continues'                   => [['Wait until', 'Redis has flushed.'], ['Wait until Redis has flushed.'], [0]],
+            'a dash continues'                          => [['Handled by the runner -', 'Symfony then sends it.'], ['Handled by the runner - Symfony then sends it.'], [0]],
             'a lowercase line with a capital continues' => [[self::TITLE, 'then a Sentence follows.'], [self::TITLE . ' then a Sentence follows.'], [0]],
             'a lowercase accented line continues'       => [[self::TITLE, 'été follows.'], [self::TITLE . ' été follows.'], [0]],
         ];
@@ -809,8 +811,8 @@ final class CommentWrapperTest extends TestCase
     /**
      * A wrapper asked to let a capital open a paragraph keeps a line that opens
      * with a capital apart from a line above that does not end mid-sentence,
-     * and still merges it into one ending in a comma, an open parenthesis or a
-     * function word, or one it continues in lowercase.
+     * and still merges it into one ending in a comma, an open parenthesis, a
+     * dash or a function word, or one it continues in lowercase.
      *
      * @param  list<string>  $lines
      * @param  list<string>  $expected

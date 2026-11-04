@@ -22,8 +22,9 @@ namespace SineMacula\CodingStandards\Comments;
  */
 final class CommentWrapper
 {
-    /** @var string The end of a line that leaves its sentence open: a comma, an open parenthesis or a function word. */
-    private const string OPEN_ENDING_PATTERN = '/(?:[,(]|\b(?:a|an|the|and|or|but|nor|of|to|in|on|for|with|by|from|as|at|into|than|that|which|when|if|via|per|is|are|be|not))$/';
+    /** @var string The end of a line that leaves its sentence open: a comma, an open parenthesis, a dash or a function word. */
+    private const string OPEN_ENDING_PATTERN = '/(?:[,(-]|\b(?:a|an|the|and|or|but|nor|so|then|of|to|in|on|for|with|by|from|as|at'
+        . '|into|than|that|which|what|where|when|while|if|unless|until|since|because|before|after|via|per|is|are|be|not))$/';
 
     /** @var \SineMacula\CodingStandards\Comments\CommentLineClassifier The line classifier. */
     private CommentLineClassifier $classifier;
