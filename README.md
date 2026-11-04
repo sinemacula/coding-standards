@@ -330,11 +330,15 @@ parameter-count check is off, and the return-statement, function-complexity and 
 project, set it there; to turn back on a check the source switches off, set `enabled = true` alongside the threshold,
 because the two files are merged rather than replaced.
 
-The source also drops Radarlint's function naming rule, `php:S100`, through a `[[triage]]` entry. Its pattern wants
+The source also drops three Radarlint rules through `[[triage]]` entries. The function naming rule, `php:S100`, wants
 camelCase on every function, which rejects the snake_case global functions
 `SineMacula.NamingConventions.ValidGlobalFunctionName` requires, while methods are already held to camelCase by PSR1.
-A `[[triage]]` entry in your own file is added alongside the source's rather than replacing it, so nothing needs
-repeating there.
+The unused private method rule, `php:S1144`, cannot see a call made from a used trait or through a first-class callable
+such as `self::method(...)`, and PHPStan already reports a private method nothing calls. The unused parameter rule,
+`php:S1172`, flags the positional parameters a framework callback has to declare to reach a later one, such as
+`$attribute` in a validation closure taking `($attribute, $value, $fail)`, the same reason the phpcs ruleset leaves its
+own unused parameter sniff off. A `[[triage]]` entry in your own file is added alongside the source's rather than
+replacing it, so nothing needs repeating there.
 
 ### Swift (SwiftLint and SwiftFormat)
 

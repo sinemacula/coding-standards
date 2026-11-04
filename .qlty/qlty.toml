@@ -161,3 +161,14 @@ file_patterns = [".qlty/hooks/**"]
 [[triage]]
 match.rules = ["radarlint-php:php:S100"]
 set.ignored = true
+
+# Radarlint's unused private method and unused parameter rules misread trait
+# calls, first-class callables and framework callbacks; mirrors the source.toml
+# triage.
+[[triage]]
+match.rules = ["radarlint-php:php:S1144"]
+set.ignored = true
+
+[[triage]]
+match.rules = ["radarlint-php:php:S1172"]
+set.ignored = true
