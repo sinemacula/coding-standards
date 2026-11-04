@@ -34,7 +34,7 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
      */
     public function testFlagsMutablePublicProperties(): void
     {
-        $this->assertErrorsOnLines('RequireReadonlyPublicProperty.inc', [7, 18, 59, 63]);
+        $this->assertErrorsOnLines('RequireReadonlyPublicProperty.inc', [7, 18, 59, 63, 75]);
     }
 
     /**
@@ -50,6 +50,7 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
             18 => ['Public property "$promotedMutable" must be readonly; mutable public state breaks encapsulation.'],
             59 => ['Public property "$width" must be readonly; mutable public state breaks encapsulation.'],
             63 => ['Public property "$second" must be readonly; mutable public state breaks encapsulation.'],
+            75 => ['Public property "$count" must be readonly; mutable public state breaks encapsulation.'],
         ]);
     }
 
@@ -118,7 +119,7 @@ final class RequireReadonlyPublicPropertySniffTest extends AbstractSniffTestCase
     protected function sniffProperties(): array
     {
         return [
-            'ignoredParentClasses'       => ['Model', 'Base'],
+            'ignoredParentClasses'       => ['\Illuminate\Database\Eloquent\Model', 'base'],
             'ignoredInterfaceProperties' => [
                 'ShouldQueue'                                        => ' tries, timeout ,backoff,,maxExceptions',
                 '\Illuminate\Contracts\Broadcasting\ShouldBroadcast' => 'connection',

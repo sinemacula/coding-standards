@@ -64,3 +64,13 @@ class Widget extends Component
     ) {
     }
 }
+
+class Record extends \Illuminate\Database\Eloquent\Model
+{
+    public int $id = 0;
+}
+
+class Draft extends ModelFactory
+{
+    public int $count = 0;
+}
