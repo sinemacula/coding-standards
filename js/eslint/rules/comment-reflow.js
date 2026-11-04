@@ -8,7 +8,10 @@
  * and the indices of the input lines that overflow or wrap prematurely. A
  * fenced block, a type-annotation tag whose value opens a bracketed type across
  * lines, headings, indented code, tags, directives, tables and separators are
- * left verbatim and bound the paragraph around them.
+ * left verbatim and bound the paragraph around them. When asked to, a line
+ * opening with a capital letter begins a paragraph of its own unless the line
+ * above ends mid-sentence, so a short standalone note such as a title is not
+ * merged into the sentence below.
  *
  * Widths count Unicode code points and whitespace is matched as ASCII only, so
  * the output is byte-for-byte identical to the PHP engine (mb_strlen and the
@@ -21,16 +24,26 @@
 import { KIND, bracketDelta, classify, indentWidth, indented, isFence, isTypeBoundary, listMarker, typeTagDepth } from './comment-classifier.js';
 import { reflowParagraph } from './comment-paragraph.js';
 
+/** The end of a line that leaves its sentence open: a comma, an open parenthesis, a dash or a function word. */
+const OPEN_ENDING = /(?:[,(-]|\b(?:a|an|the|and|or|but|nor|so|then|of|to|in|on|for|with|by|from|as|at|into|than|that|which|what|where|when|while|if|unless|until|since|because|before|after|via|per|is|are|be|not))$/;
+
+/** A line opening with an uppercase letter. */
+const CAPITAL_START = /^\p{Lu}/u;
+
+/** Trailing whitespace as PHP's rtrim strips it. */
+const TRAILING_SPACE = /[ \t\n\r\0\v]+$/;
+
 export { KIND, classify, isFence, listMarker } from './comment-classifier.js';
 export { tokenize } from './comment-tokenizer.js';
 
 /**
  * Reflow a block's content lines to the greedy canonical form, returning the
  * canonical lines and the indices of the input lines that overflow or wrap
- * prematurely.
+ * prematurely. When capitalOpensParagraph is set, a capitalised line after a
+ * finished one opens a new paragraph.
  */
-export function reflow(lines, marginWidth, maxLength) {
-    const ctx = { out: [], long: [], premature: [], marginWidth, maxLength, inFence: false, typeDepth: 0 };
+export function reflow(lines, marginWidth, maxLength, capitalOpensParagraph = false) {
+    const ctx = { out: [], long: [], premature: [], marginWidth, maxLength, capitalOpensParagraph, inFence: false, typeDepth: 0 };
     let i = 0;
 
     while (i < lines.length) {
@@ -105,7 +118,7 @@ function verbatim(line, i, ctx) {
  * always parses to a marker, so it never reaches the plain-prose branch.
  */
 function paragraph(lines, start, marker, ctx) {
-    const end = marker === null ? flushEnd(lines, start) : continuationEnd(lines, start + 1, marker.indent + marker.width);
+    const end = marker === null ? flushEnd(lines, start, ctx.capitalOpensParagraph) : continuationEnd(lines, start + 1, marker.indent + marker.width);
     const slice = lines.slice(start, end);
     const segment = reflowParagraph(slice, marker, ctx.marginWidth, ctx.maxLength, start);
 
@@ -120,14 +133,23 @@ function paragraph(lines, start, marker, ctx) {
  * The index one past the last flush prose line from the given start. An
  * indented line ends the paragraph, bounding a verbatim indented code block.
  */
-function flushEnd(lines, from) {
+function flushEnd(lines, from, capitalOpensParagraph) {
     let end = from;
 
     while (end < lines.length && classify(lines[end], false) === KIND.PROSE && !indented(lines[end])) {
+        if (capitalOpensParagraph && end > from && opensParagraph(lines[end - 1], lines[end])) {
+            break;
+        }
+
         end += 1;
     }
 
     return end;
+}
+
+/** Whether the line begins with a capital and the line above ends its sentence. */
+function opensParagraph(previous, line) {
+    return CAPITAL_START.test(line) && !OPEN_ENDING.test(previous.replace(TRAILING_SPACE, ''));
 }
 
 /**
