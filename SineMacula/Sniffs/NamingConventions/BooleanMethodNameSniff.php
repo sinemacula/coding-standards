@@ -218,8 +218,8 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * The lowercased names of the attributes in the group between the
-     * brackets, without a leading separator or their arguments.
+     * The lowercased names of the attributes in the group between the brackets,
+     * without a leading separator or their arguments.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $opener
