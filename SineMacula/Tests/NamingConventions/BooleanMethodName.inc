@@ -99,7 +99,7 @@ class Example
      *
      * @imperative
      */
-    #[\Override]
+    #[\Deprecated]
     public function close(): bool
     {
         return true;
@@ -110,7 +110,7 @@ class Example
      *
      * @imperative
      */
-    #[\Override]
+    #[\Deprecated]
     #[\ReturnTypeWillChange]
     public function connect(): bool
     {
@@ -122,7 +122,7 @@ class Example
      *
      * @imperative
      */
-    #[\Override] public function subscribe(): bool
+    #[\Deprecated] public function subscribe(): bool
     {
         return true;
     }
@@ -130,7 +130,7 @@ class Example
     /**
      * Reports availability, but without the opt-out tag, behind an attribute.
      */
-    #[\Override]
+    #[\Deprecated]
     public function available(): bool
     {
         return true;
@@ -174,7 +174,7 @@ class Example
         return true;
     }
 
-    /** @imperative */#[\Override] public function teardown(): bool
+    /** @imperative */#[\Deprecated] public function teardown(): bool
     {
         return true;
     }
