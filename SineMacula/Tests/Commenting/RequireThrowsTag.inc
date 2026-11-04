@@ -139,6 +139,16 @@ final class Fixture
         }
     }
 
+    /**
+     * @throws \LogicException
+     */
+    public function throwsBesideAnArrowFunction(): void
+    {
+        $this->bind(fn (): object => throw new \DomainException('x'));
+
+        throw new \RuntimeException();
+    }
+
     // Not flagged: every type thrown in the body is declared.
 
     /**
@@ -242,6 +252,19 @@ final class Fixture
                 throw new \RuntimeException();
             }
         };
+    }
+
+    /**
+     */
+    public function throwsOnlyInArrowFunctions(): void
+    {
+        $this->bind(fn (): object => throw new \DomainException('x'));
+
+        $this->bind(fn (): \Closure => fn (): object => throw new \LengthException());
+
+        $this->bind(static function (): \Closure {
+            return fn (): object => throw new \RuntimeException();
+        });
     }
 
     /**

@@ -19,7 +19,8 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
  * exceptions a callee propagates to be declared too, so a function that both
  * throws and propagates carries more tags than its body throws, and each type
  * thrown is still checked however many tags there are. An exception thrown
- * inside a closure or an anonymous class is not the function's own.
+ * inside a closure, an arrow function or an anonymous class is not the
+ * function's own.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -32,7 +33,7 @@ final class RequireThrowsTagSniff implements Sniff
     private const array MODIFIERS = [T_PUBLIC, T_PROTECTED, T_PRIVATE, T_STATIC, T_FINAL, T_ABSTRACT];
 
     /** @var array<int, int|string> Scopes whose throws are not the enclosing function's. */
-    private const array NESTED_SCOPES = [T_CLOSURE, T_ANON_CLASS];
+    private const array NESTED_SCOPES = [T_CLOSURE, T_FN, T_ANON_CLASS];
 
     /**
      * Register the tokens this sniff listens for.

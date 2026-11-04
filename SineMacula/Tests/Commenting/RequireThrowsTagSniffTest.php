@@ -29,10 +29,10 @@ final class RequireThrowsTagSniffTest extends AbstractSniffTestCase
      * Each type thrown in the body without a tag is flagged once, however many
      * tags the comment carries and wherever the throw sits among the others, as
      * is a throw of any kind from a function with no @throws tag at all. A type
-     * thrown in a nested closure or class, a tag matching a whole trailing part
-     * of the name, an extra tag for a propagated exception, a re-throw of a
-     * variable the catch does not bind, and a function with no comment or no
-     * body are not.
+     * thrown in a nested closure, arrow function or class, a tag matching a
+     * whole trailing part of the name, an extra tag for a propagated exception,
+     * a re-throw of a variable the catch does not bind, and a function with no
+     * comment or no body are not.
      *
      * @return void
      */
@@ -52,6 +52,7 @@ final class RequireThrowsTagSniffTest extends AbstractSniffTestCase
             116 => ['Missing @throws tag for "Failure" exception'],
             124 => ['Missing @throws tag for "App\Errors\ParseFailure" exception'],
             132 => ['Missing @throws tag for "DomainException" exception'],
+            144 => [self::UNDECLARED_RUNTIME],
         ]);
     }
 
@@ -64,7 +65,7 @@ final class RequireThrowsTagSniffTest extends AbstractSniffTestCase
     {
         $this->assertErrorCodesOnLines(
             'RequireThrowsTag.inc',
-            array_fill_keys([13, 24, 31, 39, 51, 60, 68, 80, 92, 104, 116, 124, 132], ['Missing']),
+            array_fill_keys([13, 24, 31, 39, 51, 60, 68, 80, 92, 104, 116, 124, 132, 144], ['Missing']),
         );
     }
 }
