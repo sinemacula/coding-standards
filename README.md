@@ -602,8 +602,8 @@ an indented code or command block, a doc-tag whose value opens a multi-line brac
 such as a long name or URL, trailing comments after code and compact single-line docblocks are left untouched. Each
 comment token reclaims its own width from the line, so a `#` comment fills one column further than a `//` one.
 One difference: the PHP sniff starts a new paragraph at a `//` line that opens with a capital letter, unless the line
-above ends with a comma, an open parenthesis or a function word such as `the` or `of`, so a title or a one-line note is
-not merged into the sentence below it. This rule still merges them.
+above ends with a comma, an open parenthesis, a dash or a function word such as `the`, `of` or `until`, so a title or a
+one-line note is not merged into the sentence below it. This rule still merges them.
 
 This is the one rule the base layer also carries over `.yml` and `.yaml`, which nothing else in the standards bounds for
 comment width: yamllint's `line-length` cannot tell a comment from a value, so it would fault `run:` commands and action

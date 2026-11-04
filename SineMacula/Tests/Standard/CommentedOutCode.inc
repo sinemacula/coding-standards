@@ -28,6 +28,9 @@ final class StepList
         // $steps[] = $this->legacyStep();
         $steps[] = 'confirm';
 
+        // $last = $count - 1;
+        $steps[] = 'done';
+
         // return array_reverse($steps);
         return $steps;
     }

@@ -202,7 +202,7 @@ final class BooleanMethodNameSniff implements Sniff
         $ptr    = $stackPtr - 1;
 
         while (
-            ($closer = $phpcsFile->findPrevious([T_WHITESPACE, ...self::MODIFIERS], $ptr, null, true)) !== false
+            ($closer = $phpcsFile->findPrevious([T_WHITESPACE, T_COMMENT, ...self::MODIFIERS], $ptr, null, true)) !== false
             && $tokens[$closer]['code'] === T_ATTRIBUTE_END
         ) {
             $ptr = $tokens[$closer]['attribute_opener'];
@@ -219,7 +219,7 @@ final class BooleanMethodNameSniff implements Sniff
 
     /**
      * The lowercased names of the attributes in the group between the brackets,
-     * without a leading separator or their arguments.
+     * without a leading separator, their arguments or any comments.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $opener
@@ -230,7 +230,17 @@ final class BooleanMethodNameSniff implements Sniff
      */
     private function attributeNames(File $phpcsFile, int $opener, int $closer): array
     {
-        $group = $phpcsFile->getTokensAsString($opener + 1, $closer - $opener - 1);
+        $tokens = $phpcsFile->getTokens();
+        $group  = '';
+
+        for ($i = $opener + 1; $i < $closer; $i++) {
+            if ($tokens[$i]['code'] === T_COMMENT) {
+                continue;
+            }
+
+            $group .= $tokens[$i]['content'];
+        }
+
         $names = explode(',', (string) preg_replace('/\((?:[^()]++|(?R))*\)/', '', $group));
 
         return array_map(static fn (string $name): string => strtolower(ltrim(trim($name), '\\')), $names);

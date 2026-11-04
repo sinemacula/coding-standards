@@ -78,10 +78,11 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     /**
      * A method carrying an Override attribute is exempt, written qualified or
      * imported, in any case, alone or grouped with others whose arguments hold
-     * commas, in any of the method's attribute groups and flush against the
-     * function keyword; the interface declaring the name is still checked.
-     * Another attribute, an Override named only in an argument or under another
-     * namespace, and one on the property above are not.
+     * commas, in any of the method's attribute groups, flush against the
+     * function keyword and beside a comment; the interface declaring the name
+     * is still checked. Another attribute, an Override named only in an
+     * argument or under another namespace, and one on the property above are
+     * not.
      *
      * @return void
      */

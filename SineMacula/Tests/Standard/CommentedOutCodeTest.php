@@ -20,7 +20,8 @@ final class CommentedOutCodeTest extends AbstractStandardTestCase
 {
     /**
      * A label with a colon and its limits in brackets reads as prose, while a
-     * commented-out statement or return is still reported.
+     * commented-out statement, a short assignment scoring 45% or a return is
+     * still reported.
      *
      * @return void
      */
@@ -29,6 +30,7 @@ final class CommentedOutCodeTest extends AbstractStandardTestCase
         $this->assertStandardWarns('CommentedOutCode.inc', [
             28 => ['Squiz.PHP.CommentedOutCode.Found'],
             31 => ['Squiz.PHP.CommentedOutCode.Found'],
+            34 => ['Squiz.PHP.CommentedOutCode.Found'],
         ]);
     }
 

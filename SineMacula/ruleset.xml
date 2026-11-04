@@ -209,13 +209,14 @@
     </rule>
 
     <!--
-        Warn on commented-out code. Above the default 35% so that prose with a
-        colon or brackets, such as a step label with its limits, is not taken
-        for code; commented-out statements and calls still score higher.
+        Warn on commented-out code. Above the default 35% so that most prose
+        with a colon or brackets, such as a step label with its limits, is not
+        taken for code. The sniff warns only above the value, and a short
+        assignment such as `$a = $b - 1;` scores 45%, so 44 is the ceiling.
     -->
     <rule ref="Squiz.PHP.CommentedOutCode">
         <properties>
-            <property name="maxPercentage" value="45"/>
+            <property name="maxPercentage" value="44"/>
         </properties>
     </rule>
 

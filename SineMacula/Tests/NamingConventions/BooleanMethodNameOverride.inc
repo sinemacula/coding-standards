@@ -78,4 +78,16 @@ final class StatusReport implements Reportable
     {
         return true;
     }
+
+    #[\Override] // Named by the parent.
+    public function getPinned(): bool
+    {
+        return true;
+    }
+
+    #[/* Named by the parent. */ \Override, \ReturnTypeWillChange]
+    public function getQueued(): bool
+    {
+        return true;
+    }
 }
