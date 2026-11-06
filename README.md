@@ -79,12 +79,16 @@ to the newest release it already allows, so a caret range is reported as current
 silently stays at the version it was written with. The entry stays in your own file rather than coming from the shared
 source, because the source is consumed at a tag and cannot pin the release of the package it is published alongside.
 
-The shared source adds the rest of the sandbox: it holds Symfony below 8, because PHP CS Fixer has accepted that line
-since 3.90.0, it requires PHP 8.4.1, and the sandbox install does not honour the platform requirement. Without the
-pins a project on 8.3 installs a Symfony its runner cannot parse, and PHP CS Fixer exits 255 - reported as an errored
-build rather than as findings, arriving after a genuine pass, so a status read once looks green. Setting
-`package_file` makes qlty ignore every `extra_packages` list, the shared one included, silently. `php-codesniffer` and
-`phpstan` are unaffected and keep their `package_file`, their sandboxes being where the sniff and rule code comes from.
+The shared source runs qlty on PHP 8.5. A project that analyses on another PHP version sets its own runtime, and qlty
+resolves each tool sandbox for it, so PHP 8.3 installs a Symfony that 8.3 can run:
+
+```toml
+[runtimes.enabled]
+php = "8.3"
+```
+
+Setting `package_file` makes qlty ignore `extra_packages`, silently. `php-codesniffer` and `phpstan` are unaffected and
+keep their `package_file`, their sandboxes being where the sniff and rule code comes from.
 
 You can pass rule overrides as a second argument:
 

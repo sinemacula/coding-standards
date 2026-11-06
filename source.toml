@@ -48,8 +48,10 @@ set.ignored = true
 match.rules = ["radarlint-php:php:S1172"]
 set.ignored = true
 
+# A consumer that analyses on another PHP sets its own [runtimes.enabled]; qlty
+# resolves each tool sandbox for that runtime.
 [runtimes.enabled]
-php = "8.3"
+php = "8.5"
 
 # The plugins, versions and modes every consumer runs; a plugin with nothing to
 # lint in a repository does not run there. A consumer's own entry for the same
@@ -174,21 +176,8 @@ exported_config_paths = []
 [plugins.definitions.php-codesniffer.drivers.lint]
 success_codes = [0, 1, 2, 3]
 
-# The sandbox install ignores the runner's PHP version, and php-cs-fixer accepts
-# a Symfony 8 that needs PHP 8.4.1, so the tree is held below 8. A consumer adds
-# only its sinemacula/coding-standards entry; the two lists are combined.
 [plugins.definitions.php-cs-fixer]
 exported_config_paths = []
-extra_packages = [
-    "symfony/console@^7.4",
-    "symfony/event-dispatcher@^7.4",
-    "symfony/filesystem@^7.4",
-    "symfony/finder@^7.4",
-    "symfony/options-resolver@^7.4",
-    "symfony/process@^7.4",
-    "symfony/stopwatch@^7.4",
-    "symfony/string@^7.4",
-]
 
 [plugins.definitions.gitleaks]
 exported_config_paths = ["security/.gitleaks.toml"]
