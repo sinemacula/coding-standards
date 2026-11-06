@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.29.0](https://github.com/sinemacula/coding-standards/compare/v1.28.0...v1.29.0) (2026-11-06)
+
+
+### Features
+
+* accept [@param](https://github.com/param) types that span lines ([#194](https://github.com/sinemacula/coding-standards/issues/194)) ([ee8f9e7](https://github.com/sinemacula/coding-standards/commit/ee8f9e7e8deebdb4a1cdaaa0d76a4580b2166f1f))
+* add class-suffix and interface-property exemptions to two sniffs ([#190](https://github.com/sinemacula/coding-standards/issues/190)) ([4a70528](https://github.com/sinemacula/coding-standards/commit/4a705283c345636fe0009364d7a8412deb82ef9b))
+* exempt listed properties in a class extending a named parent ([#193](https://github.com/sinemacula/coding-standards/issues/193)) ([fbd2f6d](https://github.com/sinemacula/coding-standards/commit/fbd2f6dac009e66a31074b795f49b2ff0fd3039e))
+* replace the core throw tag sniff with SineMacula.Commenting.RequireThrowsTag, which accepts a tag for an exception a callee propagates ([fa40ec1](https://github.com/sinemacula/coding-standards/commit/fa40ec1fe8d7b7c9aa1018e4fb4b415afccb21e5))
+* report arguments whose type strict types would reject ([#188](https://github.com/sinemacula/coding-standards/issues/188)) ([e0d456c](https://github.com/sinemacula/coding-standards/commit/e0d456c99d583a2253bae292b716b05e2bc11913))
+* require bare [@param](https://github.com/param) and [@throws](https://github.com/throws) tags with SineMacula.Commenting.DisallowTagDescription, autofixable ([fa40ec1](https://github.com/sinemacula/coding-standards/commit/fa40ec1fe8d7b7c9aa1018e4fb4b415afccb21e5))
+* run the shared qlty source on PHP 8.5, and drop the Symfony &lt; 8 pins ([#200](https://github.com/sinemacula/coding-standards/issues/200)) ([d262e5b](https://github.com/sinemacula/coding-standards/commit/d262e5bfb51cf88debf0e9aaa7978fd787291144))
+
+
+### Bug Fixes
+
+* accept rotate as a command verb in SineMacula.NamingConventions.BooleanMethodName ([503a22c](https://github.com/sinemacula/coding-standards/commit/503a22c61f9565468f4cbf6a14ca61662bcec160))
+* align comment wrapping and boolean naming rules with the PHP sniffs ([7137812](https://github.com/sinemacula/coding-standards/commit/71378121d2d34e4a5913fbb91103a51789e1cb9c))
+* drop radarlint's function naming rule php:S100 from the shared source ([fa40ec1](https://github.com/sinemacula/coding-standards/commit/fa40ec1fe8d7b7c9aa1018e4fb4b415afccb21e5))
+* drop radarlint's unused private method (php:S1144) and unused parameter (php:S1172) rules from the shared source ([503a22c](https://github.com/sinemacula/coding-standards/commit/503a22c61f9565468f4cbf6a14ca61662bcec160))
+* exempt a method carrying an Override attribute from SineMacula.NamingConventions.BooleanMethodName ([503a22c](https://github.com/sinemacula/coding-standards/commit/503a22c61f9565468f4cbf6a14ca61662bcec160))
+* exempt an Override attribute beside a comment from SineMacula.NamingConventions.BooleanMethodName ([87c7de4](https://github.com/sinemacula/coding-standards/commit/87c7de4c7ff223581db39d75a9ad73e4e8ad5067))
+* ignore a throw inside an arrow function in SineMacula.Commenting.RequireThrowsTag ([503a22c](https://github.com/sinemacula/coding-standards/commit/503a22c61f9565468f4cbf6a14ca61662bcec160))
+* keep a // line ending in a dash or a conjunction in the paragraph below it in SineMacula.Commenting.CommentLineLength ([87c7de4](https://github.com/sinemacula/coding-standards/commit/87c7de4c7ff223581db39d75a9ad73e4e8ad5067))
+* keep the assignment a [@var](https://github.com/var) tag names by turning off php-cs-fixer's return_assignment ([fa40ec1](https://github.com/sinemacula/coding-standards/commit/fa40ec1fe8d7b7c9aa1018e4fb4b415afccb21e5))
+* lower the Squiz.PHP.CommentedOutCode threshold to 44% so a short commented-out assignment still warns ([87c7de4](https://github.com/sinemacula/coding-standards/commit/87c7de4c7ff223581db39d75a9ad73e4e8ad5067))
+* match RequireReadonlyPublicProperty's ignored parent classes on their short name, ignoring case ([260eb84](https://github.com/sinemacula/coding-standards/commit/260eb847182a7c7e3f4c27d9b8e8981fe0afd445))
+* raise the Squiz.PHP.CommentedOutCode threshold to 45% so a label with its limits reads as prose ([503a22c](https://github.com/sinemacula/coding-standards/commit/503a22c61f9565468f4cbf6a14ca61662bcec160))
+* start a new paragraph in SineMacula.Commenting.CommentLineLength at a capitalised // line that follows a finished one ([503a22c](https://github.com/sinemacula/coding-standards/commit/503a22c61f9565468f4cbf6a14ca61662bcec160))
+
 ## [1.28.0](https://github.com/sinemacula/coding-standards/compare/v1.27.1...v1.28.0) (2026-11-02)
 
 
