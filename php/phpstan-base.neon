@@ -14,6 +14,12 @@ parameters:
         - identifier: greaterOrEqual.alwaysTrue
         - identifier: smaller.alwaysTrue
         - identifier: classConstant.deprecated
+        # With implicitThrows off, a call without @throws cannot throw, so a
+        # best-effort catch of Throwable around framework or I/O code always
+        # reads as dead. Catches of a specific exception are still checked.
+        -
+            identifier: catch.neverThrown
+            message: '#^Dead catch - Throwable is never thrown in the try block\.$#'
 
     checkMissingCallableSignature: true
     checkMissingVarTagTypehint: true
