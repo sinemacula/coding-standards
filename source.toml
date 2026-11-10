@@ -88,7 +88,13 @@ mode = "comment"
 
 [[plugin]]
 name = "php-cs-fixer"
-version = "3.95.25"
+version = "3.95.30"
+
+# The analysis stack comes from each project's own package_file, which its entry
+# keeps, so only the version is set here.
+[[plugin]]
+name = "phpstan"
+version = "2.3.5"
 
 [[plugin]]
 name = "radarlint-php"
