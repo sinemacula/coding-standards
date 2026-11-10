@@ -98,14 +98,15 @@ expect_entry() {
     fi
 }
 
-for plugin in trufflehog yamllint actionlint osv-scanner editorconfig-checker php-cs-fixer; do
+for plugin in trufflehog yamllint actionlint osv-scanner editorconfig-checker php-cs-fixer phpstan; do
     expect_entry "${plugin}" "^- name: ${plugin}$"
 done
 
 expect_entry markdownlint '^  mode: comment$'
 expect_entry php-codesniffer '^  version: 4\.0\.4$'
 expect_entry php-codesniffer '^  mode: comment$'
-expect_entry php-cs-fixer '^  version: 3\.95\.25$'
+expect_entry php-cs-fixer '^  version: 3\.95\.30$'
+expect_entry phpstan '^  version: 2\.3\.5$'
 expect_entry radarlint-php '^  mode: comment$'
 expect_entry trivy '^  - fs-vuln$'
 expect_entry terraform '^  version: 1\.16\.5$'
