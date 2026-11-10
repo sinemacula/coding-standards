@@ -125,6 +125,14 @@ parameters:
         - tests
 ```
 
+Point the qlty plugin at the Composer file that holds your analysis stack, and leave its `version` to the source:
+
+```toml
+[[plugin]]
+name = "phpstan"
+package_file = "composer.json"
+```
+
 Do not set `level`. Analysis runs through qlty, whose phpstan driver passes `--level=9` on the command line, and a
 command-line level overrides the config file outright - so a level set here does nothing except mislead whoever reads
 it next.
@@ -321,12 +329,12 @@ tag = "<version>"
 
 The source enables the plugins every project runs, at the versions and modes they run with: TruffleHog, markdownlint,
 yamllint, actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP CS
-Fixer, Radarlint, Terraform (formatting only) and TFLint. A plugin with nothing to lint in a repository does not run
-there, so a TypeScript project is not charged for the PHP tools. It also sets the PHP runtime and the shared excludes,
-keeps PHPCS 4.x findings from being discarded as a crash, and supplies the ESLint and Biome wiring for projects that
-enable those. List a plugin in your own file only to change it: a version or mode you leave out is taken from the
-source, but any list you set, such as `drivers` or `extra_packages`, replaces the source's rather than adding to it. To
-turn a plugin off, give it `mode = "disabled"`.
+Fixer, PHPStan, Radarlint, Terraform (formatting only) and TFLint. A plugin with nothing to lint in a repository does
+not run there, so a TypeScript project is not charged for the PHP tools. It also sets the PHP runtime and the shared
+excludes, keeps PHPCS 4.x findings from being discarded as a crash, and supplies the ESLint and Biome wiring for
+projects that enable those. List a plugin in your own file only to change it: a version or mode you leave out is taken
+from the source, but any list you set, such as `drivers` or `extra_packages`, replaces the source's rather than adding
+to it. To turn a plugin off, give it `mode = "disabled"`.
 
 The source also sets the code smell policy: smells are reported as comments rather than failing the check, the
 parameter-count check is off, and the return-statement, function-complexity and file-complexity thresholds are raised
