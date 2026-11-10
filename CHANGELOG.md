@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.0](https://github.com/sinemacula/coding-standards/compare/v1.29.0...v1.30.0) (2026-11-10)
+
+
+### Features
+
+* pin PHPStan in the shared qlty source, and raise PHP CS Fixer to 3.95.30 ([#202](https://github.com/sinemacula/coding-standards/issues/202)) ([28f2086](https://github.com/sinemacula/coding-standards/commit/28f2086a317b58a9457f1994895b73744fb3d6f2))
+
 ## [1.29.0](https://github.com/sinemacula/coding-standards/compare/v1.28.0...v1.29.0) (2026-11-07)
 
 
