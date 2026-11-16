@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.1](https://github.com/sinemacula/coding-standards/compare/v1.30.0...v1.30.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* make Biome load the project config under qlty ([9bc07be](https://github.com/sinemacula/coding-standards/commit/9bc07bef4f3f8bd1c0f4c63b7ed969438c9226a9))
+
 ## [1.30.0](https://github.com/sinemacula/coding-standards/compare/v1.29.0...v1.30.0) (2026-11-10)
 
 
