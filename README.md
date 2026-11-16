@@ -189,9 +189,11 @@ Then create `.qlty/configs/biome.json`, which extends the shared config by that 
 ```
 
 The project config is required: without one, Biome runs on its own defaults. Anything set in it applies over the shared
-config, so project-specific `files.includes` and overrides stay there. Leave the Biome plugin definition and its drivers
-as the source sets them; a `--config-path` or an `exported_config_paths` override stops the project config from loading.
-Biome before 2.2.0 resolves the relative `extends` from the real location of the staged file and fails to load it.
+config, so project-specific `files.includes` and overrides stay there. A project config that still extends
+`js/biome.json`, by package name or through the Qlty source mirror, must switch to `./biome.shared.json`. Leave the
+Biome plugin definition and its drivers as the source sets them; a `--config-path` or an `exported_config_paths`
+override breaks the staging. Biome before 2.2.0 resolves the relative `extends` from the real location of the staged
+file and fails to load it.
 
 Without Qlty, install the npm package and extend `@sinemacula/coding-standards/js/biome.shared.json` from the project's
 `biome.json`. The shared config leaves Biome's VCS integration off, because Qlty formats a copy of each file outside the
