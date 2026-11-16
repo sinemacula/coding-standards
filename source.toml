@@ -151,21 +151,10 @@ exported_config_paths = []
 [plugins.definitions.actionlint.drivers.lint]
 script = "actionlint -ignore 'label .ubuntu-26\\.04(-arm)?. is unknown' -format \"{{json .}}\" ${target}"
 
+# Exported under a name of its own so it does not displace the project's
+# .qlty/configs/biome.json, which extends it as ./biome.shared.json.
 [plugins.definitions.biome]
-exported_config_paths = ["js/biome.json"]
-config_files = [".qlty/configs/biome.json"]
-
-[plugins.definitions.biome.drivers.format]
-script = "biome format --write ${config_script} ${target}"
-config_script = "--config-path ${config_file}"
-batch = true
-cache_results = true
-output = "rewrite"
-suggested = "targets"
-
-[plugins.definitions.biome.drivers.lint]
-script = "biome lint --reporter=json ${config_script} ${target}"
-config_script = "--config-path ${config_file}"
+exported_config_paths = ["js/biome.shared.json"]
 
 [plugins.definitions.knip]
 exported_config_paths = ["js/knip.json"]

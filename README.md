@@ -160,18 +160,25 @@ sniffs and PHPStan rules; see that package's README for setup.
 
 ### Biome (JavaScript / TypeScript)
 
-After installing the npm package, extend the shared Biome config from your project's `biome.json` (or
-`.qlty/configs/biome.json` when wired through Qlty):
+Through Qlty, the source stages the shared config at the repository root as `biome.shared.json` while Biome runs. Enable
+Biome at 2.2.0 or later in your `.qlty/qlty.toml`:
+
+```toml
+[[plugin]]
+name = "biome"
+version = "2.5.6"
+```
+
+Then create `.qlty/configs/biome.json`, which extends the shared config by that relative path:
 
 ```json
 {
-    "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.5.6/schema.json",
     "root": true,
     "extends": [
-        "@sinemacula/coding-standards/js/biome.json"
+        "./biome.shared.json"
     ],
     "files": {
-        "ignoreUnknown": true,
         "includes": [
             "**",
             "!**/node_modules/**",
@@ -181,8 +188,16 @@ After installing the npm package, extend the shared Biome config from your proje
 }
 ```
 
-`extends` paths are resolved through normal Node module lookup, so the package only needs to be installed (no path math
-against `node_modules/` required). Project-specific `files.includes` and `files.excludes` stay in the consumer config.
+The project config is required: without one, Biome runs on its own defaults. Anything set in it applies over the shared
+config, so project-specific `files.includes` and overrides stay there. A project config that still extends
+`js/biome.json`, by package name or through the Qlty source mirror, must switch to `./biome.shared.json`. Leave the
+Biome plugin definition and its drivers as the source sets them; a `--config-path` or an `exported_config_paths`
+override breaks the staging. Biome before 2.2.0 resolves the relative `extends` from the real location of the staged
+file and fails to load it.
+
+Without Qlty, install the npm package and extend `@sinemacula/coding-standards/js/biome.shared.json` from the project's
+`biome.json`. The shared config leaves Biome's VCS integration off, because Qlty formats a copy of each file outside the
+repository, where no ignore file exists. A project that runs Biome directly can turn it on in its own `biome.json`.
 
 ### ESLint (JavaScript / TypeScript)
 
@@ -451,7 +466,7 @@ pull request here instead.
 | `php/.php-cs-fixer.rules.php`             | PHP CS Fixer         | Shared rules array (PSR-12 base + org conventions)     |
 | `SineMacula/ruleset.xml`                  | PHPCS                | Auto-discovered coding standard (PSR-12 + exclusions)  |
 | `php/phpstan-base.neon`                   | PHPStan              | Base config (org-wide ignored errors + settings)       |
-| `js/biome.json`                           | Biome                | JavaScript / TypeScript formatter + linter rules       |
+| `js/biome.shared.json`                    | Biome                | JavaScript / TypeScript formatter + linter rules       |
 | `js/knip.json`                            | Knip                 | Unused-export detection rules                          |
 | `js/eslint/`                              | ESLint               | Structural, type-aware + Vue rules; runs with Biome    |
 | `js/eslint/` (YAML block)                 | ESLint               | Comment width in `.yml` / `.yaml`; yamllint owns rest  |
