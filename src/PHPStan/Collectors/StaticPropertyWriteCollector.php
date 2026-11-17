@@ -21,12 +21,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * Collect runtime writes to static properties.
+ * Collect the "Class::property" key of every write to a static property.
  *
- * Records a "Class::property" key for every assignment, compound assignment or
- * increment/decrement whose target resolves to a static property (directly or
- * through array/object access). The mutable-static rule uses these keys to flag
- * only static properties that are actually written, not merely declared.
+ * A write through array or object access counts as a write to the property.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

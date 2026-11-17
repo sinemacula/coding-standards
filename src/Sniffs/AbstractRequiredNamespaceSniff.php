@@ -9,17 +9,11 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
- * Base sniff requiring a declaration to live under a namespace segment.
+ * Base sniff requiring a declaration's namespace to contain a given segment.
  *
- * A subclass declares only what distinguishes it: the token to inspect, the
- * subject noun and the error code as constants, and the required segment as the
- * default of an inherited property a ruleset can override. This base does the
- * rest, flagging any declaration whose namespace lacks that segment at any
- * depth. Holding those four as data rather than as overridden methods is what
- * keeps the subclasses from being three copies of one shape; that they are each
- * filled in is covered by a test, since a constant cannot be declared abstract.
- * It lives under the Composer-autoloaded namespace (not the
- * PHP_CodeSniffer-scanned Sniffs tree) so it is never registered as a sniff.
+ * Subclasses fill in the constants and the segment default; a test checks they
+ * do, since a constant cannot be abstract. Lives outside the scanned Sniffs
+ * tree so it is never registered as a sniff.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -28,13 +22,13 @@ abstract class AbstractRequiredNamespaceSniff implements Sniff
 {
     use ResolvesQualifiedNames;
 
-    /** @var array<int, int|string> The tokens the sniff listens for; a subclass names its own. */
+    /** @var array<int, int|string> The tokens the sniff listens for. */
     protected const array TOKENS = [];
 
     /** @var string The subject noun used in the message (e.g. "Interface", "Trait"). */
     protected const string SUBJECT = '';
 
-    /** @var string The sniff error code, which stays put when the segment is reconfigured. */
+    /** @var string The sniff error code. */
     protected const string ERROR_CODE = '';
 
     /** @var string The namespace segment the declaration must live under. */

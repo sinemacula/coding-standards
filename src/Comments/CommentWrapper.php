@@ -5,24 +5,17 @@ declare(strict_types = 1);
 namespace SineMacula\CodingStandards\Comments;
 
 /**
- * Re-wraps comment prose to a deterministic greedy canonical form.
+ * Re-wraps a comment block's prose to its greedy canonical form.
  *
- * Given the content lines of one comment block (their margin already stripped)
- * and the display width that margin will reclaim, this walks the block and
- * hands each run of prose and each list item to a paragraph reflow, gathering
- * the canonical lines and the indices of the input lines that overflow or wrap
- * prematurely. Anything that is not plain prose - a tag, a directive, fenced or
- * indented code, a table, a separator - is left verbatim and bounds the
- * paragraph around it. When asked to, a line opening with a capital letter
- * begins a paragraph of its own unless the line above ends mid-sentence, so a
- * short standalone note such as a title is not merged into the sentence below.
+ * Optionally, a capitalised line after a finished sentence opens a paragraph,
+ * so a short title is not merged into the sentence below.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
  */
 final class CommentWrapper
 {
-    /** @var string The end of a line that leaves its sentence open: a comma, an open parenthesis, a dash or a function word. */
+    /** @var string A line ending that leaves its sentence open. */
     private const string OPEN_ENDING_PATTERN = '/(?:[,(-]|\b(?:a|an|the|and|or|but|nor|so|then|of|to|in|on|for|with|by|from|as|at'
         . '|into|than|that|which|what|where|when|while|if|unless|until|since|because|before|after|via|per|is|are|be|not))$/';
 
@@ -50,8 +43,8 @@ final class CommentWrapper
     }
 
     /**
-     * Reflow a block's content lines, returning the canonical lines and the
-     * indices of the input lines that overflow or wrap prematurely.
+     * Reflow a block's margin-stripped lines, returning the canonical lines and
+     * the indices of lines that overflow or wrap early.
      *
      * @param  list<string>  $lines
      * @param  int  $marginWidth
@@ -79,11 +72,8 @@ final class CommentWrapper
     }
 
     /**
-     * Resolve the next segment of the block: its output and faults, the index
-     * to continue from, and the fence and type-block state that follow.
-     *
-     * A fenced block, and a type-annotation tag whose value opens a bracketed
-     * type across lines, are each left verbatim until they close.
+     * Resolve the next segment: its output, the next index, and the fence and
+     * type-block state.
      *
      * @param  list<string>  $lines
      * @param  int  $index
@@ -110,8 +100,8 @@ final class CommentWrapper
     }
 
     /**
-     * The verbatim segment for a line inside an open fenced block or an open
-     * type-annotation value, or null when neither block is open at this line.
+     * The verbatim segment for a line inside an open fence or multi-line type,
+     * or null when neither is open.
      *
      * @param  list<string>  $lines
      * @param  int  $index
@@ -135,8 +125,7 @@ final class CommentWrapper
     }
 
     /**
-     * Dispatch a line by its kind: enter a fence, reflow a prose paragraph or
-     * list item, or leave the line verbatim.
+     * Dispatch a line by its kind.
      *
      * @param  list<string>  $lines
      * @param  int  $index
@@ -158,11 +147,7 @@ final class CommentWrapper
     }
 
     /**
-     * Reflow a prose paragraph or list item beginning at the index. A prose
-     * paragraph is a run of flush prose lines; a list item is its marker line
-     * with any continuation lines that stay within its hanging indent. A list
-     * line always parses to a marker, so it never reaches the plain-prose
-     * branch.
+     * Reflow the prose paragraph or list item beginning at the index.
      *
      * @param  list<string>  $lines
      * @param  int  $start
@@ -182,9 +167,7 @@ final class CommentWrapper
     }
 
     /**
-     * The index one past the last flush prose line, given the index of the
-     * paragraph's first line. An indented line ends the paragraph, bounding a
-     * verbatim indented code block beneath it.
+     * The index one past the paragraph's last flush prose line.
      *
      * @param  list<string>  $lines
      * @param  int  $from
@@ -206,8 +189,7 @@ final class CommentWrapper
     }
 
     /**
-     * Whether the line opens a paragraph of its own: it begins with a capital
-     * letter and the line above does not end mid-sentence.
+     * Whether a capitalised line follows a finished sentence.
      *
      * @param  string  $previous
      * @param  string  $line
@@ -221,10 +203,9 @@ final class CommentWrapper
     }
 
     /**
-     * The index one past the last continuation line of a list item, given the
-     * index of its first candidate and the item's hanging indent. A line
-     * indented past the hanging indent is a verbatim code block, not a
-     * continuation, so it ends the item.
+     * The index one past a list item's last continuation line.
+     *
+     * A line indented past the hanging indent is code and ends the item.
      *
      * @param  list<string>  $lines
      * @param  int  $from

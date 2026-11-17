@@ -8,13 +8,9 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Base sniff for size metrics measured across a token scope.
+ * Base sniff flagging a scoped structure whose measure exceeds a limit.
  *
- * Subclasses register the structures to inspect and implement measure() to turn
- * a scope into a number; this base flags any structure whose measure exceeds
- * the configured limit. It lives under the Composer-autoloaded namespace (not
- * the PHP_CodeSniffer-scanned Sniffs tree) so it is never registered as a
- * sniff.
+ * Lives outside the scanned Sniffs tree so it is never registered as a sniff.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

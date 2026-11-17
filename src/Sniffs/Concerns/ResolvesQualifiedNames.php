@@ -5,15 +5,10 @@ declare(strict_types = 1);
 namespace SineMacula\CodingStandards\Sniffs\Concerns;
 
 /**
- * Reads qualified names across PHP_CodeSniffer 3.x and 4.x.
+ * Token codes that form a qualified name on both PHP_CodeSniffer 3.x and 4.x.
  *
- * PHP 8 emits a single `T_NAME_*` token per qualified name. PHP_CodeSniffer 3.x
- * backfilled those to `T_STRING` / `T_NS_SEPARATOR` sequences for backwards
- * compatibility, whereas 4.x keeps the whole-name tokens. A sniff that reads a
- * name from the token stream must therefore accept both forms; this trait
- * centralises the set of token codes that make up a name. A relative name
- * (`namespace\Foo`) is one `T_NAME_RELATIVE` on 4.x, but on 3.x its leading
- * `namespace` keyword backfills to `T_NAMESPACE`, so that is included too.
+ * 3.x splits a name into `T_STRING` / `T_NS_SEPARATOR` (and `T_NAMESPACE` for a
+ * relative name), while 4.x keeps the single `T_NAME_*` token.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

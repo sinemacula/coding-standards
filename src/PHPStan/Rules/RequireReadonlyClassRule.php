@@ -12,21 +12,10 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
- * Require a readonly class where every property is readonly.
+ * Require a final, parentless class whose every property is readonly to be
+ * declared `readonly`.
  *
- * A final class that holds at least one property, whose every property -
- * declared, promoted or trait-provided - is `readonly` and none static, and
- * that extends nothing, must be declared a `readonly` class rather than
- * repeating the modifier on each property. Only final leaf classes qualify: a
- * readonly class forces the modifier onto every descendant, so promoting a base
- * would silently constrain its subclasses. A class that extends anything is
- * left alone - a non-readonly class can only extend a non-readonly parent,
- * which a readonly class may not do - as is a class carrying a mutable or
- * static property, a class using a trait that declares one, an already-readonly
- * class, and interfaces, traits, enums, anonymous classes and test classes.
- * Seeing through traits to the properties they contribute needs the
- * whole-program type graph, which is why this is a PHPStan rule rather than a
- * single-file sniff.
+ * Trait-provided properties count. Enums and test classes are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -66,8 +55,7 @@ final class RequireReadonlyClassRule implements Rule
     }
 
     /**
-     * Whether the class is outside the rule's scope: not a concrete final leaf
-     * class, already readonly, extends a parent, or is a test class.
+     * Whether the class is outside the rule's scope.
      *
      * @param  \ReflectionClass<object>  $reflection
      * @param  \PHPStan\Analyser\Scope  $scope
@@ -75,11 +63,7 @@ final class RequireReadonlyClassRule implements Rule
      */
     private function isExempt(\ReflectionClass $reflection, Scope $scope): bool
     {
-        // An enum is final and reports its implicit `$name`/`$value` as
-        // readonly properties, but cannot itself be declared readonly, so it is
-        // excluded explicitly. Interfaces, traits, anonymous classes and
-        // non-final classes are all non-final and fall out with the finality
-        // check.
+        // An enum has readonly properties but cannot be declared readonly.
         if (
             $reflection->isEnum()
             || $reflection->isFinal() === false
@@ -93,8 +77,7 @@ final class RequireReadonlyClassRule implements Rule
     }
 
     /**
-     * Whether the class declares at least one property and every one of them,
-     * including those contributed by traits, is readonly and non-static.
+     * Whether the class has at least one property and all are readonly.
      *
      * @param  \ReflectionClass<object>  $reflection
      * @return bool
@@ -108,8 +91,7 @@ final class RequireReadonlyClassRule implements Rule
         }
 
         foreach ($properties as $property) {
-            // A static property can never be readonly, so the readonly check
-            // also excludes a class that declares one.
+            // A static property is never readonly, so this excludes it too.
             if ($property->isReadOnly() === false) {
                 return false;
             }
@@ -119,10 +101,9 @@ final class RequireReadonlyClassRule implements Rule
     }
 
     /**
-     * Whether the class is a test class, where holding readonly state is not
-     * the concern the rule guards. A class extending a *TestCase carries a
-     * parent and so is already out of scope, leaving the name and directory to
-     * check here.
+     * Whether the class is a test class.
+     *
+     * A `*TestCase` subclass has a parent, so it is already exempt.
      *
      * @param  \ReflectionClass<object>  $reflection
      * @param  \PHPStan\Analyser\Scope  $scope

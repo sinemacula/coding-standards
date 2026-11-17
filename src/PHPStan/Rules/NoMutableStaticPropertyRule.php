@@ -14,16 +14,10 @@ use SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyDeclarationColle
 use SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyWriteCollector;
 
 /**
- * Forbid mutable static state.
+ * Forbid static properties that are written anywhere in the analysed program.
  *
- * Static properties are global mutable state. This rule flags a static property
- * only when it is actually written somewhere in the analysed program - an
- * assignment, compound assignment or increment/decrement. A static that is only
- * declared and read is configuration (like `$fillable`), not mutable state, and
- * is left alone. Deliberately-mutated statics (e.g. a memo cache flushed at a
- * known boundary) opt out with a `@managed-static` doc tag on the property or
- * its declaring class. Test classes are exempt - mutable statics there track
- * state across assertions, not production global state.
+ * A read-only static is configuration and passes. Opt out with
+ * `@managed-static` on the property or class; test classes are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

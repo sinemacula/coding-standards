@@ -7,12 +7,9 @@ namespace SineMacula\CodingStandards\Sniffs\Concerns;
 use PHP_CodeSniffer\Files\File;
 
 /**
- * Detects test classes.
+ * Detects test classes, so production-only rules can exempt test code.
  *
- * A class is treated as a test when its name ends in `Test`, it extends a class
- * whose name ends in `TestCase`, or its file lives under a `tests/` directory.
- * Rules that only apply to production code (size metrics, the readonly mandate)
- * can use this to exempt test fixtures - recording spies, fakes and the like.
+ * A test class is named `*Test`, extends `*TestCase`, or lives under `tests/`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

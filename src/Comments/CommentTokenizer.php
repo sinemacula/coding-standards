@@ -7,11 +7,8 @@ namespace SineMacula\CodingStandards\Comments;
 /**
  * Splits comment prose into wrapping tokens.
  *
- * A token is a run of non-space characters, except that a handful of constructs
- * may hold spaces yet must never be split across a line break: inline backtick
- * code, an inline `{@link ...}` tag and a Markdown `[text](url)` link. Each is
- * consumed whole. A delimiter that never closes is treated as an ordinary
- * character, so malformed prose still tokenises predictably.
+ * Backtick code, `{@link ...}` tags and `[text](url)` links stay whole even
+ * when they hold spaces; an unclosed delimiter is an ordinary character.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

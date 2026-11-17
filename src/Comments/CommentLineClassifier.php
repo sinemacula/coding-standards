@@ -7,11 +7,8 @@ namespace SineMacula\CodingStandards\Comments;
 /**
  * Classifies a single content line of a comment.
  *
- * Only prose and list items are reflowed; every other kind is preserved
- * verbatim and acts as a paragraph boundary. Directives, docblock tags, fenced
- * or indented code, tables and rule separators are left exactly as written, so
- * a reflow never disturbs a construct whose position or spacing carries
- * meaning.
+ * Only prose and list items are reflowed; every other kind is kept verbatim and
+ * acts as a paragraph boundary.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -120,8 +117,7 @@ final class CommentLineClassifier
     }
 
     /**
-     * Parse a list marker from a content line: the bullet or ordinal, the
-     * indent before it and the width it occupies with its trailing space.
+     * Parse a list marker's bullet, indent and width (including its space).
      *
      * @param  string  $content
      * @return array{marker: string, indent: int, width: int}|null
@@ -140,9 +136,7 @@ final class CommentLineClassifier
     }
 
     /**
-     * Whether a content line is indented past the prose baseline - a leading
-     * tab or two or more spaces - marking it as a verbatim code or command
-     * block.
+     * Whether a content line is indented as a verbatim code block.
      *
      * @param  string  $content
      * @return bool
@@ -153,8 +147,7 @@ final class CommentLineClassifier
     }
 
     /**
-     * The number of leading spaces on a content line, for comparing a list
-     * item's continuation indent against its hanging indent.
+     * The number of leading spaces on a content line.
      *
      * @param  string  $content
      * @return int
@@ -165,8 +158,8 @@ final class CommentLineClassifier
     }
 
     /**
-     * Whether a line ends the verbatim type block that precedes it: a blank
-     * line or a fresh tag, neither of which a bracketed type ever spans.
+     * Whether a line (blank or a fresh tag) ends a preceding verbatim type
+     * block.
      *
      * @param  string  $content
      * @return bool
@@ -179,10 +172,7 @@ final class CommentLineClassifier
     }
 
     /**
-     * The depth a type-annotation tag's bracketed value opens on this line, or
-     * zero when the line is not a type tag or its type closes on the same line.
-     * Only the type slot is considered, so a stray bracket in the description
-     * that follows the variable never opens a block.
+     * The bracket depth a type tag's value leaves open on this line, or zero.
      *
      * @param  string  $content
      * @return int
@@ -199,9 +189,8 @@ final class CommentLineClassifier
     }
 
     /**
-     * The net depth the type slot of a line opens: braces, angle brackets and
-     * parentheses opened less those closed, ignoring inline spans and the
-     * object and double-arrow operators.
+     * The net bracket depth the type slot of a line opens, ignoring `->` and
+     * `=>`.
      *
      * @param  string  $text
      * @return int
@@ -217,9 +206,8 @@ final class CommentLineClassifier
     }
 
     /**
-     * The portion of a line that carries the type: inline spans removed and
-     * everything from the first variable onward dropped, so a bracket in a
-     * description never counts toward the type's depth.
+     * The line up to its first variable, with inline spans and literals
+     * removed, so a bracket in the description never counts.
      *
      * @param  string  $content
      * @return string
@@ -233,8 +221,7 @@ final class CommentLineClassifier
     }
 
     /**
-     * Classify a non-blank content line by its leading marks, defaulting to
-     * prose.
+     * Classify a non-blank content line, defaulting to prose.
      *
      * @param  string  $content
      * @param  string  $trimmed
@@ -256,8 +243,7 @@ final class CommentLineClassifier
     }
 
     /**
-     * Whether a line carries code syntax, ignoring inline atomic spans whose
-     * contents (backticked code, an FQCN in a `{@link}`) are not code.
+     * Whether a line carries code syntax outside its inline spans.
      *
      * @param  string  $trimmed
      * @return bool

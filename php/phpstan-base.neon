@@ -1,6 +1,4 @@
-# No level is set here, and a project should not set one either: analysis runs
-# through qlty, whose phpstan driver passes --level=9 on the command line, which
-# overrides whatever a config file says.
+# No level here or in projects: qlty passes --level=9, which overrides config.
 parameters:
     ignoreErrors:
         - identifier: ternary.shortNotAllowed
@@ -14,9 +12,8 @@ parameters:
         - identifier: greaterOrEqual.alwaysTrue
         - identifier: smaller.alwaysTrue
         - identifier: classConstant.deprecated
-        # With implicitThrows off, a call without @throws cannot throw, so a
-        # best-effort catch of Throwable around framework or I/O code always
-        # reads as dead. Catches of a specific exception are still checked.
+        # With implicitThrows off, a best-effort catch of Throwable always reads
+        # as dead; catches of specific exceptions are still checked.
         -
             identifier: catch.neverThrown
             message: '#^Dead catch - Throwable is never thrown in the try block\.$#'
@@ -28,13 +25,8 @@ parameters:
     inferPrivatePropertyTypeFromConstructor: false
     reportUnmatchedIgnoredErrors: false
 
-    # Require every checked exception a method can throw to be declared in its
-    # @throws tag (and, via tooWideThrowType, no @throws that cannot be thrown).
-    # implicitThrows is off so an un-analysable call is not assumed to throw
-    # Throwable. Unchecked are the exceptions that signal a programming or engine
-    # error (the LogicException, RuntimeException and Error families), or are so
-    # ubiquitous that a @throws for them everywhere is noise rather than signal
-    # (reflection, JSON, error-handler and PSR cache throwables).
+    # Unchecked: programming/engine errors, plus throwables too ubiquitous to
+    # be worth a @throws everywhere.
     exceptions:
         implicitThrows: false
         check:
