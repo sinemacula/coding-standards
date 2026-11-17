@@ -23,17 +23,8 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Predicate prefixes, third-person (-s) and past-tense (-ed) verbs,
-     * idiomatic predicates (successful), command verbs (built-in and a
-     * project-supplied one), @imperative-tagged and magic methods, and
-     * non-boolean returns are accepted; the @imperative opt-out is
-     * case-insensitive and still holds when an attribute (single, stacked or
-     * inline) sits between the docblock and the signature, or when the docblock
-     * closes flush against the function keyword or the attribute. An adjective
-     * name is flagged whether the method carries no docblock, a plain docblock,
-     * a docblock hidden behind an attribute, or a docblock whose only tag is
-     * not the opt-out; a nullable bool return and a PascalCase name are flagged
-     * too.
+     * Flags boolean methods whose names read as neither predicates nor
+     * commands, unless tagged @imperative.
      *
      * @return void
      */
@@ -43,8 +34,7 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered message names the offending method, proving the name is
-     * passed through to the report.
+     * The message names the offending method.
      *
      * @return void
      */
@@ -61,12 +51,7 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Methods of a named class, interface, trait or enum whose name ends with
-     * an ignored suffix are exempt. An anonymous class and a function declared
-     * inside such a method are not its methods and are still checked, as are a
-     * class carrying the suffix elsewhere in its name, a class matching it only
-     * case-insensitively, and a global function. An empty configured suffix
-     * exempts nothing.
+     * Exempts methods of a structure named with an ignored suffix.
      *
      * @return void
      */
@@ -76,13 +61,8 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A method carrying an Override attribute is exempt, written qualified or
-     * imported, in any case, alone or grouped with others whose arguments hold
-     * commas, in any of the method's attribute groups, flush against the
-     * function keyword and beside a comment; the interface declaring the name
-     * is still checked. Another attribute, an Override named only in an
-     * argument or under another namespace, and one on the property above are
-     * not.
+     * Exempts methods carrying an Override attribute, however written; the
+     * declaring interface is still checked.
      *
      * @return void
      */
@@ -92,9 +72,8 @@ final class BooleanMethodNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Extend the built-in command verbs with a project-supplied one, mirroring
-     * a consumer ruleset's property override with extend set, and exempt the
-     * fixture's policy classes by suffix.
+     * Add a project command verb as a consumer ruleset would, and exempt the
+     * fixture's policy classes.
      *
      * @return array<string, mixed>
      */

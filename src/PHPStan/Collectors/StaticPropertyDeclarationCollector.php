@@ -12,14 +12,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 
 /**
- * Collect static property declarations eligible for the mutable-static rule.
+ * Collect static property declarations not opted out with `@managed-static`.
  *
- * Records every static property declaration that is not opted out with a
- * `@managed-static` doc tag (on the property or its declaring class). Test
- * classes and anonymous classes are skipped entirely - mutable statics there
- * track state across assertions, not production global state. Each record
- * carries the "Class::property" key, the property name and the declaration
- * line, so the rule can flag the ones that are also written.
+ * Test and anonymous classes are skipped.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -65,8 +60,7 @@ final class StaticPropertyDeclarationCollector implements Collector
     }
 
     /**
-     * Whether the class is a test class, where mutable statics track state
-     * across assertions rather than introduce production global state.
+     * Whether the class is a test class.
      *
      * @param  \PhpParser\Node\Stmt\ClassLike  $node
      * @param  \PHPStan\Analyser\Scope  $scope

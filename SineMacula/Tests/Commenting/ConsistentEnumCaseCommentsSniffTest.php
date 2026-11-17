@@ -23,10 +23,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class ConsistentEnumCaseCommentsSniffTest extends AbstractSniffTestCase
 {
     /**
-     * When some but not all cases are documented, the undocumented ones are
-     * flagged; a fully undocumented enum is left alone. A case documented
-     * behind an attribute still counts as documented, so its plain undocumented
-     * sibling is flagged.
+     * Undocumented cases are flagged only when a sibling case is documented.
      *
      * @return void
      */
@@ -36,8 +33,7 @@ final class ConsistentEnumCaseCommentsSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A case declared immediately after the opening brace is still counted, so
-     * it is flagged when a later case is documented.
+     * A case directly after the opening brace is still counted.
      *
      * @return void
      */

@@ -30,8 +30,7 @@ final class PhpCsFixerConfigTest extends TestCase
     private string $directory;
 
     /**
-     * Create a fixture directory with one matching file, one non-PHP file and
-     * one dotfile so the finder's filters are observable.
+     * Create a directory holding one PHP file and files the finder must skip.
      *
      * @return void
      *
@@ -70,9 +69,7 @@ final class PhpCsFixerConfigTest extends TestCase
     }
 
     /**
-     * The factory builds a config carrying the shared rules with overrides
-     * taking precedence, caching and risky fixers enabled, and parallelism
-     * detected from the environment.
+     * The config merges overrides over the shared rules.
      *
      * @return void
      */
@@ -113,8 +110,7 @@ final class PhpCsFixerConfigTest extends TestCase
     }
 
     /**
-     * Repeated factory calls in one process keep returning the shared rules
-     * rather than the boolean a stale include would produce.
+     * Repeated calls in one process keep returning the shared rules.
      *
      * @return void
      */

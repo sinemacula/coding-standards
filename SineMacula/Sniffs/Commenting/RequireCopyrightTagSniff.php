@@ -9,12 +9,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Copyright tag sniff.
- *
- * Requires an @copyright tag in the docblock of every class, interface, enum or
- * trait. The PEAR class-comment sniff already requires the docblock and @author
- * but treats @copyright as optional, so this closes that gap. Structures with
- * no docblock are left to the class-comment sniff.
+ * Requires an @copyright tag in every class, interface, enum and trait
+ * docblock, which the PEAR class-comment sniff treats as optional.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -10,7 +10,6 @@ import { ruleTester, yamlRuleTester } from './tester.js';
 
 ruleTester.run('comment-line-wrap', rule, {
     valid: [
-        // A short standalone comment well within the width.
         '// A short standalone comment well within the width.\nconst x = 1;',
         // A `//` run already wrapped as tightly as the width allows.
         '// A longer standalone comment that has already been wrapped greedily so that\n// every one of its lines is filled as far as the width will allow it to be.\nconst x = 1;',
@@ -20,8 +19,7 @@ ruleTester.run('comment-line-wrap', rule, {
         '//ThisIsASingleVeryLongCommentTokenWithoutAnySpacesThatExceedsTheEightyCharacterLimitForSureXX\nconst x = 1;',
         // A directive line is never reflowed, whatever its length.
         '// prettier-ignore because the construct below is intentionally formatted by hand and must be left exactly so\nconst x = 1;',
-        // A hashbang is not a line comment, so its leading `#` never reads as
-        // prose; reflowing one would break the interpreter line outright.
+        // A hashbang is not a line comment.
         '#!/usr/bin/env -S node --experimental-vm-modules --no-warnings --enable-source-maps\nconst x = 1;',
         // A tool-directive comment is exempt from the length and wrap checks.
         '// biome-ignore lint/suspicious/noExplicitAny: the upstream type is genuinely any so we accept it here now\nconst x = 1;',
@@ -66,8 +64,7 @@ ruleTester.run('comment-line-wrap', rule, {
         // A capitalised line after a finished one opens a paragraph of its own.
         '// Section title\n// A sentence that follows the title as a separate note.\nconst x = 1;',
         '// A finished sentence.\n// Another sentence on its own line.\nconst x = 1;',
-        // A word that merely ends in a joining word does not hold the sentence
-        // open.
+        // A word merely ending in a joining word does not join.
         '// Wraps after Santa\n// Claus arrives.\nconst x = 1;',
     ],
     invalid: [
@@ -109,8 +106,7 @@ ruleTester.run('comment-line-wrap', rule, {
             errors: [{ messageId: 'tooLong' }],
         },
         {
-            // Adjacent `//` comments at different indents are separate runs; the
-            // deeper one reflows within its own indent and the other is left be.
+            // Comments at different indents are separate runs.
             code: '// Short comment at column one that fits within the width comfortably here now.\n    // A deeper indented standalone comment that runs on well beyond the eighty character limit for sure.\nconst value = 1;',
             output: '// Short comment at column one that fits within the width comfortably here now.\n    // A deeper indented standalone comment that runs on well beyond the eighty\n    // character limit for sure.\nconst value = 1;',
             errors: [{ messageId: 'tooLong' }],
@@ -156,23 +152,18 @@ ruleTester.run('comment-line-wrap', rule, {
 
 yamlRuleTester.run('comment-line-wrap (yaml)', rule, {
     valid: [
-        // A short standalone `#` comment well within the width.
         '# A short standalone comment.\nname: CI\n',
-        // A `#` comment filling the line to its final column exactly. The `#`
-        // token reclaims one column less than `//`, so eighty holds a content
-        // line of seventy-eight; a margin measured as `//` would fault this.
+        // `#` is one column narrower than `//`, so this line fits exactly.
         '# A standalone YAML comment whose prose is filled right up to the last column ok\nname: CI\n',
         // A `#` run already wrapped as tightly as the width allows.
         '# A standalone YAML comment run whose prose fills each line as far as the width\n# will allow before the next word is carried onto the line beneath it.\nname: CI\n',
-        // A long `run:` command is a value, not a comment, and is never
-        // touched.
+        // A long `run:` command is a value, not a comment.
         'jobs:\n  build:\n    steps:\n      - run: npx some-tool --with-a-very-long-flag=value --and-another-flag=value --more\n',
         // A long `uses:` action reference is a value and is left alone.
         'jobs:\n  build:\n    steps:\n      - uses: sinemacula/some-really-long-reusable-workflow-name/.github/actions/build@v5\n',
-        // A comment trailing a value is not standalone, so it is not governed.
+        // A comment trailing a value is not standalone.
         'jobs:\n  build:\n    steps:\n      - uses: actions/checkout@v5 # pinned deliberately to the major tag for now ok yes\n',
-        // A `#` inside a plain scalar parses as a trailing comment, not a
-        // standalone one, so a `run:` line carrying one is still left alone.
+        // A `#` inside a plain scalar parses as a trailing comment.
         'jobs:\n  build:\n    steps:\n      - run: echo "a # b" and then some more text to carry this line past eighty chars\n',
         // A shell comment inside a block scalar is content, not a comment.
         'jobs:\n  build:\n    steps:\n      - run: |\n          # A shell comment inside a block scalar that runs far past the eighty character limit.\n          npm ci\n',
@@ -191,8 +182,7 @@ yamlRuleTester.run('comment-line-wrap (yaml)', rule, {
     ],
     invalid: [
         {
-            // An overflowing `#` line wraps, filling the first line to the last
-            // column available to a `#` comment.
+            // An overflowing `#` line wraps to the last available column.
             code: '# A standalone YAML comment whose prose is filled right up to the last column ok and then some more.\nname: CI\n',
             output: '# A standalone YAML comment whose prose is filled right up to the last column ok\n# and then some more.\nname: CI\n',
             errors: [{ messageId: 'tooLong' }],
@@ -204,8 +194,7 @@ yamlRuleTester.run('comment-line-wrap (yaml)', rule, {
             errors: [{ messageId: 'prematureWrap' }, { messageId: 'prematureWrap' }],
         },
         {
-            // An indented comment inside a `steps:` block wraps within its own
-            // indent, which the margin reclaims from the width.
+            // An indented comment wraps within its own indent.
             code: 'jobs:\n  build:\n    steps:\n      # An indented comment inside the steps block that runs past the width allowed here.\n      - run: echo hello\n',
             output: 'jobs:\n  build:\n    steps:\n      # An indented comment inside the steps block that runs past the width\n      # allowed here.\n      - run: echo hello\n',
             errors: [{ messageId: 'tooLong' }],

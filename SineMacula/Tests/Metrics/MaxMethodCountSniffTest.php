@@ -48,8 +48,7 @@ final class MaxMethodCountSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A method declared on a nested anonymous class counts toward that class,
-     * not toward the structure enclosing it.
+     * A nested anonymous class's methods count toward that class only.
      *
      * @return void
      */

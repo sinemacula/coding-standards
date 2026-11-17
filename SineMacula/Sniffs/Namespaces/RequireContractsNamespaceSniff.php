@@ -7,11 +7,8 @@ namespace SineMacula\Sniffs\Namespaces;
 use SineMacula\CodingStandards\Sniffs\AbstractRequiredNamespaceSniff;
 
 /**
- * Contracts namespace sniff.
- *
- * Requires every interface to be declared under a `Contracts` namespace segment
- * (at any depth, e.g. `App\Contracts` or `App\Billing\Contracts`), keeping
- * ports and contracts grouped and discoverable.
+ * Requires every interface to sit under a `Contracts` namespace segment, at any
+ * depth (e.g. `App\Billing\Contracts`).
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -8,16 +8,8 @@ const TS_AND_JS_FILES = [...TS_FILES, '**/*.js', '**/*.jsx', '**/*.mjs', '**/*.c
 const YAML_FILES = ['**/*.yml', '**/*.yaml'];
 
 /**
- * Base flat config: the AST-only custom rules that need no type information.
- *
- * Requires no tsconfig, so it stays cheap. The typescript-eslint parser
- * resolves TypeScript syntax. The interface, readonly-property and enum rules
- * target TypeScript-only constructs, as does jsdoc/no-types, which presumes a
- * signature to hold the type it strips from the tag; no-mutable-static also
- * applies to plain JavaScript (exported let/var, mutable static fields), so it
- * runs across both. A final block carries the comment-wrap rule alone over
- * YAML, which otherwise bounds nothing about a comment's width. The opt-in
- * type-aware layer lives in ./type-checked.js.
+ * Base flat config: the custom rules that need no type information, so no
+ * tsconfig. The type-aware layer is in ./type-checked.js.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -40,12 +32,8 @@ export default [
 
             '@typescript-eslint/no-explicit-any': 'error',
 
-            // A TypeScript signature already records the type, so a tag that
-            // repeats it is a second copy free to drift from the first. Plain
-            // JavaScript has no signature to hold one, which is why this rule
-            // stops at TypeScript: there the tag is the only place a type is
-            // written down, and clearing it would delete the type rather than
-            // move it to where the reader already looks.
+            // TypeScript only: in plain JavaScript the tag is the only place
+            // the type is recorded.
             'jsdoc/no-types': 'error',
         },
     },
@@ -73,15 +61,6 @@ export default [
             'max-lines-per-function': ['error', { max: 50, skipComments: true, skipBlankLines: true, IIFEs: true }],
             'max-depth': ['error', 4],
 
-            // Every declared function, method, class, assigned arrow and
-            // property carries a documentation comment describing intent, so a
-            // reader meets each member's purpose before its type. Interface
-            // members and class fields are held to the same bar as methods.
-            // Every @param and @returns says what the value means, whether or
-            // not the tag also carries a type; the type itself is governed by
-            // no-types in the TypeScript block above, which is the only place a
-            // signature holds one. Each block stands off from the code above
-            // it, single-line blocks included.
             'jsdoc/require-jsdoc': ['error', {
                 require: {
                     ClassDeclaration: true,
@@ -97,9 +76,8 @@ export default [
                     'PropertyDefinition',
                 ],
                 checkConstructors: false,
-                // Report only; the autofix inserts an empty stub that then
-                // fails require-description, so a blind fix would scatter
-                // hollow comments rather than resolve the finding.
+                // The autofix inserts an empty stub that fails
+                // require-description.
                 enableFixer: false,
             }],
             'jsdoc/require-description': 'error',
@@ -109,11 +87,7 @@ export default [
         },
     },
     {
-        // YAML carries the comment-wrap rule and nothing else. The parser is
-        // registered for its `#` comments alone, so no eslint-plugin-yml rule
-        // is enabled: pulling that plugin's own set in would fault every
-        // consumer's YAML on quoting, key order and indentation at once, none
-        // of which this package governs. yamllint keeps the rest of YAML.
+        // Only comment width; yamllint governs the rest of YAML.
         files: YAML_FILES,
         plugins: {
             '@sinemacula': plugin,
@@ -126,15 +100,9 @@ export default [
         },
     },
     {
-        // Test code keeps the length and depth exemptions and nothing else. A
-        // spec body is a long, deeply nested account of one scenario, and
-        // splitting it to satisfy a metric hides the scenario rather than
-        // simplifying it. Documentation is a different matter: require-jsdoc's
-        // contexts reach declared functions, assigned arrows and classes, which
-        // in a spec file are its helpers, factories and builders - the code a
-        // reader has to understand before the assertions mean anything. A test
-        // case itself is an arrow passed as a call argument, which no context
-        // reaches, so `it('...', () => {})` is never asked to carry a block.
+        // Specs are exempt from the size metrics but not from documentation;
+        // an `it()` callback is a call argument, which require-jsdoc never
+        // reaches.
         files: ['**/*.{test,spec}.{ts,tsx,mts,cts,js,jsx,mjs,cjs}', '**/__tests__/**', '**/tests/**', '**/test-support/**'],
         rules: {
             'max-lines-per-function': 'off',

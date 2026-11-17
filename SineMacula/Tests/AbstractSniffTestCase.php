@@ -14,10 +14,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Base test case for Sine Macula PHP_CodeSniffer sniffs.
  *
- * A concrete test is named "<SniffName>SniffTest" and lives under
- * SineMacula/Tests/<Category>/ alongside its fixtures. The sniff under test,
- * its file path and its dotted code are all derived from the test class by
- * convention, so a test is just a fixture plus one assertion per scenario.
+ * The sniff under test is resolved from the "<SniffName>SniffTest" class name.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -42,8 +39,7 @@ abstract class AbstractSniffTestCase extends TestCase
     }
 
     /**
-     * Assert that the sniff reports the given error codes on the given lines,
-     * where the map is keyed by line and lists the short code of each error.
+     * Assert the short error codes reported on each line.
      *
      * @param  string  $fixture
      * @param  array<int, list<string>>  $expected
@@ -68,8 +64,7 @@ abstract class AbstractSniffTestCase extends TestCase
     }
 
     /**
-     * Assert that the sniff reports the given rendered error messages on the
-     * given lines, where the map is keyed by line and lists each message.
+     * Assert the rendered error messages reported on each line.
      *
      * @param  string  $fixture
      * @param  array<int, list<string>>  $expected
@@ -94,8 +89,8 @@ abstract class AbstractSniffTestCase extends TestCase
     }
 
     /**
-     * Assert that the sniff fixes the fixture to its expected `.fixed`
-     * companion, and that a second pass over the output leaves it unchanged.
+     * Assert that the sniff fixes the fixture to its `.fixed` companion,
+     * idempotently.
      *
      * @param  string  $fixture
      * @return void
@@ -114,8 +109,7 @@ abstract class AbstractSniffTestCase extends TestCase
     }
 
     /**
-     * Property overrides to apply to the sniff under test (e.g. lowered
-     * limits).
+     * Property overrides to apply to the sniff under test.
      *
      * @return array<string, mixed>
      */
@@ -172,9 +166,7 @@ abstract class AbstractSniffTestCase extends TestCase
      */
     private function boot(): array
     {
-        // A built-in standard gives the Ruleset something valid to construct
-        // from (it rejects an empty sniff set); its sniffs are then dropped so
-        // only the sniff under test, registered directly from its file, runs.
+        // An empty standard is rejected, so boot Generic and drop its sniffs.
         $config            = new Config(['--extensions=inc,php'], false);
         $config->standards = ['Generic'];
 

@@ -9,11 +9,8 @@ use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 
 /**
- * Method count sniff.
- *
  * Caps the number of methods declared directly on a class, interface, trait or
- * enum. A structure that legitimately needs more can opt out with a native
- * `// phpcs:ignore SineMacula.Metrics.MaxMethodCount.TooManyMethods` directive.
+ * enum. Test classes are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -37,8 +34,7 @@ final class MaxMethodCountSniff extends AbstractMetricSniff
     }
 
     /**
-     * Skip test classes, which legitimately declare many methods, then defer to
-     * the base metric check.
+     * Skip test classes, then defer to the base metric check.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

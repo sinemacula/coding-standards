@@ -1,12 +1,6 @@
 /**
- * Reflows a single paragraph of comment prose to its greedy canonical form.
- *
- * A paragraph is a run of prose lines, or one list item with its continuation
- * lines. It is filled line by line with as many whole words as the width
- * allows, never splitting a word and keeping any list marker's hanging indent.
- * A paragraph is reflowed only when it is safe to: it holds no token wider than
- * the line, is not too narrow, and would still read as prose once wrapped.
- * Otherwise it is returned untouched.
+ * Reflows one paragraph (a prose run, or a list item with its continuation) to
+ * its greedy canonical form, leaving it untouched when wrapping is unsafe.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -8,18 +8,10 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Combined trait import sniff.
+ * Requires a structure to import all its traits in one `use A, B;` statement.
  *
- * Requires a structure to import its traits in one statement, `use A, B;`,
- * rather than one statement per trait. The set of behaviour a class mixes in is
- * then a single thing to read, and adding to it is an edit to that statement
- * rather than a new line that reviews as unrelated.
- *
- * Every import after the first is reported, wherever it sits in the body, so
- * the split form cannot survive by separating the statements. The report is not
- * fixable: merging them is an edit to a line whose order is the author's to
- * choose, and a fixable report here could be undone by a formatter on the next
- * pass.
+ * Every import after the first is reported. The report is not fixable, since
+ * the merged order is the author's to choose.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -59,10 +51,8 @@ final class RequireCombinedTraitImportSniff implements Sniff
     }
 
     /**
-     * The trait imports declared directly in the structure's body, in source
-     * order. An import counts only where this structure is its innermost scope,
-     * so a closure's own use clause and an inner structure's imports are never
-     * read as this one's.
+     * Collect the trait imports declared directly in the structure's body,
+     * skipping closure use clauses and nested structures.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

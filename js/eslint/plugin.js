@@ -13,11 +13,7 @@ import singleLinePropertyDoc from './rules/single-line-property-doc.js';
 import validEnumMemberName from './rules/valid-enum-member-name.js';
 
 /**
- * The @sinemacula ESLint plugin.
- *
- * Bundles this package's custom structural rules. Each rule is registered in
- * the map below; the flat configs in index.js and type-checked.js are what
- * switch them on.
+ * The @sinemacula ESLint plugin; index.js and type-checked.js enable its rules.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

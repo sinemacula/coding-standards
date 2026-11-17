@@ -10,15 +10,12 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesTagHead;
 
 /**
- * Param tag sniff.
+ * Requires an @param tag for each parameter of a documented function, in
+ * signature order.
  *
- * A documented function names each of its parameters in an @param tag of its
- * own, in the order the signature declares them. Unlike the core function
- * comment sniff, which reads a tag from its first line, a type that spans lines
- * is followed to its close before the variable is looked for, so an array shape
- * or a callable signature written one member to a line keeps its variable, and
- * a variable inside the type's brackets is never taken for the tag's own. The
- * codes and messages are the core sniff's, and its other checks still apply.
+ * Replaces the core function comment sniff's name checks, which read only a
+ * tag's first line, by following a multi-line type to its close first. Codes
+ * and messages match the core sniff.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -70,8 +67,8 @@ final class RequireParamTagSniff implements Sniff
     }
 
     /**
-     * The names the @param tags of the doc comment at the pointer document,
-     * each tag checked against the parameter at its own position.
+     * Collect the names the @param tags document, checking each against the
+     * parameter at its position.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $opener
@@ -106,9 +103,8 @@ final class RequireParamTagSniff implements Sniff
     }
 
     /**
-     * The variable the tag at the pointer names, an empty string when it names
-     * none, or null when the tag has no type before it, which the core sniff
-     * reports as a missing type.
+     * Read the variable the tag names: an empty string when it names none, or
+     * null when the tag has no type, which the core sniff reports.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $tag
@@ -134,9 +130,8 @@ final class RequireParamTagSniff implements Sniff
     }
 
     /**
-     * Report a tag naming a variable other than the parameter at its position,
-     * or naming one where the signature has no parameter left, and return the
-     * name it documents.
+     * Report a tag that names the wrong parameter, or one past the end of the
+     * signature, and return the name it documents.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $tag
@@ -174,8 +169,8 @@ final class RequireParamTagSniff implements Sniff
     }
 
     /**
-     * Report a tag whose variable is not the parameter at its position, telling
-     * a difference of case alone apart.
+     * Report a tag whose variable differs from the parameter at its position,
+     * distinguishing a case-only difference.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $tag
@@ -196,8 +191,8 @@ final class RequireParamTagSniff implements Sniff
     }
 
     /**
-     * The name a tag gives the parameter, a variadic one written with its
-     * leading ellipsis.
+     * Build the name a tag gives the parameter, with a leading ellipsis when
+     * variadic.
      *
      * @param  array<string, mixed>  $parameter
      * @return string

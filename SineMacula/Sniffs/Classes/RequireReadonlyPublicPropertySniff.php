@@ -10,15 +10,10 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 
 /**
- * Readonly public property sniff.
+ * Requires public properties, declared or promoted, to be `readonly`.
  *
- * Public properties (declared or constructor-promoted) must be `readonly`.
- * Mutable public state breaks encapsulation; the legitimate data-holder case is
- * expressed with `public readonly`. Static properties are left to the mutable
- * static state rule, and non-public properties are unaffected. Test classes are
- * exempt (recording spies and fakes legitimately hold mutable public state), as
- * are the properties $ignoredInterfaceProperties lists for an interface the
- * class implements and $ignoredParentClassProperties lists for its parent.
+ * Static properties, readonly classes and test classes are exempt, as are the
+ * classes and properties configured through the public ignore lists.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -75,8 +70,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * Whether the token sits in a class declared `readonly`, where every
-     * property is already immutable through the class modifier (PHP 8.2+).
+     * Determine whether the token sits in a `readonly` class.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -90,12 +84,9 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * Whether the token sits in a class extending a configured ignored parent.
-     *
-     * Standards layered on top of this one (e.g. a framework standard) can set
-     * $ignoredParentClasses to exempt mutable entity bases such as Eloquent's
-     * Model, where the readonly contract does not apply. Names match
-     * case-insensitively on their short name, as the property exemptions do.
+     * Determine whether the token sits in a class extending an ignored parent,
+     * such as a framework's mutable model base. Names match case-insensitively
+     * on their short name.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -111,17 +102,9 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * Whether the property is exempt through an interface its class implements
-     * or the parent it extends.
-     *
-     * Framework contracts such as Laravel's ShouldQueue read configuration from
-     * public properties (tries, timeout, ...) that need defaults and so cannot
-     * be readonly. Only an interface named in the implements clause, or the
-     * parent named in the extends clause, of the property's own class, named or
-     * anonymous, counts; a project whose jobs extend a base that implements the
-     * contract names that base. Both the clauses and the configured keys are
-     * matched case-insensitively on their short name, so an imported and a
-     * fully qualified reference behave alike.
+     * Determine whether the property is exempt through an interface or parent
+     * named directly on its own class, such as a queued job's `$tries`. Names
+     * match case-insensitively on their short name.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -149,7 +132,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * The property names a keyed exemption list grants to the given names.
+     * Collect the property names an exemption map grants to the given classes.
      *
      * @param  array<string, string>  $exemptions
      * @param  array<int, string>  $names
@@ -172,8 +155,8 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * The lowercased last namespace segment of a class-like name, keeping its
-     * leading backslash.
+     * Lowercase the last namespace segment of a name, keeping its leading
+     * backslash.
      *
      * @param  string  $name
      * @return string
@@ -184,8 +167,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
     }
 
     /**
-     * Whether the token sits in a test class, where mutable public recording
-     * state (spies, fakes) is legitimate rather than a smell.
+     * Determine whether the token sits in a test class.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -210,7 +192,7 @@ final class RequireReadonlyPublicPropertySniff implements Sniff
         try {
             $properties = $phpcsFile->getMemberProperties($stackPtr);
         } catch (RuntimeException) {
-            // Not a class member variable (e.g. a local); nothing to check.
+            // Not a member variable, e.g. a local.
             return;
         }
 

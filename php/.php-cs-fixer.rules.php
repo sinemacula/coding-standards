@@ -2,18 +2,10 @@
 
 return [
 
-    /*
-    |---------------------------------------------------------------------------
-    | Preset
-    |---------------------------------------------------------------------------
-    */
+    // Preset
     '@PSR12' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Alias rules
-    |---------------------------------------------------------------------------
-    */
+    // Alias
     'backtick_to_shell_exec'           => true,
     'modernize_strpos'                 => true,
     'no_alias_language_construct_call' => true,
@@ -28,11 +20,7 @@ return [
     ],
     'set_type_to_cast' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Array notation rules
-    |---------------------------------------------------------------------------
-    */
+    // Array notation
     'array_syntax'                                => ['syntax' => 'short'],
     'no_multiline_whitespace_around_double_arrow' => true,
     'no_whitespace_before_comma_in_array'         => true,
@@ -41,19 +29,11 @@ return [
     'trim_array_spaces'                           => true,
     'whitespace_after_comma_in_array'             => ['ensure_single_space' => true],
 
-    /*
-    |---------------------------------------------------------------------------
-    | Attribute notation rules
-    |---------------------------------------------------------------------------
-    */
+    // Attribute notation
     'attribute_empty_parentheses' => ['use_parentheses' => false],
     'ordered_attributes'          => ['sort_algorithm' => 'alpha', 'order' => []],
 
-    /*
-    |---------------------------------------------------------------------------
-    | Basic rules
-    |---------------------------------------------------------------------------
-    */
+    // Basic
     'braces_position' => [
         'allow_single_line_anonymous_functions'     => true,
         'allow_single_line_empty_anonymous_classes' => true,
@@ -77,11 +57,7 @@ return [
     'numeric_literal_separator' => ['strategy' => 'no_separator'],
     'single_line_empty_body'    => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Casing rules
-    |---------------------------------------------------------------------------
-    */
+    // Casing
     'class_reference_name_casing'    => true,
     'constant_case'                  => ['case' => 'lower'],
     'integer_literal_case'           => true,
@@ -92,17 +68,15 @@ return [
     'native_function_casing'         => true,
     'native_type_declaration_casing' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Cast notation rules
-    |---------------------------------------------------------------------------
-    */
-    'cast_spaces'                 => ['space' => 'single'],
-    'lowercase_cast'              => true,
-    'modernize_types_casting'     => true,
-    'no_short_bool_cast'          => true,
-    'no_unset_cast'               => true,
-    'short_scalar_cast'           => true,
+    // Cast notation
+    'cast_spaces'             => ['space' => 'single'],
+    'lowercase_cast'          => true,
+    'modernize_types_casting' => true,
+    'no_short_bool_cast'      => true,
+    'no_unset_cast'           => true,
+    'short_scalar_cast'       => true,
+
+    // Class notation
     'class_attributes_separation' => [
         'elements' => [
             'const'        => 'only_if_meta',
@@ -163,11 +137,7 @@ return [
         'elements' => ['const', 'method', 'property'],
     ],
 
-    /*
-    |---------------------------------------------------------------------------
-    | Comment rules
-    |---------------------------------------------------------------------------
-    */
+    // Comment
     'header_comment'                    => false,
     'multiline_comment_opening_closing' => true,
     'no_empty_comment'                  => true,
@@ -177,18 +147,10 @@ return [
         'comment_types' => ['asterisk', 'hash'],
     ],
 
-    /*
-    |---------------------------------------------------------------------------
-    | Constant notation rules
-    |---------------------------------------------------------------------------
-    */
+    // Constant notation
     'native_constant_invocation' => false,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Control structure rules
-    |---------------------------------------------------------------------------
-    */
+    // Control structure
     'control_structure_braces'                => true,
     'control_structure_continuation_position' => ['position' => 'same_line'],
     'elseif'                                  => true,
@@ -210,11 +172,7 @@ return [
     ],
     'yoda_style' => false,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Function annotation rules
-    |---------------------------------------------------------------------------
-    */
+    // Function notation
     'combine_nested_dirname' => true,
     'function_declaration'   => [
         'closure_fn_spacing'       => 'one',
@@ -227,10 +185,7 @@ return [
         'keep_multiple_spaces_after_comma' => false,
         'on_multiline'                     => 'ignore',
     ],
-    // Pairs with the SineMacula.WhiteSpace.PromotedConstructorSpacing sniff,
-    // which requires a blank line above each promoted-constructor parameter;
-    // keep_blank_lines must stay true so cs-fixer preserves those blanks
-    // (default false strips them, which would fight the sniff).
+    // Keeps the blank lines PromotedConstructorSpacing requires.
     'multiline_promoted_properties' => [
         'minimum_number_of_parameters' => 1,
         'keep_blank_lines'             => true,
@@ -257,11 +212,7 @@ return [
     'use_arrow_functions' => true,
     'void_return'         => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Import rules
-    |---------------------------------------------------------------------------
-    */
+    // Import
     'fully_qualified_strict_types' => false,
     'global_namespace_import'      => [
         'import_classes'   => false,
@@ -276,11 +227,7 @@ return [
     'single_import_per_statement' => true,
     'single_line_after_imports'   => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Language construct rules
-    |---------------------------------------------------------------------------
-    */
+    // Language construct
     'class_keyword'                 => true,
     'combine_consecutive_issets'    => true,
     'combine_consecutive_unsets'    => true,
@@ -296,37 +243,21 @@ return [
     'nullable_type_declaration'     => ['syntax' => 'question_mark'],
     'single_space_around_construct' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | List notation rules
-    |---------------------------------------------------------------------------
-    */
+    // List notation
     'list_syntax' => [
         'syntax' => 'short',
     ],
 
-    /*
-    |---------------------------------------------------------------------------
-    | Namespace notation rules
-    |---------------------------------------------------------------------------
-    */
+    // Namespace notation
     'blank_line_after_namespace'      => true,
     'blank_lines_before_namespace'    => true,
     'clean_namespace'                 => true,
     'no_leading_namespace_whitespace' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Naming rules
-    |---------------------------------------------------------------------------
-    */
+    // Naming
     'no_homoglyph_names' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Operator rules
-    |---------------------------------------------------------------------------
-    */
+    // Operator
     'assign_null_coalescing_to_coalesce_equal' => true,
     'binary_operator_spaces'                   => [
         'default' => 'align_single_space_minimal',
@@ -358,11 +289,7 @@ return [
     'ternary_to_null_coalescing' => true,
     'unary_operator_spaces'      => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | PHP tag rules
-    |---------------------------------------------------------------------------
-    */
+    // PHP tag
     'blank_line_after_opening_tag' => true,
     'echo_tag_syntax'              => [
         'format'                         => 'short',
@@ -372,11 +299,7 @@ return [
     'linebreak_after_opening_tag' => true,
     'no_closing_tag'              => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | PHPUnit rules
-    |---------------------------------------------------------------------------
-    */
+    // PHPUnit
     'php_unit_assert_new_names' => true,
     'php_unit_attributes'       => [
         'keep_annotations' => false,
@@ -426,11 +349,7 @@ return [
     ],
     'php_unit_test_class_requires_covers' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | PHPDoc rules
-    |---------------------------------------------------------------------------
-    */
+    // PHPDoc
     'align_multiline_comment' => [
         'comment_type' => 'phpdocs_like',
     ],
@@ -505,23 +424,13 @@ return [
     'phpdoc_var_annotation_correct_order' => true,
     'phpdoc_var_without_name'             => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Return notation rules
-    |---------------------------------------------------------------------------
-    */
+    // Return notation
     'no_useless_return' => true,
-    // Off because folding `/** @var T $x */ $x = expr; return $x;` into a
-    // return leaves the @var naming a variable that no longer exists, which
-    // PHPStan reports as varTag.variableNotFound.
+    // Folding into a return orphans the @var tag on the assigned variable.
     'return_assignment'      => false,
     'simplified_null_return' => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Semicolon rules
-    |---------------------------------------------------------------------------
-    */
+    // Semicolon
     'multiline_whitespace_before_semicolons' => [
         'strategy' => 'no_multi_line',
     ],
@@ -532,20 +441,12 @@ return [
         'remove_in_empty_for_expressions' => true,
     ],
 
-    /*
-    |---------------------------------------------------------------------------
-    | Strict rules
-    |---------------------------------------------------------------------------
-    */
+    // Strict
     'declare_strict_types' => true,
     'strict_comparison'    => true,
     'strict_param'         => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | String notation rules
-    |---------------------------------------------------------------------------
-    */
+    // String notation
     'explicit_string_variable'          => true,
     'heredoc_closing_marker'            => true,
     'heredoc_to_nowdoc'                 => true,
@@ -560,11 +461,7 @@ return [
     'string_line_ending'          => true,
     'string_length_to_empty'      => true,
 
-    /*
-    |---------------------------------------------------------------------------
-    | Whitespace rules
-    |---------------------------------------------------------------------------
-    */
+    // Whitespace
     'array_indentation'           => true,
     'blank_line_before_statement' => [
         'statements' => ['do', 'for', 'foreach', 'if', 'switch', 'try', 'while'],

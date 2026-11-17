@@ -9,19 +9,13 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Comments\CommentWrapper;
 
 /**
- * Comment line length sniff.
+ * Wraps standalone comment prose greedily, reporting and fixing lines that
+ * overflow and lines that wrap earlier than they need to.
  *
- * Keeps standalone comment prose wrapped to a readable width by filling each
- * line greedily with as many whole words as fit. It reports, and fixes, two
- * faults on their own footings: a line that overflows the width, and a line
- * that wraps earlier than it needs to. Standalone `//` runs and multi-line
- * docblocks are governed; tag lines, suppression directives, fenced or indented
- * code, tables, separators and trailing comments after code are left untouched,
- * as is a line whose overflow is a single unbreakable token such as a long name
- * or URL, and a compact single-line docblock, which the single-line member
- * rules already govern. In a `//` run, a line opening with a capital letter
- * starts a paragraph of its own unless the line above ends mid-sentence, so a
- * title or a one-line note is not merged into the sentence below it.
+ * Covers `//` runs and multi-line docblocks. Tags, directives, code, tables,
+ * trailing comments and lines whose overflow is one unbreakable token are left
+ * alone. In a `//` run a capitalised line starts a new paragraph unless the
+ * line above ends mid-sentence.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -139,8 +133,7 @@ final class CommentLineLengthSniff implements Sniff
     }
 
     /**
-     * Replace the block's tokens with the reflowed text. The caller only fixes
-     * a block that has a fault, so the text always differs from the original.
+     * Replace the block's tokens with the reflowed text.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  DocBlock|SlashBlock  $block
@@ -285,8 +278,8 @@ final class CommentLineLengthSniff implements Sniff
     }
 
     /**
-     * The pointers of the standalone `//` comments forming a run from the
-     * pointer down consecutive lines.
+     * Collect the standalone `//` comments on consecutive lines from the
+     * pointer.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $firstPtr
@@ -315,8 +308,7 @@ final class CommentLineLengthSniff implements Sniff
     }
 
     /**
-     * Whether the comment begins a standalone `//` run: itself standalone, with
-     * no standalone `//` comment on the line directly above.
+     * Determine whether the comment begins a standalone `//` run.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $ptr
@@ -338,8 +330,7 @@ final class CommentLineLengthSniff implements Sniff
     }
 
     /**
-     * Whether the comment is a `//` comment that is the first token on its
-     * line.
+     * Determine whether the comment is a `//` comment that starts its line.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $ptr

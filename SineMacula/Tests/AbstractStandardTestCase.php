@@ -10,13 +10,7 @@ use PHP_CodeSniffer\Ruleset;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Base test case for the standard as a whole.
- *
- * Where a sniff test isolates one sniff, this boots the real ruleset.xml with
- * every sniff it references, so a fixture is judged the way a consumer's code
- * is. That is the only way to pin how sniffs behave together: a shape can
- * satisfy each rule read on its own and still be unwritable because two of them
- * meet on the same line.
+ * Base test case that runs the full ruleset, to pin how sniffs interact.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -24,9 +18,8 @@ use PHPUnit\Framework\TestCase;
 abstract class AbstractStandardTestCase extends TestCase
 {
     /**
-     * Assert that the standard reports exactly the given error sources against
-     * a fixture, as a map of line number to the full dotted code of each error
-     * reported on it. An empty map asserts the fixture is accepted outright.
+     * Assert the full error sources reported on each line of a fixture; an
+     * empty map asserts the fixture is clean.
      *
      * @param  string  $fixture
      * @param  array<int, list<string>>  $expected
@@ -40,8 +33,8 @@ abstract class AbstractStandardTestCase extends TestCase
     }
 
     /**
-     * Assert the same against a file anywhere on disk, for a fixture that is
-     * produced during the test rather than committed beside it.
+     * Assert the full error sources reported on each line of a file at any
+     * path.
      *
      * @param  string  $path
      * @param  array<int, list<string>>  $expected
@@ -53,9 +46,7 @@ abstract class AbstractStandardTestCase extends TestCase
     }
 
     /**
-     * Assert that the standard warns with exactly the given sources against a
-     * fixture, as a map of line number to the full dotted code of each warning
-     * on it.
+     * Assert the full warning sources reported on each line of a fixture.
      *
      * @param  string  $fixture
      * @param  array<int, list<string>>  $expected
@@ -69,7 +60,7 @@ abstract class AbstractStandardTestCase extends TestCase
     }
 
     /**
-     * The source of each reported message, keyed by line in line order.
+     * Map each line to the sources reported on it.
      *
      * @param  array<int, array<int, list<array{source: string}>>>  $reports
      * @return array<int, list<string>>
@@ -90,7 +81,7 @@ abstract class AbstractStandardTestCase extends TestCase
     }
 
     /**
-     * The map sorted by line.
+     * Sort the map by line.
      *
      * @param  array<int, list<string>>  $map
      * @return array<int, list<string>>

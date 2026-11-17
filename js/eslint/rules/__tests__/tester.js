@@ -10,7 +10,6 @@ import { RuleTester } from '@typescript-eslint/rule-tester';
 import { afterAll, describe, it } from 'vitest';
 import * as yamlParser from 'yaml-eslint-parser';
 
-// Bridge @typescript-eslint/rule-tester onto vitest's lifecycle globals.
 RuleTester.afterAll = afterAll;
 RuleTester.describe = describe;
 RuleTester.it = it;
@@ -18,15 +17,11 @@ RuleTester.itOnly = it.only;
 
 const fixtures = path.join(import.meta.dirname, 'fixtures');
 
-/**
- * Syntax-only tester. Use for rules that inspect the AST but never read types.
- */
+/** Syntax-only tester for rules that never read types. */
 export const ruleTester = new RuleTester();
 
 /**
- * Type-aware tester. Use for rules that call getTypeAtLocation and friends;
- * types resolve against fixtures/tsconfig.json. RuleTester writes each test
- * case into file.ts (or react.tsx for JSX), which the tsconfig includes.
+ * Type-aware tester; each case is written to fixtures/file.ts (or react.tsx).
  */
 export const typedRuleTester = new RuleTester({
     languageOptions: {
@@ -37,11 +32,7 @@ export const typedRuleTester = new RuleTester({
     },
 });
 
-/**
- * YAML tester. Use for the rules the base config carries over `.yml`; each case
- * is parsed by yaml-eslint-parser, which surfaces a `#` comment as a `Block`
- * comment rather than the `Line` a `//` comment arrives as.
- */
+/** YAML tester; the parser surfaces a `#` comment as a `Block` comment. */
 export const yamlRuleTester = new RuleTester({
     languageOptions: {
         parser: yamlParser,

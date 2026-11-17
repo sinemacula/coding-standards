@@ -35,14 +35,8 @@ final class NoRedundantStaticReturnTypeRuleTest extends RuleTestCase
     private const string DOCUMENTED = '@return tag';
 
     /**
-     * A method of a final class or an enum returning static is flagged, whether
-     * the type is declared natively (plainly, nullably or in a union), written
-     * in a return tag, or both, and whatever case the keyword carries. So is an
-     * override of a parent method that declares no return type at all. A method
-     * whose return type an ancestor pins to static is not, nor is one whose
-     * only static ancestor declaration is private, a method of a non-final or
-     * abstract class, a trait method a final class uses, or a return tag whose
-     * description merely mentions the word.
+     * Flags a static return in a final class or enum, native or documented,
+     * unless an ancestor pins it to static.
      *
      * @return void
      */

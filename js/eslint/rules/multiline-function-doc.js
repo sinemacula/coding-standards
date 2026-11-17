@@ -26,19 +26,11 @@ function singleLineContent(value) {
 }
 
 /**
- * Require a method's documentation comment to span multiple lines.
+ * Require a method's documentation comment to span multiple lines, the mirror
+ * of the single-line form data properties take.
  *
- * A method earns a fuller account than a data field: what it does, and in time
- * its parameters and what it returns. Holding its comment open across lines
- * keeps that room ready and sets behaviour apart from data at a glance, the
- * mirror of the single-line form data properties take. Class methods, interface
- * method signatures and class fields that hold a function are governed; a data
- * property keeps its one line, and a free function is left to the author, since
- * a short helper reads well on a single line.
- *
- * A block already spanning lines passes. A one-line block is unfolded onto
- * three, its prose moved to the middle line; an empty one is left for the
- * description rule to report, since there is nothing to unfold.
+ * Governs class methods, interface method signatures and function-valued class
+ * fields; free functions are left to the author.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -78,8 +70,7 @@ export default createRule({
 
             const content = singleLineContent(doc.value);
 
-            // An empty block is the description rule's to report; there is no
-            // prose to move onto the middle line.
+            // An empty block is the description rule's to report.
             if (content.length === 0) {
                 return;
             }

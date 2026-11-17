@@ -1,13 +1,13 @@
 # Contributing
 
-Contributions are welcome via GitHub pull requests. This guide covers the expectations for working on this package.
+Contributions are welcome via GitHub pull requests.
 
 ## Requirements
 
 - PHP 8.3+
 - Composer 2
-- Node.js is only needed when working on the JavaScript, Markdown, YAML or shell configs distributed via npm
-- macOS and Qlty CLI are needed when working on the SwiftLint or SwiftFormat policy
+- Node.js, for the JavaScript, Markdown, YAML and shell configs distributed via npm
+- Qlty CLI, for the policy integration tests; the Swift one also needs macOS
 
 ## Getting Started
 
@@ -15,6 +15,7 @@ Contributions are welcome via GitHub pull requests. This guide covers the expect
 git clone git@github.com:sinemacula/coding-standards.git
 cd coding-standards
 composer install
+npm ci
 ```
 
 ## Development Workflow
@@ -33,7 +34,7 @@ Branch from `master` using the appropriate prefix:
 
 ### Commits
 
-This project uses [Conventional Commits](https://www.conventionalcommits.org/). Prefix your commit messages accordingly:
+This project uses [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```text
 feat(phpcs): add sniff for redundant else branches
@@ -44,13 +45,14 @@ chore: update qlty configuration
 
 ### Code Quality
 
-All code must pass static analysis before submission:
+All code must pass these before submission:
 
 ```bash
-composer check    # Static analysis and lint checks via qlty (PHPStan,
-                  # PHP-CS-Fixer, CodeSniffer)
-composer format   # Format the codebase via qlty
-composer smells   # Advisory code smells (duplication, complexity)
+composer check    # Static analysis and lint via qlty
+composer format   # Format via qlty
+composer smells   # Code smells (duplication, complexity) via qlty
+composer analyse  # PHPStan over the sniffs and rules
+npm run lint:js   # ESLint over the ESLint rules
 ```
 
 ### Testing
@@ -58,40 +60,38 @@ composer smells   # Advisory code smells (duplication, complexity)
 Run the full test suite before submitting:
 
 ```bash
-composer test            # Run the PHPUnit sniff test suite
-composer test:coverage   # With Clover coverage report (requires Xdebug)
-bash scripts/test-swift-policy.sh # Validate Swift exports, formatting and linting on macOS
-bash scripts/test-terraform-policy.sh # Validate Terraform exports, formatting and linting
+composer test                 # PHPUnit suite for the sniffs and PHPStan rules
+composer test:coverage        # With Clover coverage report (requires Xdebug)
+composer test:mutation        # Infection mutation gate on the diff against origin/master
+npm run test:js               # Vitest suite for the ESLint rules
+bash scripts/test-<tool>-policy.sh  # Qlty consumer integration test for knip, shared, swift, terraform, trivy or zizmor
 ```
 
 Single test file or method:
 
 ```bash
 vendor/bin/phpunit SineMacula/Tests/<Category>/<Name>SniffTest.php
-vendor/bin/phpunit --filter testDetectsViolations SineMacula/Tests/<Category>/<Name>SniffTest.php
+vendor/bin/phpunit --filter <testMethod> SineMacula/Tests/<Category>/<Name>SniffTest.php
 ```
 
 ### Standards
 
-- New sniffs and PHPStan rules ship with tests and maintain 100% line coverage; the package's mutation-testing gate
-  (`composer test:mutation`) is the enforced floor
-- Swift policy changes must pass the isolated Qlty consumer integration test on macOS
-- Terraform policy changes must pass the isolated Qlty consumer integration test
+- New sniffs and PHPStan rules ship with tests and 100% line coverage; `composer test:mutation` is the enforced floor
+- Changes to an exported Qlty policy must pass its consumer integration test (`scripts/test-*-policy.sh`)
 - Full type hints on all method parameters and return types
 - PHPDoc on all classes and methods
 - Sniffs are token-based; PHPStan rules are AST/reflection-based
 
 ## Pull Requests
 
-- Keep changes minimal and scoped to a single concern
+- Keep changes scoped to a single concern
 - Do not change static-analysis or formatting configuration without prior discussion
 - Include tests for new or changed behaviour
 - Ensure `composer check` and `composer test` pass
 
 ## Security
 
-If you discover a security vulnerability, please report it directly to Sine Macula rather than opening a public issue.
-See [SECURITY.md](SECURITY.md) for details.
+Report vulnerabilities directly to Sine Macula rather than opening a public issue. See [SECURITY.md](SECURITY.md).
 
 ## License
 

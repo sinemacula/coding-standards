@@ -43,9 +43,7 @@ jobs:
         name: Test / PHP ${{ matrix.php }} / phpcs ${{ matrix.phpcs }}
         runs-on: ubuntu-latest
 
-        # Consumers run the sniffs under phpcs 4.x via qlty, so the suite is
-        # tested against both the 3.x and 4.x token streams. The resolver pulls
-        # the slevomat line that matches each phpcs major automatically.
+        # Consumers run phpcs 4.x via qlty; 3.x stays supported.
         strategy:
             fail-fast: false
             matrix:
@@ -75,8 +73,7 @@ jobs:
                     composer update --prefer-dist --no-interaction --no-progress
                     --with "squizlabs/php_codesniffer:${{ matrix.constraint }}"
 
-            # Analysed on the PHP floor only: newer versions ask for attributes,
-            # such as #[\Override] on a property, that the floor cannot parse.
+            # Floor only: newer PHP asks for attributes the floor cannot parse.
             -   name: PHPStan
                 if: ${{ matrix.php == '8.3' }}
                 run: composer analyse
@@ -137,9 +134,8 @@ jobs:
             -   name: Install Qlty
                 uses: qltysh/qlty-action/install@v2
 
-            # Qlty anchors configuration at a Git worktree's root. The script
-            # creates an isolated consumer that exercises this checkout just as
-            # a downstream repository would.
+            # Qlty anchors config at the worktree root, so the script builds an
+            # isolated consumer.
             -   name: Verify Swift policy
                 run: bash scripts/test-swift-policy.sh
 

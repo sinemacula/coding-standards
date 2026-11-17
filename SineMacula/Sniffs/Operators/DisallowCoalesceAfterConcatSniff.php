@@ -9,12 +9,10 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use PHP_CodeSniffer\Util\Tokens;
 
 /**
- * Unreachable null coalesce sniff.
+ * Flags a `??` whose whole left operand is a concatenation.
  *
- * Concatenation binds tighter than `??`, so `$prefix . $value ?? $fallback`
- * reads as `($prefix . $value) ?? $fallback`. A concatenation is never null, so
- * the fallback can never run. Flags a `??` whose whole left operand is a
- * concatenation; the intended `$prefix . ($value ?? $fallback)` is not flagged.
+ * `.` binds tighter, so `$prefix . $value ?? $fallback` coalesces the whole
+ * concatenation, which is never null, and the fallback never runs.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -116,11 +114,9 @@ final class DisallowCoalesceAfterConcatSniff implements Sniff
     }
 
     /**
-     * Whether the operand ending at the given token is a concatenation at its
-     * root, looking inside a pair of parentheses that wraps all of it.
-     *
-     * Reads backwards to the token that ends the operand, stepping over each
-     * bracketed group whole.
+     * Determine whether the operand ending at the token is a concatenation at
+     * its root, looking inside parentheses that wrap all of it. Reads
+     * backwards, stepping over each bracketed group whole.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $ptr
@@ -161,8 +157,7 @@ final class DisallowCoalesceAfterConcatSniff implements Sniff
     }
 
     /**
-     * The opening token of the bracketed group the given token closes, if it
-     * closes one.
+     * Resolve the opener of the bracketed group the token closes, if any.
      *
      * @param  array<string, mixed>  $token
      * @return int|null

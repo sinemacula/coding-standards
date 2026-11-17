@@ -9,13 +9,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Single-line data member comment sniff.
- *
- * A data member's description is a single phrase, so where it carries a doc
- * comment that comment sits on one line. Properties, class constants and enum
- * cases are governed; a method reads as behaviour and keeps a multi-line block.
- * No comment is ever required here, only held to one line where it is present,
- * so enum cases stay documented at the author's discretion.
+ * Requires a property, class constant or enum case doc comment, where present,
+ * to sit on one line.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -78,8 +73,7 @@ final class SingleLineMemberCommentSniff implements Sniff
     }
 
     /**
-     * Resolve the doc comment closer for the data member at the pointer, or
-     * null when the token is not a documented data member.
+     * Resolve the data member's doc comment closer, or null when it has none.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -101,9 +95,8 @@ final class SingleLineMemberCommentSniff implements Sniff
     }
 
     /**
-     * Whether the variable at the pointer declares a class member property,
-     * distinguishing a declaration in a class body from a promoted parameter, a
-     * local variable or a static access inside a method.
+     * Determine whether the variable is a property declared in a class body,
+     * rather than a promoted parameter, local variable or static access.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

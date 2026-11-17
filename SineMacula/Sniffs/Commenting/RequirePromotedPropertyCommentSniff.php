@@ -8,10 +8,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Promoted property doc comment sniff.
- *
- * Requires a doc comment directly above every constructor-promoted property, so
- * promoted properties are documented like any other property.
+ * Requires a doc comment above every constructor-promoted property.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

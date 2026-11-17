@@ -8,11 +8,8 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Mixed constructor parameter comment sniff.
- *
- * When a constructor mixes promoted properties with plain parameters, each
- * plain parameter must carry a preceding inline comment explaining why it is
- * not promoted.
+ * Requires a comment before each plain parameter of a constructor that also
+ * promotes properties, explaining why it is not promoted.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

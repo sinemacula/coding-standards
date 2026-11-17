@@ -13,12 +13,7 @@ use SineMacula\Tests\AbstractStandardTestCase;
 /**
  * Tests that the formatter and the sniffs agree about the same file.
  *
- * Both run over a consumer's code, the formatter first, so a shape the
- * formatter writes and the sniffs then reject cannot be resolved by the
- * consumer at all: formatting reintroduces the violation every time. Reading
- * either ruleset alone cannot show that, since each is self-consistent. The
- * fixture is written the way the sniffs require, so anything the formatter
- * changes about it is a disagreement between the two.
+ * The formatter runs first, so the sniffs must accept whatever it writes.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -50,11 +45,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
-     * The standard accepts its own fixture once the formatter has been over it.
-     * Member doc comments are the case that has diverged: the formatter decides
-     * the span of each kind separately, and a kind it is not told about takes
-     * its own default, which for enum cases is the multi-line shape the sniffs
-     * refuse.
+     * The sniffs accept the enum fixture once formatted.
      *
      * @return void
      */
@@ -64,8 +55,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
-     * The same for the members of a class, so the spans the formatter is told
-     * about stay covered alongside the one it was not.
+     * The sniffs accept the class fixture once formatted.
      *
      * @return void
      */
@@ -75,11 +65,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
-     * A tag left bare by the description sniff is a shape both sides accept:
-     * the formatter leaves it exactly as the fixer wrote it and the sniffs
-     * report nothing. A described tag has no such shape, since the formatter
-     * lowercases the description and strips its full stop while the sniffs ask
-     * for both.
+     * The formatter keeps the bare tags the fixer writes, and the sniffs pass.
      *
      * @return void
      */
@@ -94,10 +80,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
-     * An @param type written across lines is a shape both sides accept: the
-     * formatter leaves it as written, and the sniffs follow the type to its
-     * close to find the variable, where reading the tag's first line alone
-     * finds none.
+     * Both sides accept an @param type written across lines.
      *
      * @return void
      */
@@ -111,9 +94,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
-     * An assignment a @var tag names is kept, not folded into the return that
-     * reads it, since folding it leaves the tag naming a variable that no
-     * longer exists, which PHPStan reports.
+     * The formatter keeps an assignment that a @var tag names.
      *
      * @return void
      */
@@ -123,8 +104,7 @@ final class FormatterAgreementTest extends AbstractStandardTestCase
     }
 
     /**
-     * Run the shipped formatter rules over a fixture and write the result where
-     * the sniffs can read it, returning that path.
+     * Format a fixture with the shipped rules and return the output path.
      *
      * @param  string  $fixture
      * @return string

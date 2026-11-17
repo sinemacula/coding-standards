@@ -5,14 +5,9 @@ declare(strict_types = 1);
 namespace SineMacula\CodingStandards\Comments;
 
 /**
- * Reflows a single paragraph of comment prose to its greedy canonical form.
+ * Reflows one paragraph or list item of comment prose to its greedy form.
  *
- * A paragraph is a run of prose lines, or one list item with its continuation
- * lines. It is filled line by line with as many whole words as the width
- * allows, never splitting a word and keeping any list marker's hanging indent.
- * A paragraph is reflowed only when it is safe to: it holds no token wider than
- * the line, is not too narrow, and would still read as prose once wrapped.
- * Otherwise it is returned untouched.
+ * A paragraph that cannot be wrapped safely is returned untouched.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -39,9 +34,8 @@ final class CommentParagraph
     }
 
     /**
-     * Reflow a paragraph, returning its output lines and the faults found,
-     * their indices offset from the given base, or the verbatim input when it
-     * cannot be reflowed or carries no fault.
+     * Reflow a paragraph, returning its lines and faults offset by the base, or
+     * the input verbatim when it cannot be reflowed or has no fault.
      *
      * @param  list<string>  $slice
      * @param  array{marker: string, indent: int, width: int}|null  $marker
@@ -91,8 +85,7 @@ final class CommentParagraph
     }
 
     /**
-     * Assemble output lines from wrapped text, prefixing the marker on the
-     * first line and the hanging indent on the rest.
+     * Assemble output lines with the list marker and hanging indent.
      *
      * @param  list<string>  $wrapped
      * @param  array{marker: string, indent: int, width: int}|null  $marker
@@ -114,8 +107,7 @@ final class CommentParagraph
     }
 
     /**
-     * Whether every reflowed line still classifies as it must, so a further
-     * pass would leave it unchanged.
+     * Whether every reflowed line still classifies as it must.
      *
      * @param  list<string>  $lines
      * @param  array{marker: string, indent: int, width: int}|null  $marker
@@ -179,8 +171,7 @@ final class CommentParagraph
     }
 
     /**
-     * Join a paragraph's lines into a single string, stripping any list marker
-     * from the first line.
+     * Join a paragraph's lines into one string, without the list marker.
      *
      * @param  list<string>  $slice
      * @param  array{marker: string, indent: int, width: int}|null  $marker
@@ -198,8 +189,7 @@ final class CommentParagraph
     }
 
     /**
-     * Merge backward any token that must never open a wrapped line, so a
-     * reflowed paragraph cannot begin a tag or list.
+     * Merge backward any token that must never open a wrapped line.
      *
      * @param  list<string>  $tokens
      * @return list<string>

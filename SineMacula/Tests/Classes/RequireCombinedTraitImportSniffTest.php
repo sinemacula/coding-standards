@@ -23,10 +23,7 @@ final class RequireCombinedTraitImportSniffTest extends AbstractSniffTestCase
     private const string MESSAGE = 'Traits must be imported in a single use statement.';
 
     /**
-     * Every import after the first is flagged, in a class, a trait, an enum and
-     * an anonymous class alike. Separating the statements with other members
-     * does not excuse them, a single import is accepted, and the combined form
-     * is what the rule asks for, so neither is reported.
+     * Flags every trait import after the first, in any class-like structure.
      *
      * @return void
      */
@@ -36,8 +33,7 @@ final class RequireCombinedTraitImportSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The report names the rule rather than the trait, since the fix is to
-     * merge the statements rather than to change any one import.
+     * The message names the rule rather than the trait.
      *
      * @return void
      */
@@ -52,13 +48,11 @@ final class RequireCombinedTraitImportSniffTest extends AbstractSniffTestCase
             65 => [self::MESSAGE],
             71 => [self::MESSAGE],
             85 => [self::MESSAGE],
-
         ]);
     }
 
     /**
-     * The report carries its own code, which is what a project excludes to
-     * silence this rule alone rather than the sniff it sits beside.
+     * Reports under its own code so a project can exclude this rule alone.
      *
      * @return void
      */
@@ -73,7 +67,6 @@ final class RequireCombinedTraitImportSniffTest extends AbstractSniffTestCase
             65 => ['NotCombined'],
             71 => ['NotCombined'],
             85 => ['NotCombined'],
-
         ]);
     }
 }

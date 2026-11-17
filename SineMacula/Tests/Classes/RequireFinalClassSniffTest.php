@@ -23,12 +23,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequireFinalClassSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Only concrete classes that are neither final nor marked @inheritable
-     * should be flagged. The @inheritable opt-out still holds when an attribute
-     * sits between the docblock and the class; a concrete class behind an
-     * attribute with no opt-out is still flagged. A docblock carrying an
-     * unrelated tag does not opt out, while the opt-out tag itself matches
-     * case-insensitively.
+     * Flags concrete classes that are neither final nor marked @inheritable.
      *
      * @return void
      */
@@ -38,8 +33,7 @@ final class RequireFinalClassSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered error names the offending class so the report points at the
-     * declaration that must change.
+     * The message names the offending class.
      *
      * @return void
      */

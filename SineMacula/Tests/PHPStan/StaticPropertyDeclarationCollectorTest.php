@@ -26,8 +26,7 @@ use SineMacula\CodingStandards\PHPStan\Collectors\StaticPropertyDeclarationColle
 final class StaticPropertyDeclarationCollectorTest extends TestCase
 {
     /**
-     * A declaration naming several static properties produces one full record
-     * per name, each carrying the key, the bare name and the declaration line.
+     * Collects one record per name of a multi-property static declaration.
      *
      * @return void
      */
@@ -43,8 +42,7 @@ final class StaticPropertyDeclarationCollectorTest extends TestCase
     }
 
     /**
-     * Instance property declarations are never collected, even when the class
-     * carries no opt-out tag.
+     * Instance property declarations are never collected.
      *
      * @return void
      */
@@ -57,8 +55,7 @@ final class StaticPropertyDeclarationCollectorTest extends TestCase
     }
 
     /**
-     * The tests-directory exemption also matches paths that use backslash
-     * directory separators.
+     * The tests-directory exemption also matches backslash paths.
      *
      * @return void
      */

@@ -9,11 +9,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Final class sniff.
- *
- * Requires every concrete class to be `final`. Classes designed for extension
- * must be `abstract`; the rare concrete class that must remain extendable can
- * opt out with an `@inheritable` docblock tag.
+ * Requires every concrete class to be `final`, unless its docblock carries an
+ * `@inheritable` tag.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

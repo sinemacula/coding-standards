@@ -9,8 +9,7 @@ fi
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# TMPDIR is unset in many shells. Left bare, the template collapses to a path at
-# the filesystem root and mktemp fails with an error that names neither cause.
+# TMPDIR is often unset; without a fallback mktemp targets the filesystem root.
 terraform_consumer_dir="$(mktemp -d "${TMPDIR:-/tmp}/coding-standards-terraform.XXXXXX")"
 
 cleanup() {
@@ -42,9 +41,8 @@ diff -ru "${repository_root}/tests/terraform-consumer/modules" modules
 cmp "${repository_root}/tests/terraform-consumer/Fixtures/unaligned.tf.fixture" "${vendored_dir}/unaligned.tf"
 qlty check --all --no-cache --no-formatters
 
-# Undocumented variables are reported only at the "all" preset, and TFLint runs
-# from the module's own directory, away from where qlty stages the config. This
-# finding therefore proves the exported policy reached a nested module.
+# Only the "all" preset reports undocumented variables, and TFLint runs from the
+# module directory, so this proves the exported policy reached a nested module.
 cp "${repository_root}/tests/terraform-consumer/Fixtures/undocumented.tf.fixture" \
     modules/greeting/undocumented.tf
 

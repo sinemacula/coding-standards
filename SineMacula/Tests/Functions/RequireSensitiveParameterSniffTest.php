@@ -25,9 +25,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Sensitive parameters without the attribute are flagged; marked ones, the
-     * ambiguous $token, lookalikes such as $tokenizer, and parameters in a test
-     * class are not.
+     * Flags unmarked sensitive parameters, but not lookalikes or test classes.
      *
      * @return void
      */
@@ -47,10 +45,7 @@ final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Camel-case names are matched case-insensitively - $apiKey matches the
-     * joined keyword form and $currentPassword matches on a word boundary - the
-     * reported message names the offending parameter, and an unqualified
-     * imported attribute counts as marked.
+     * Camel-case names match and the message names the parameter.
      *
      * @return void
      */
@@ -63,13 +58,7 @@ final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A sensitive name only counts where the declared type could carry the
-     * secret. A parameter typed solely as a class, interface, `object` or
-     * `self`, including nullable, intersection and disjunctive-normal forms,
-     * holds what the secret belongs to rather than the secret. A value type
-     * still counts wherever it appears - alone, in any case, nullable, or as
-     * one member of a union or disjunctive-normal type - as does an untyped
-     * parameter, promoted constructor properties included.
+     * Flags only types that can hold the secret, not the object owning it.
      *
      * @return void
      */
@@ -79,8 +68,7 @@ final class RequireSensitiveParameterSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The closest enclosing class decides the test exemption - a test class
-     * declared inside a production class method is still exempt.
+     * The closest enclosing class decides the test exemption.
      *
      * @return void
      */

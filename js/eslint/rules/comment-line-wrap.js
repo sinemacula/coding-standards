@@ -20,13 +20,9 @@ function isStandalone(comment, sourceCode) {
 }
 
 /**
- * The line-comment token a comment opens with, or null when it opens none.
- *
- * Read from the source text rather than inferred from the comment's type,
- * because parsers label the same shape differently: a `//` comment arrives as
- * `Line`, while yaml-eslint-parser tags a `#` comment `Block`. Requiring one of
- * the two recognised types first leaves out a hashbang, which is neither and
- * whose leading `#` must never be read as prose.
+ * The line-comment token a comment opens with, or null. Read from the source
+ * because yaml-eslint-parser types a `#` comment as `Block`; the type check
+ * still excludes a hashbang.
  */
 function lineToken(comment, sourceCode) {
     if (!COMMENT_TYPES.includes(comment.type)) {
@@ -166,27 +162,13 @@ function enforce(context, descriptor, maxLength) {
 }
 
 /**
- * Keep standalone comment prose wrapped to a readable width.
+ * Keep standalone comment prose wrapped greedily to a readable width.
  *
- * The syntax-only counterpart of the PHP comment line length sniff. It fills
- * each line greedily with as many whole words as fit and reports two faults on
- * their own footings: a line that overflows the width, and a line that wraps
- * earlier than it needs to. Standalone runs of the line-comment tokens `//` and
- * `#` and multi-line docblocks are governed; tag lines, suppression directives,
- * fenced or indented code, tables, separators and trailing comments after code
- * are left untouched, as is a line whose overflow is a single unbreakable token
- * such as a long name or URL, and a compact single-line docblock, which the
- * single-line property rule governs. In a line-comment run, a line opening with
- * a capital letter starts a paragraph of its own unless the line above ends
- * mid-sentence, so a title or a one-line note is not merged into the sentence
- * below it. The fix reflows each faulted paragraph to its greedy canonical form
- * and is idempotent.
- *
- * The `#` token carries the rule into YAML through yaml-eslint-parser, where it
- * reaches only standalone comments: block-scalar bodies are content rather than
- * comments, so a shell comment inside a `run:` step is never seen, and a
- * comment trailing a value is not standalone. Each token reclaims its own
- * width, so a `#` comment fills one column further than a `//` one.
+ * Reports a line that overflows and a line that wraps before it needs to, over
+ * standalone `//` and `#` runs and multi-line docblocks. Trailing comments,
+ * single-line docblocks and an overflow caused by one unbreakable token are
+ * left alone. In YAML, block-scalar bodies are content, so a shell comment in a
+ * `run:` step is never seen.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

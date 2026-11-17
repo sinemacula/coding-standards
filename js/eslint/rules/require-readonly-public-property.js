@@ -9,16 +9,11 @@ import {
 } from './lib.js';
 
 /**
- * Require the `readonly` modifier on public class properties.
+ * Require the `readonly` modifier on public class properties, declared or
+ * constructor-promoted.
  *
- * Public properties, whether declared or constructor-promoted, must be
- * `readonly`. Mutable public state breaks encapsulation; the legitimate
- * data-holder case is expressed with `public readonly`. Public auto-accessors
- * have no `readonly` form and always expose a setter, so they are disallowed
- * outright. Static properties are left to the mutable static state concern,
- * non-public properties are unaffected, and ambient declarations plus test
- * fixtures are exempt. TypeScript has no whole-class readonly modifier, so
- * there is no class-level exemption.
+ * A public auto-accessor has no readonly form, so it is disallowed outright.
+ * Statics are left to `no-mutable-static`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -52,7 +47,6 @@ export default createRule({
         const ignoredParents = options.ignoredParentClasses ?? [];
         const { sourceCode }  = context;
 
-        // Declaration files and test directories are exempt wholesale.
         if (isDeclarationFile(context.filename) || isTestPath(context.filename)) {
             return {};
         }
@@ -82,8 +76,6 @@ export default createRule({
                 });
             },
             'AccessorProperty, TSAbstractAccessorProperty'(node) {
-                // An auto-accessor cannot be readonly, so a public one is
-                // always mutable.
                 if (isOutOfScope(node) || isExempt(node)) {
                     return;
                 }
@@ -116,10 +108,7 @@ function isNonPublic(node) {
         || node.accessibility === 'protected';
 }
 
-/**
- * Whether a class property is outside the public-mutable scope: static,
- * ambient, or non-public.
- */
+/** Whether a class property is static, ambient or non-public. */
 function isOutOfScope(node) {
     return node.static || node.declare || isNonPublic(node);
 }

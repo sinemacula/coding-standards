@@ -3,19 +3,10 @@ import pluginVue from 'eslint-plugin-vue';
 import tseslint from 'typescript-eslint';
 
 /**
- * Opt-in Vue layer: the single-file-component rules. Registers the SFC parser
- * so `.vue` files are linted at all, resolves `<script lang="ts">` blocks
- * through the TypeScript parser, and holds component filenames to the same
- * kebab-case convention the shared formatter enforces on plain sources.
+ * Opt-in Vue layer for single-file components, including template layout, which
+ * Biome cannot format.
  *
- * This layer also carries the template layout rules, which the shared formatter
- * cannot: it does not understand single-file components, so `.vue` markup would
- * otherwise go unformatted entirely.
- *
- * Additive, and deliberately unlike the type-aware layer: it carries no base
- * rules of its own, so spread it after whichever layer a repo already uses
- * rather than in place of one. Vue is orthogonal to type-awareness, and a repo
- * enabling both would otherwise apply the base rules twice.
+ * It carries no base rules, so spread it after the base or type-aware layer.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

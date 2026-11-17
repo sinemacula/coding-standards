@@ -11,16 +11,9 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
- * Disallow a redundant static reference in a final class.
+ * Disallow `new static`, `static::` and `instanceof static` in a final class.
  *
- * `new static`, `static::` and `instanceof static` all defer to a class that is
- * only decided when one is called - which, in a final class, is always the
- * class the expression is written in. Reading as though a subclass were coming
- * costs nothing today and changes meaning the day `final` is lifted, whereas
- * `self` states what actually happens. This is the expression-position
- * counterpart of the redundant static return type; the two are separate so
- * either can be silenced without the other. A trait body is skipped, since a
- * trait cannot know whether the class using it is final.
+ * Trait bodies are skipped: a trait cannot know whether its user is final.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -105,8 +98,7 @@ final class NoRedundantStaticReferenceRule implements Rule
     }
 
     /**
-     * Whether the class an expression names is the static keyword itself,
-     * rather than a written name or a runtime expression.
+     * Whether the class an expression names is the static keyword.
      *
      * @param  \PhpParser\Node  $class
      * @return bool

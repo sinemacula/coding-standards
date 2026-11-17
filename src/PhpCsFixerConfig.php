@@ -9,10 +9,7 @@ use PhpCsFixer\Finder;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 /**
- * PHP CS Fixer configuration factory.
- *
- * Provides a factory for building PHP CS Fixer configurations using the shared
- * Sine Macula coding standards.
+ * Builds a PHP CS Fixer configuration from the shared Sine Macula rules.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -23,7 +20,7 @@ use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 final class PhpCsFixerConfig
 {
     /**
-     * Create a PHP CS Fixer configuration using shared Sine Macula rules.
+     * Create a configuration over the directories, with rule overrides.
      *
      * @param  array<int, string>  $directories
      * @param  array<string, mixed>  $overrides

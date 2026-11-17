@@ -40,7 +40,6 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-
             -   name: Trigger the dependency-updates worker
                 env:
                     GH_TOKEN: ${{ secrets.DEPENDENCIES_DISPATCH_TOKEN }}

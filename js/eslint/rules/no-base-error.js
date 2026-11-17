@@ -3,10 +3,7 @@ import { createRule, isTestPath } from './lib.js';
 /** Global objects whose `Error` member resolves to the base `Error`. */
 const GLOBAL_OBJECTS = new Set(['globalThis', 'window', 'global', 'self']);
 
-/**
- * Strips the `as`, `satisfies` and non-null wrappers a throw argument may
- * carry.
- */
+/** Strips `as`, `satisfies` and non-null wrappers from a throw argument. */
 function unwrapType(node) {
     let current = node;
 
@@ -39,10 +36,7 @@ function isGlobalError(callee) {
         && isErrorProperty(callee.property);
 }
 
-/**
- * Whether a construction callee denotes the base `Error`, directly or through a
- * global object.
- */
+/** Whether a callee is the base `Error`, directly or via a global object. */
 function isBaseError(callee) {
     if (callee.type === 'Identifier') {
         return callee.name === 'Error';
@@ -52,26 +46,11 @@ function isBaseError(callee) {
 }
 
 /**
- * Disallow throwing the base `Error`.
+ * Disallow throwing the base `Error`, directly or via a global object such as
+ * `globalThis`, since it gives a caller no type to catch on.
  *
- * A bare `throw new Error(...)`, including the argument-free `throw new Error`,
- * gives a caller no type to catch on, so a domain-specific subclass such as
- * `ValidationError` must be thrown instead.
- *
- * The check is syntactic. It flags a throw whose argument constructs the base
- * `Error`, whether named directly (`new Error()`) or reached through a global
- * object (`new globalThis.Error()`, `new window.Error()`). A `throw ... as X`,
- * `throw ...!` or `satisfies` annotation is unwrapped before the construction
- * is inspected, so the annotation cannot hide the throw. Subclasses
- * (`new NotFoundError()`) and the specific built-ins (`new TypeError()`) read
- * as domain-specific and pass; a re-thrown variable (`throw err`), a qualified
- * name (`new foo.Error()`) and a base `Error` built for a non-throw use
- * (`const e = new Error()`) fall outside the pattern. Only the base `Error` is
- * ever a candidate, so listing `Error` in the `allow` option is the one way to
- * permit it; any other name has nothing to match and stays inert.
- *
- * Test files are exempt: stubs and fakes legitimately throw the base `Error`
- * (`throw new Error('not implemented')`), where a domain subclass adds nothing.
+ * The check is syntactic; a type assertion around the throw is unwrapped first.
+ * Only `Error` in the `allow` option has any effect. Test files are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -9,13 +9,8 @@ use PHP_CodeSniffer\Files\File;
 /**
  * Resolves the doc comment attached to a declaration.
  *
- * A docblock does not always sit immediately before the keyword it documents:
- * declaration modifiers (public, final, ...) and one or more attribute groups
- * (`#[\Override]`, ...) may sit between them. A naive backwards scan that only
- * steps over modifiers lands on an attribute's closing bracket and concludes
- * the declaration is undocumented. This trait scans back over whitespace, the
- * given modifiers and whole attribute groups so the docblock is found wherever
- * it legitimately sits.
+ * Scans back over modifiers and whole attribute groups, either of which may sit
+ * between the docblock and the keyword it documents.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -23,9 +18,7 @@ use PHP_CodeSniffer\Files\File;
 trait ResolvesDocComment
 {
     /**
-     * Resolve the doc comment close tag for the declaration at the pointer,
-     * looking past the given modifiers and any attribute groups, or null when
-     * the declaration carries no doc comment.
+     * Resolve the declaration's doc comment close tag, or null if it has none.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -43,14 +36,10 @@ trait ResolvesDocComment
                 return $before;
             }
 
-            // Anything other than an attribute group between the docblock and
-            // the declaration means there is no docblock to find.
             if ($tokens[$before]['code'] !== T_ATTRIBUTE_END) {
                 return null;
             }
 
-            // Step over the whole attribute group and keep looking; the close
-            // bracket carries the opener it pairs with.
             $ptr = $tokens[$before]['attribute_opener'] - 1;
         }
 

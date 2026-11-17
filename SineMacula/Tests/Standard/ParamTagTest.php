@@ -8,14 +8,9 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use SineMacula\Tests\AbstractStandardTestCase;
 
 /**
- * Tests that the standard still holds @param tags to the signature once a tag's
- * type may span lines.
+ * Tests that @param tags are held to the signature when a type spans lines.
  *
- * The core function comment sniff reads a tag from its first line, so its
- * checks of the tag's variable are replaced by a sniff that reads the tag to
- * the close of its type. A parameter with no tag, a tag naming another variable
- * and a tag naming none are each still reported, whether the type sits on one
- * line or spans several.
+ * The core sniff reads only a tag's first line, so a custom sniff checks names.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

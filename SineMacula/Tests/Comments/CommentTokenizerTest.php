@@ -10,8 +10,7 @@ use PHPUnit\Framework\TestCase;
 use SineMacula\CodingStandards\Comments\CommentTokenizer;
 
 /**
- * Tests for the wrapping tokenizer's atomic spans and for the fallbacks that
- * keep malformed prose tokenising predictably when a delimiter never closes.
+ * Tests for the comment tokenizer.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -22,9 +21,7 @@ use SineMacula\CodingStandards\Comments\CommentTokenizer;
 final class CommentTokenizerTest extends TestCase
 {
     /**
-     * Atomic-span cases: inline code, inline tags and Markdown links hold their
-     * spaces, only a brace followed by an at-sign opens a tag span, and
-     * multibyte prose splits cleanly.
+     * Atomic span cases.
      *
      * @return iterable<string, array{string, list<string>}>
      */
@@ -43,8 +40,7 @@ final class CommentTokenizerTest extends TestCase
     }
 
     /**
-     * Prose splits on spaces, while inline code, an inline tag and a Markdown
-     * link, even one with an empty label, are each consumed as a single token.
+     * Inline code, inline tags and Markdown links are kept as single tokens.
      *
      * @param  string  $text
      * @param  list<string>  $expected
@@ -57,9 +53,7 @@ final class CommentTokenizerTest extends TestCase
     }
 
     /**
-     * Malformed-delimiter cases: every unclosed or misplaced delimiter falls
-     * back to an ordinary character, so the surrounding prose still splits on
-     * its spaces.
+     * Malformed delimiter cases.
      *
      * @return iterable<string, array{string, list<string>}>
      */
@@ -76,10 +70,7 @@ final class CommentTokenizerTest extends TestCase
     }
 
     /**
-     * A delimiter that never closes is treated as an ordinary character: the
-     * token ends at the next space, a label must be followed at once by its
-     * target, and when a target never closes the bracket is rescanned so a span
-     * inside it still binds.
+     * An unclosed delimiter is treated as an ordinary character.
      *
      * @param  string  $text
      * @param  list<string>  $expected

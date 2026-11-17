@@ -38,8 +38,7 @@ final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The reported code names the segment the declaration is missing, so a
-     * ruleset can silence this sniff alone without reaching for the others.
+     * Reports under its own code so a ruleset can silence this sniff alone.
      *
      * @return void
      */
@@ -49,8 +48,7 @@ final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A trait in the global namespace (no namespace declaration) is also
-     * flagged.
+     * A trait in the global namespace is also flagged.
      *
      * @return void
      */
@@ -60,9 +58,7 @@ final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A trait in the global namespace whose own name matches the required
-     * segment is still flagged - the declaration name is not a namespace
-     * segment.
+     * A global trait named after the required segment is still flagged.
      *
      * @return void
      */
@@ -72,8 +68,7 @@ final class RequireConcernsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The required segment may appear at any depth of the namespace, not only
-     * as the final segment.
+     * The required segment may appear at any depth of the namespace.
      *
      * @return void
      */

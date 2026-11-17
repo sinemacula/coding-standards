@@ -12,20 +12,10 @@ use PHPStan\Rules\RuleError;
 use PHPStan\Rules\RuleErrorBuilder;
 
 /**
- * Disallow a redundant static return type in a final class.
+ * Disallow a `static` return type or `@return` tag in a final class.
  *
- * A final class cannot be extended, so late static binding has nothing to bind
- * to and `static` names exactly the class it is written in. `self` says the
- * same thing without implying an inheritance that can never happen. Both the
- * native return type and the `@return` tag are checked, including a `static`
- * nested inside a nullable, union or generic type. A method whose signature is
- * fixed by a parent class or an interface declaring `static` is left alone: PHP
- * rejects narrowing an inherited `static` to `self` outright, even where the
- * overriding class is final, so the redundancy there is not the author's to
- * remove. A trait body is skipped too - the declaration belongs to the trait,
- * which is never final, whatever the class using it is. Resolving what an
- * ancestor declares needs the whole-program type graph, which is why this is a
- * PHPStan rule rather than a single-file sniff.
+ * Skips methods whose ancestor declares `static`, which PHP forbids narrowing
+ * to `self`, and trait bodies.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -87,10 +77,7 @@ final class NoRedundantStaticReturnTypeRule implements Rule
     }
 
     /**
-     * Whether an ancestor pins the method's return type to static, which PHP
-     * forbids an override from narrowing to self however final the overriding
-     * class is. Both the parent chain and every implemented interface are
-     * consulted; `getMethod` on either resolves through its own ancestors.
+     * Whether a parent or interface pins the method's return type to static.
      *
      * @param  \ReflectionClass<object>  $reflection
      * @param  string  $method
@@ -128,9 +115,7 @@ final class NoRedundantStaticReturnTypeRule implements Rule
 
         $inherited = $reflection->getMethod($method);
 
-        // A private ancestor method is not inherited, so redeclaring the name
-        // lower down is a fresh declaration rather than an override and PHP
-        // applies no signature check to it.
+        // A private ancestor method is not inherited, so no signature applies.
         if ($inherited->isPrivate()) {
             return false;
         }
@@ -139,9 +124,9 @@ final class NoRedundantStaticReturnTypeRule implements Rule
     }
 
     /**
-     * Whether a reflected return type is, or nests, the static type. Case is
-     * not folded because reflection reports the keyword lowercased however it
-     * was written.
+     * Whether a reflected return type is, or nests, the static type.
+     *
+     * Reflection always reports the keyword lowercased.
      *
      * @param  \ReflectionType|null  $type
      * @return bool
@@ -160,8 +145,9 @@ final class NoRedundantStaticReturnTypeRule implements Rule
     }
 
     /**
-     * Whether the declared return type is, or nests, the static type. An
-     * intersection member is skipped: PHP forbids static as part of one.
+     * Whether the declared return type is, or nests, the static type.
+     *
+     * Intersections are skipped: PHP forbids static in one.
      *
      * @param  \PhpParser\Node|null  $type
      * @return bool
@@ -184,9 +170,7 @@ final class NoRedundantStaticReturnTypeRule implements Rule
     }
 
     /**
-     * Whether the method's own doc comment documents a static return. Only the
-     * type expression of each return tag is read, so a description that merely
-     * uses the word is not mistaken for the type.
+     * Whether the type of any return tag in the doc comment names static.
      *
      * @param  string|null  $comment
      * @return bool
@@ -209,9 +193,8 @@ final class NoRedundantStaticReturnTypeRule implements Rule
     }
 
     /**
-     * Take the type expression off the front of a return tag, dropping any
-     * description that follows it. Whitespace nested inside a generic, array
-     * shape or parenthesised type belongs to the type and does not end it.
+     * The type expression at the front of a return tag, without its
+     * description.
      *
      * @param  string  $tag
      * @return string

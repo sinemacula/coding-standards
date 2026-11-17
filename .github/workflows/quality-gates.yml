@@ -18,8 +18,7 @@ on:
 # ==============================================================================
 # CONCURRENCY
 # ==============================================================================
-# The event name keeps scheduled and manual runs out of the push group, so a
-# merge to master cannot cancel one part way through.
+# The event name stops a merge to master cancelling a scheduled or manual run.
 concurrency:
     group: quality-gates-${{ github.event.pull_request.number || github.ref }}-${{ github.event_name }}
     cancel-in-progress: true
@@ -54,11 +53,7 @@ jobs:
                     persist-credentials: false
                     fetch-depth: 0
 
-            # This repo diverges from the shared setup-php action, which pins
-            # the coverage driver to pcov: php_codesniffer loads sniffs through
-            # its own include()-based autoloader, which pcov does not instrument
-            # (it reports 0%). Xdebug is the only driver that sees them, so it
-            # is set directly.
+            # pcov does not instrument sniffs loaded by phpcs's own autoloader.
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
@@ -66,17 +61,14 @@ jobs:
                     coverage: xdebug
                     tools: composer
 
-            # The suite supports phpcs 3.x and 4.x; the mutation leg pins the
-            # 4.x major consumers run so the mutant population stays stable
-            # run-to-run.
+            # Pinned to the 4.x major consumers run, to keep mutants stable.
             -   name: Install dependencies
                 run: >
                     composer update --prefer-dist --no-interaction --no-progress
                     --with "squizlabs/php_codesniffer:^4.0.2"
 
-            # On a push, origin/master is the pushed commit itself, so the gate
-            # diffs against the commit master moved from. A push that rewrote
-            # master instead of moving it forward leaves no such base.
+            # On a push origin/master is the pushed commit, so diff against the
+            # previous head.
             -   name: Scoped mutation gate
                 env:
                     BEFORE: ${{ github.event.before }}
@@ -106,11 +98,7 @@ jobs:
                 with:
                     persist-credentials: false
 
-            # This repo diverges from the shared setup-php action, which pins
-            # the coverage driver to pcov: php_codesniffer loads sniffs through
-            # its own include()-based autoloader, which pcov does not instrument
-            # (it reports 0%). Xdebug is the only driver that sees them, so it
-            # is set directly.
+            # pcov does not instrument sniffs loaded by phpcs's own autoloader.
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
@@ -118,9 +106,7 @@ jobs:
                     coverage: xdebug
                     tools: composer
 
-            # The suite supports phpcs 3.x and 4.x; the mutation leg pins the
-            # 4.x major consumers run so the mutant population stays stable
-            # run-to-run.
+            # Pinned to the 4.x major consumers run, to keep mutants stable.
             -   name: Install dependencies
                 run: >
                     composer update --prefer-dist --no-interaction --no-progress

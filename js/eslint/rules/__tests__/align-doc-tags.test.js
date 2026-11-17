@@ -12,7 +12,6 @@ ruleTester.run('align-doc-tags', rule, {
     valid: [
         // Both tags aligned at the default column.
         '/**\n * @author      Y\n * @copyright   2026 X\n */\nexport const a = 1;',
-        // A summary above the aligned tags.
         '/**\n * Summary.\n *\n * @author      Y\n * @copyright   2026 X\n */\nexport const a = 1;',
         // Unlisted tags keep whatever spacing they carry.
         '/**\n * @param foo - a thing\n * @returns a value\n */\nexport const a = 1;',
@@ -22,17 +21,16 @@ ruleTester.run('align-doc-tags', rule, {
         '// @author Y\nexport const a = 1;',
         // A plain block comment is not a documentation block.
         '/*\n * @author Y\n */\nexport const a = 1;',
-        // A custom column.
         {
             code: '/**\n * @author   Y\n * @copyright 2026 X\n */\nexport const a = 1;',
             options: [{ column: 11 }],
         },
-        // A custom tag set: @copyright is no longer listed, so it is untouched.
+        // @copyright is outside the custom tag set.
         {
             code: '/**\n * @author      Y\n * @copyright 2026 X\n */\nexport const a = 1;',
             options: [{ tags: ['author'] }],
         },
-        // A tag too long to reach the column is skipped, not reported.
+        // A tag too long to reach the column is skipped.
         {
             code: '/**\n * @averyverylongtagname Y\n */\nexport const a = 1;',
             options: [{ tags: ['averyverylongtagname'] }],
@@ -42,7 +40,6 @@ ruleTester.run('align-doc-tags', rule, {
     ],
     invalid: [
         {
-            // The single-spaced tags this rule exists to correct.
             code: '/**\n * @author Y\n * @copyright 2026 X\n */\nexport const a = 1;',
             output: '/**\n * @author      Y\n * @copyright   2026 X\n */\nexport const a = 1;',
             errors: [
@@ -63,27 +60,25 @@ ruleTester.run('align-doc-tags', rule, {
             errors: [{ messageId: 'misaligned' }],
         },
         {
-            // Only the misaligned tag is reported; the aligned one is left be.
+            // Only the misaligned tag is reported.
             code: '/**\n * @author      Y\n * @copyright 2026 X\n */\nexport const a = 1;',
             output: '/**\n * @author      Y\n * @copyright   2026 X\n */\nexport const a = 1;',
             errors: [{ messageId: 'misaligned', data: { tag: 'copyright', column: 14 } }],
         },
         {
-            // Tag matching is case-insensitive, and the reported name is the
-            // one the source carries.
+            // Matching is case-insensitive; the source casing is reported.
             code: '/**\n * @Author Y\n */\nexport const a = 1;',
             output: '/**\n * @Author      Y\n */\nexport const a = 1;',
             errors: [{ messageId: 'misaligned', data: { tag: 'Author', column: 14 } }],
         },
         {
-            // A custom column.
             code: '/**\n * @author Y\n */\nexport const a = 1;',
             options: [{ column: 11 }],
             output: '/**\n * @author   Y\n */\nexport const a = 1;',
             errors: [{ messageId: 'misaligned', data: { tag: 'author', column: 11 } }],
         },
         {
-            // A block below the header is aligned on the same terms.
+            // A block after the imports is aligned too.
             code: "import { z } from 'z';\n/**\n * @author Y\n * @copyright   2026 X\n */\nexport const a = z;",
             output: "import { z } from 'z';\n/**\n * @author      Y\n * @copyright   2026 X\n */\nexport const a = z;",
             errors: [{ messageId: 'misaligned', data: { tag: 'author', column: 14 } }],

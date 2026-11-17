@@ -9,14 +9,11 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesTagHead;
 
 /**
- * Tag description sniff.
+ * Forbids a description on @param and @throws tags.
  *
- * An @param or @throws tag carries no description. The function comment sniff
- * wants one capitalised and closed with a full stop, while the formatter
- * lowercases it, strips the full stop and pads it again, so no description can
- * satisfy both and a bare tag is the only shape the two agree on. The fixer
- * removes the description, its continuation lines included, and leaves the type
- * and variable as written, however many lines the type spans.
+ * The function comment sniff and the formatter disagree on how a description is
+ * cased and punctuated, so a bare tag is the only shape both accept. The fixer
+ * keeps the type and variable, however many lines the type spans.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -80,7 +77,7 @@ final class DisallowTagDescriptionSniff implements Sniff
     }
 
     /**
-     * Report, and fix, a description carried by the tag at the pointer.
+     * Report and fix a description carried by the tag.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $tag
@@ -124,10 +121,9 @@ final class DisallowTagDescriptionSniff implements Sniff
     }
 
     /**
-     * Where the part of the tag that is not description ends, as the text token
-     * it ends in and the offset within it, or null when it never ends. The text
-     * is read as one run, a line break standing between each token, so a type
-     * that spans lines is followed to its close.
+     * Locate the end of the tag's type and variable as a text token and offset,
+     * or null. The lines are joined so a multi-line type is followed to its
+     * close.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  list<int>  $strings

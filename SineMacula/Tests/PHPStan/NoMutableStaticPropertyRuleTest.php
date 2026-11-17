@@ -29,12 +29,8 @@ use SineMacula\CodingStandards\PHPStan\Rules\NoMutableStaticPropertyRule;
 final class NoMutableStaticPropertyRuleTest extends RuleTestCase
 {
     /**
-     * Only static properties written at runtime are flagged; read-only config,
-     * a @managed-static opt-out, instance/constant members, and members of test
-     * classes (named *Test or extending *TestCase) are not. Every write form
-     * counts: assignment, compound assignment, pre/post increment and
-     * decrement, and writes through array or object access, including each name
-     * of a multi-property declaration.
+     * Flags static properties written at runtime, in any write form, outside
+     * opted-out and test classes.
      *
      * @return void
      */

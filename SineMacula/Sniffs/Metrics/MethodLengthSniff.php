@@ -10,12 +10,8 @@ use SineMacula\CodingStandards\Sniffs\AbstractMetricSniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 
 /**
- * Method length sniff.
- *
- * Caps the number of significant lines (blank lines and comments excluded) in a
- * function or method body. A method that legitimately needs more can opt out
- * with a native `// phpcs:ignore SineMacula.Metrics.MethodLength.TooLong`
- * directive.
+ * Caps the significant lines, excluding blanks and comments, in a function or
+ * method body. Methods of test classes are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -39,8 +35,7 @@ final class MethodLengthSniff extends AbstractMetricSniff
     }
 
     /**
-     * Skip methods in test classes, where long bodies are legitimate, then
-     * defer to the base metric check.
+     * Skip methods in test classes, then defer to the base metric check.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

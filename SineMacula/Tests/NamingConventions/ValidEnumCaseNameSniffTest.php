@@ -30,8 +30,7 @@ final class ValidEnumCaseNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered message names the offending enum case, proving the name is
-     * passed through to the report.
+     * The message names the offending enum case.
      *
      * @return void
      */

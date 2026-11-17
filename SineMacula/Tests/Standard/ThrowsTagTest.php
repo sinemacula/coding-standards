@@ -8,14 +8,9 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use SineMacula\Tests\AbstractStandardTestCase;
 
 /**
- * Tests that the @throws tags PHPStan asks for are tags the sniffs accept.
+ * Tests that @throws tags for propagated exceptions are accepted.
  *
- * PHPStan requires every checked exception a method can throw to be declared,
- * those its callees propagate included, while the throw tag sniff sees only the
- * exceptions thrown in the body itself. A method that both throws and
- * propagates needs more tags than the body throws, so the count is not held
- * against it; an exception thrown in the body without a tag is still reported,
- * however many other tags there are.
+ * The sniff sees only the body's throws, so extra tags are allowed.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

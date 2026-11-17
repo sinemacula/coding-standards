@@ -10,14 +10,13 @@ import { ruleTester } from './tester.js';
 
 ruleTester.run('require-readonly-public-property', rule, {
     valid: [
-        // A public property is fine once it is readonly.
         'class C { public readonly x = 1; }',
         'class C { readonly x = 1; }',
         // Non-public properties are outside the mandate.
         'class C { private x = 1; }',
         'class C { protected x = 1; }',
         'class C { #x = 1; }',
-        // Static state is left to a separate concern.
+        // Static state is no-mutable-static's concern.
         'class C { static x = 1; }',
         'class C { public static x = 1; }',
         // Constructor-promoted properties, readonly forms.
@@ -49,7 +48,7 @@ ruleTester.run('require-readonly-public-property', rule, {
         'class C { [k: string]: number; }',
         // Abstract public members may declare a readonly contract.
         'abstract class C { public abstract readonly x: number; }',
-        // Ambient declarations describe external shapes; not enforced.
+        // Ambient declarations are not enforced.
         'declare class C { public x: number; }',
         'declare namespace N { class C { public x: number; } }',
         'declare global { class C { public x: number; } }',
@@ -68,7 +67,7 @@ ruleTester.run('require-readonly-public-property', rule, {
             code: 'class Product extends ns.Model { public name = ""; }',
             options: [{ ignoredParentClasses: ['Model'] }],
         },
-        // Test fixtures are exempt: by class name, parent, or file location.
+        // Test classes are exempt by name, parent or path.
         'class UserTest { public spy = 1; }',
         'class Fake extends TestCase { public calls = 0; }',
         { code: 'class Fake { public calls = 0; }', filename: 'src/tests/Fake.ts' },
@@ -170,8 +169,7 @@ ruleTester.run('require-readonly-public-property', rule, {
             errors: [{ messageId: 'mutable', data: { name: 'Symbol.iterator' } }],
         },
         {
-            // A mixin-produced base cannot be name-matched, so it stays
-            // enforced.
+            // A mixin-produced base cannot be name-matched.
             code: 'class C extends mixin(Base) { public x = 1; }',
             options: [{ ignoredParentClasses: ['Base'] }],
             errors: [{ messageId: 'mutable', data: { name: 'x' } }],

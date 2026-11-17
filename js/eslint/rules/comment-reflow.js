@@ -1,21 +1,6 @@
 /**
- * Deterministic greedy re-wrapper for comment prose.
- *
- * The syntax-only counterpart of the PHP comment line length sniff: given the
- * content lines of one comment block (their margin already stripped) and the
- * width that margin will reclaim, it walks the block and hands each run of
- * prose and each list item to a paragraph reflow, gathering the canonical lines
- * and the indices of the input lines that overflow or wrap prematurely. A
- * fenced block, a type-annotation tag whose value opens a bracketed type across
- * lines, headings, indented code, tags, directives, tables and separators are
- * left verbatim and bound the paragraph around them. When asked to, a line
- * opening with a capital letter begins a paragraph of its own unless the line
- * above ends mid-sentence, so a short standalone note such as a title is not
- * merged into the sentence below.
- *
- * Widths count Unicode code points and whitespace is matched as ASCII only, so
- * the output is byte-for-byte identical to the PHP engine (mb_strlen and the
- * non-unicode PCRE `\s`).
+ * Greedy re-wrapper for comment prose, the counterpart of the PHP comment line
+ * length sniff. Its output must stay byte-identical to the PHP engine.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -1,53 +1,38 @@
-<h1 align="center">Coding Standards</h1>
-
-<div align="center">
+# Coding Standards
 
 [![Latest Stable Version](https://img.shields.io/packagist/v/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
 [![npm Version](https://img.shields.io/npm/v/@sinemacula/coding-standards.svg)](https://www.npmjs.com/package/@sinemacula/coding-standards)
-[![PHP Version](https://img.shields.io/packagist/dependency-v/sinemacula/coding-standards/php.svg)](https://packagist.org/packages/sinemacula/coding-standards)
 [![Build Status](https://github.com/sinemacula/coding-standards/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/sinemacula/coding-standards/actions/workflows/tests.yml)
-[![Quality Gates](https://github.com/sinemacula/coding-standards/actions/workflows/quality-gates.yml/badge.svg?branch=master)](https://github.com/sinemacula/coding-standards/actions/workflows/quality-gates.yml)
-[![Maintainability](https://qlty.sh/gh/sinemacula/projects/coding-standards/maintainability.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
-[![Code Coverage](https://qlty.sh/gh/sinemacula/projects/coding-standards/coverage.svg)](https://qlty.sh/gh/sinemacula/projects/coding-standards)
-[![Total Downloads](https://img.shields.io/packagist/dt/sinemacula/coding-standards.svg)](https://packagist.org/packages/sinemacula/coding-standards)
 [![License](https://img.shields.io/github/license/sinemacula/coding-standards.svg)](LICENSE)
 
-</div>
+Shared coding standards, static analysis configs and the Qlty source for Sine Macula repositories.
 
-Centralized coding standards, static analysis configurations, and code quality tooling for all Sine Macula repositories.
-
-This package ships config files only - no runtime dependencies. Consuming projects install the tools themselves.
+The packages ship configuration only, with no runtime dependencies. Consuming projects install the tools themselves.
 
 ## Installation
 
-### Composer (PHP-side: PHP CS Fixer, PHPStan, PHPCS)
+### Composer (PHP CS Fixer, PHPCS, PHPStan)
 
 ```bash
 composer require --dev sinemacula/coding-standards
 ```
 
-### npm (JS-side: Biome, ESLint)
+### npm (Biome, ESLint, tsconfig)
 
 ```bash
 npm install --save-dev @sinemacula/coding-standards
 ```
 
 The npm package ships only the static configs (`js/`, `markdown/`, `yaml/`, `shell/`, `security/`, `swift/`,
-`terraform/`). The PHP autoloaded code lives in the Composer package.
+`terraform/`). The PHP code ships in the Composer package.
 
-### Qlty (Swift-side: SwiftLint, SwiftFormat)
+### Qlty (Swift, Terraform)
 
-Swift consumers do not need the Composer or npm package. Qlty fetches the shared Swift configs from this repository as
-a pinned source and installs the native tools on macOS.
-
-### Qlty (Terraform-side: Terraform, TFLint)
-
-Terraform consumers do not need the Composer or npm package either. The Qlty source enables and pins both tools and
-supplies the shared TFLint config.
+Swift and Terraform consumers need neither package. The Qlty source supplies the shared configs and pins the tools.
 
 ## Usage
 
-Each consuming project creates thin wrapper files at its root that reference the shared configs.
+Each consuming project adds thin wrapper files at its root that reference the shared configs.
 
 ### PHP CS Fixer
 
@@ -64,33 +49,7 @@ return PhpCsFixerConfig::make([
 ]);
 ```
 
-Give the qlty plugin this package for its tool sandbox, and do **not** set `package_file` or `package_filters` on it:
-
-```toml
-[[plugin]]
-name = "php-cs-fixer"
-extra_packages = ["sinemacula/coding-standards@1.23.0"]
-```
-
-`extra_packages` installs into the tool sandbox alone, so none of this reaches your own dependency graph. The config
-above autoloads `PhpCsFixerConfig` from this package - the only thing `package_file` was doing for this plugin. Give it
-an exact version rather than a range. This entry is raised by the shared Renovate preset, which resolves a constraint
-to the newest release it already allows, so a caret range is reported as current for the life of the major and
-silently stays at the version it was written with. The entry stays in your own file rather than coming from the shared
-source, because the source is consumed at a tag and cannot pin the release of the package it is published alongside.
-
-The shared source runs qlty on PHP 8.5. A project that analyses on another PHP version sets its own runtime, and qlty
-resolves each tool sandbox for it, so PHP 8.3 installs a Symfony that 8.3 can run:
-
-```toml
-[runtimes.enabled]
-php = "8.3"
-```
-
-Setting `package_file` makes qlty ignore `extra_packages`, silently. `php-codesniffer` and `phpstan` are unaffected and
-keep their `package_file`, their sandboxes being where the sniff and rule code comes from.
-
-You can pass rule overrides as a second argument:
+Pass rule overrides as a second argument:
 
 ```php
 return PhpCsFixerConfig::make(
@@ -99,10 +58,31 @@ return PhpCsFixerConfig::make(
 );
 ```
 
+Give the qlty plugin this package for its tool sandbox, and do **not** set `package_file` or `package_filters` on it:
+
+```toml
+[[plugin]]
+name = "php-cs-fixer"
+extra_packages = ["sinemacula/coding-standards@1.23.0"]
+```
+
+`extra_packages` installs into the tool sandbox only, so it does not touch your dependency graph. Setting
+`package_file` makes qlty ignore `extra_packages` silently. Use an exact version: the shared Renovate preset resolves a
+caret range to the newest release it already allows, so a range is reported as current and never raised. The entry
+lives in your own file because the source, consumed at a tag, cannot pin the package it is published with.
+
+The shared source runs qlty on PHP 8.5. A project that analyses on another PHP version sets its own runtime, and qlty
+resolves each tool sandbox for it:
+
+```toml
+[runtimes.enabled]
+php = "8.3"
+```
+
 ### PHPCS
 
-The `SineMacula` coding standard is auto-discovered via the `phpcodesniffer-standard` composer type. Create a
-`phpcs.xml` at your project root:
+The `SineMacula` standard is auto-discovered through the `phpcodesniffer-standard` Composer type. Create a `phpcs.xml`
+at your project root:
 
 ```xml
 <?xml version="1.0"?>
@@ -115,8 +95,8 @@ The `SineMacula` coding standard is auto-discovered via the `phpcodesniffer-stan
 
 ### PHPStan
 
-The shared PHPStan configs are auto-included via the `extra.phpstan.includes` section in `composer.json`. Your project's
-`phpstan.neon` only needs its paths:
+The base config is auto-included through `extra.phpstan.includes` in `composer.json`. Your project's `phpstan.neon`
+only needs its paths:
 
 ```neon
 parameters:
@@ -133,35 +113,29 @@ name = "phpstan"
 package_file = "composer.json"
 ```
 
-Do not set `level`. Analysis runs through qlty, whose phpstan driver passes `--level=9` on the command line, and a
-command-line level overrides the config file outright - so a level set here does nothing except mislead whoever reads
-it next.
+Do not set `level`. qlty's phpstan driver passes `--level=9` on the command line, which overrides the config file.
 
-The base config enables PHPStan's checked-exception analysis: every exception a method can throw must appear in its
-`@throws` tag, except a configured set of programming-error and infrastructure exceptions that stay unchecked - the
-`LogicException`, `RuntimeException` and `Error` families among them (see `php/phpstan-base.neon` for the full list).
-Suppress a deliberate case with `@phpstan-ignore missingType.checkedException`. The PHPCS standard asks for a
-`@throws` tag for each exception thrown in a method's body, checked or not, but does not count the tags against those
-exceptions, so a tag for an exception a callee propagates is accepted there too; PHPStan's `tooWideThrowType` still
+The base config enables checked-exception analysis: every exception a method can throw must appear in its `@throws`
+tag, except the programming-error and infrastructure exceptions listed in `php/phpstan-base.neon` (the
+`LogicException`, `RuntimeException` and `Error` families among them). Suppress a deliberate case with
+`@phpstan-ignore missingType.checkedException`. The PHPCS standard asks for a `@throws` tag for each exception thrown in
+a method's body, checked or not, and accepts a tag for an exception a callee propagates; PHPStan's `tooWideThrowType`
 reports a tag for an exception nothing can throw.
 
-The base config also reports `argument.type`. The shared PHP CS Fixer rules declare `strict_types` and add native types
-from docblocks, so passing an argument of the wrong type - a string where an int is expected, null to an internal
-function, a `Stringable` where a string is expected - is a `TypeError` at runtime rather than a silent coercion. Fix a
-finding by narrowing the value where it is read (`$request->integer('limit')`, `Config::integer(...)`, an explicit null
-check) or, where the conversion is intended, with an explicit cast.
+`argument.type` is reported. The shared PHP CS Fixer rules declare `strict_types`, so an argument of the wrong type is
+a `TypeError` at runtime. Narrow the value where it is read (`$request->integer('limit')`, `Config::integer(...)`, a
+null check) or cast it explicitly where the conversion is intended.
 
 #### Laravel projects
 
-For Laravel projects, also install
-[`sinemacula/coding-standards-laravel`](https://github.com/sinemacula/coding-standards-laravel) and reference its
-`SineMaculaLaravel` PHPCS standard (which includes this one) in place of `SineMacula`. It adds the Laravel-specific
-sniffs and PHPStan rules; see that package's README for setup.
+Also install [`sinemacula/coding-standards-laravel`](https://github.com/sinemacula/coding-standards-laravel) and
+reference its `SineMaculaLaravel` PHPCS standard, which includes this one, in place of `SineMacula`. It adds the
+Laravel-specific sniffs and PHPStan rules; see that package's README for setup.
 
 ### Biome (JavaScript / TypeScript)
 
-Through Qlty, the source stages the shared config at the repository root as `biome.shared.json` while Biome runs. Enable
-Biome at 2.2.0 or later in your `.qlty/qlty.toml`:
+Through Qlty, the source stages the shared config at the repository root as `biome.shared.json` while Biome runs.
+Enable Biome 2.2.0 or later in your `.qlty/qlty.toml`:
 
 ```toml
 [[plugin]]
@@ -188,45 +162,40 @@ Then create `.qlty/configs/biome.json`, which extends the shared config by that 
 }
 ```
 
-The project config is required: without one, Biome runs on its own defaults. Anything set in it applies over the shared
-config, so project-specific `files.includes` and overrides stay there. A project config that still extends
-`js/biome.json`, by package name or through the Qlty source mirror, must switch to `./biome.shared.json`. Leave the
-Biome plugin definition and its drivers as the source sets them; a `--config-path` or an `exported_config_paths`
-override breaks the staging. Biome before 2.2.0 resolves the relative `extends` from the real location of the staged
-file and fails to load it.
+The project config is required; without one, Biome runs on its own defaults. Settings in it apply over the shared
+config, so project-specific `files.includes` and overrides go there. A project config that still extends
+`js/biome.json` must switch to `./biome.shared.json`. Leave the Biome plugin definition and its drivers as the source
+sets them: a `--config-path` or `exported_config_paths` override breaks the staging. Biome before 2.2.0 resolves the
+relative `extends` from the staged file's real location and fails to load it.
 
-Without Qlty, install the npm package and extend `@sinemacula/coding-standards/js/biome.shared.json` from the project's
-`biome.json`. The shared config leaves Biome's VCS integration off, because Qlty formats a copy of each file outside the
-repository, where no ignore file exists. A project that runs Biome directly can turn it on in its own `biome.json`.
+Without Qlty, install the npm package and extend `@sinemacula/coding-standards/js/biome.shared.json` from the
+project's `biome.json`. The shared config leaves Biome's VCS integration off, because Qlty formats a copy of each file
+outside the repository; a project that runs Biome directly can turn it on in its own `biome.json`.
 
 ### ESLint (JavaScript / TypeScript)
 
-ESLint runs *alongside* Biome, not in place of it. Biome keeps owning formatting and the fast syntactic lint; ESLint
-adds only the two things Biome structurally cannot express: this package's custom structural rules and the opt-in
-type-aware rules (the curated typescript-eslint set plus the type-driven custom rules). Add the linter, the
-typescript-eslint tooling, and this package to your dev dependencies:
+ESLint runs alongside Biome. Biome owns formatting and the syntactic lint; ESLint adds this package's custom
+structural rules and the opt-in type-aware rules. Install:
 
 ```bash
 npm install --save-dev eslint typescript typescript-eslint eslint-plugin-jsdoc yaml-eslint-parser \
     @sinemacula/coding-standards
 ```
 
-`yaml-eslint-parser` is imported by the base layer for the YAML comment-width block, so it has to resolve even in a
-repository with no YAML worth linting; without it the flat config fails to load at all.
+`yaml-eslint-parser` is imported by the base layer, so the config fails to load without it, even in a repository with
+no YAML.
 
 The package exposes three flat-config entry points:
 
-- `@sinemacula/coding-standards/js/eslint` - the base layer of syntax-only custom rules; needs no `tsconfig`, so it
-  stays cheap and runs anywhere Biome runs. Covers `.ts`/`.js` and, for the comment-width rule alone, `.yml`/`.yaml`.
-- `@sinemacula/coding-standards/js/eslint/type-checked` - the opt-in type-aware layer. It includes the base layer and
-  adds the cross-file / type-driven rules, so it needs a consumer `tsconfig`; use it in place of the base layer where
-  one exists.
-- `@sinemacula/coding-standards/js/eslint/vue` - the opt-in Vue layer for single-file components. Unlike the type-aware
-  layer it carries no base rules of its own, so spread it *alongside* whichever layer the repository already uses rather
-  than in place of one.
+- `@sinemacula/coding-standards/js/eslint` - the base layer of syntax-only rules. Needs no `tsconfig`. Covers
+  `.ts`/`.js` and, for the comment-width rule alone, `.yml`/`.yaml`.
+- `@sinemacula/coding-standards/js/eslint/type-checked` - the base layer plus the type-aware rules. Needs a
+  `tsconfig`; use it in place of the base layer where one exists.
+- `@sinemacula/coding-standards/js/eslint/vue` - the Vue single-file-component layer. It carries no base rules, so
+  spread it after whichever layer the repository uses.
 
-Create an `eslint.config.js` (or `.qlty/configs/eslint.config.js` when wired through Qlty) that spreads the layer you
-want. Without a `tsconfig`, use the base layer:
+Create an `eslint.config.js` (or `.qlty/configs/eslint.config.mjs` when wired through Qlty) that spreads the layer
+you want. Without a `tsconfig`:
 
 ```js
 import sm from '@sinemacula/coding-standards/js/eslint';
@@ -234,7 +203,7 @@ import sm from '@sinemacula/coding-standards/js/eslint';
 export default [...sm];
 ```
 
-Where a `tsconfig` exists, use the type-aware layer instead (it already carries the base rules):
+With a `tsconfig`:
 
 ```js
 import typeChecked from '@sinemacula/coding-standards/js/eslint/type-checked';
@@ -242,7 +211,7 @@ import typeChecked from '@sinemacula/coding-standards/js/eslint/type-checked';
 export default [...typeChecked];
 ```
 
-Vue repositories add the Vue toolchain and spread the Vue layer after the layer they already use:
+Vue repositories add the Vue toolchain and spread the Vue layer after their existing one:
 
 ```bash
 npm install --save-dev eslint-plugin-vue vue-eslint-parser eslint-plugin-check-file
@@ -255,16 +224,12 @@ import vue from '@sinemacula/coding-standards/js/eslint/vue';
 export default [...typeChecked, ...vue];
 ```
 
-The Vue layer registers the single-file-component parser (without it `.vue` files are not linted at all), resolves
-`<script lang="ts">` blocks through the TypeScript parser, and holds component filenames to kebab-case. It also carries
-the template layout rules, which is the one place ESLint takes on formatting: Biome does not understand single-file
-components, so `.vue` markup would otherwise go unformatted entirely. Those rules are aligned to the shared four-space
-indent.
+The Vue layer registers the single-file-component parser, resolves `<script lang="ts">` through the TypeScript
+parser, and requires kebab-case component filenames. It also carries the template layout rules, set to a four-space
+indent, because Biome cannot format `.vue` markup.
 
-When wiring ESLint through Qlty, the shared eslint plugin sandbox installs only `eslint`, `jest`, and `prettier` by
-default, so the flat config's imports of this package and `typescript-eslint` fail to resolve. Widen the install filter
-in your `.qlty/qlty.toml` so the sandbox carries them. It is set per project rather than in the shared source because
-the packages the sandbox needs differ between projects:
+Through Qlty, the eslint plugin sandbox installs only `eslint`, `jest` and `prettier` by default, so the config's
+imports fail to resolve. Widen the install filter in your `.qlty/qlty.toml`:
 
 ```toml
 [plugins.definitions.eslint]
@@ -274,8 +239,7 @@ package_filters = [
 ]
 ```
 
-Repositories enabling the Vue layer widen the same filter further, since its plugins have to resolve inside that sandbox
-too:
+With the Vue layer, add its packages too:
 
 ```toml
 [plugins.definitions.eslint]
@@ -287,8 +251,7 @@ package_filters = [
 
 ### TypeScript (tsconfig)
 
-The package ships a shared `tsconfig` base so every TypeScript repository checks its code to the same bar. Install the
-package (as above) and extend the base from your `tsconfig.json`:
+Extend the shared base from your `tsconfig.json`:
 
 ```json
 {
@@ -309,20 +272,18 @@ package (as above) and extend the base from your `tsconfig.json`:
 }
 ```
 
-The base carries only the environment-independent options: the full strictness set and the module/resolution discipline.
-Everything environment-specific stays in the consuming repo and layers on top - `lib` (DOM for the browser, none for a
-Node service), `types`, Vue's `jsx`/`jsxImportSource`, `paths`, `noEmit`, and the `include`/`exclude` globs. The`target`
-and `module` defaults suit bundler-built apps and libraries; a non-bundler project overrides them.
+The base carries the strictness and module-resolution options only. Environment-specific settings stay in the
+consuming repository: `lib`, `types`, Vue's `jsx`/`jsxImportSource`, `paths`, `noEmit` and `include`/`exclude`. The
+`target` and `module` defaults suit bundler-built code; a non-bundler project overrides them.
 
-The base sets `noPropertyAccessFromIndexSignature`, so a property that comes from an index signature is accessed with
-brackets (`config['key']`), not a dot. Biome cannot see types and so cannot tell that access apart from a normal one,
-which is why its `useLiteralKeys` rule is off and the type-aware `@typescript-eslint/dot-notation` rule enforces dot
-access for real properties instead. Load the type-checked ESLint layer to get it.
+The base sets `noPropertyAccessFromIndexSignature`, so index-signature properties are read with brackets
+(`config['key']`). Biome cannot see types, so its `useLiteralKeys` rule is off and the type-checked ESLint layer's
+`@typescript-eslint/dot-notation` enforces dot access for declared properties.
 
 ### Knip (JavaScript / TypeScript)
 
-Knip needs no shared config. Its defaults find a project's entry points from `package.json` and its plugins (Vite,
-Vitest and the like), so most projects run it without one. Enable it in `.qlty/qlty.toml`:
+Knip needs no shared config; its defaults find entry points from `package.json` and its plugins. Enable it in
+`.qlty/qlty.toml`:
 
 ```toml
 [[plugin]]
@@ -344,42 +305,42 @@ repository = "https://github.com/sinemacula/coding-standards"
 tag = "<version>"
 ```
 
-The source enables the plugins every project runs, at the versions and modes they run with: TruffleHog, markdownlint,
-yamllint, actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP CS
-Fixer, PHPStan, Radarlint, Terraform (formatting only) and TFLint. A plugin with nothing to lint in a repository does
-not run there, so a TypeScript project is not charged for the PHP tools. It also sets the PHP runtime and the shared
-excludes, keeps PHPCS 4.x findings from being discarded as a crash, and supplies the ESLint and Biome wiring for
-projects that enable those. List a plugin in your own file only to change it: a version or mode you leave out is taken
-from the source, but any list you set, such as `drivers` or `extra_packages`, replaces the source's rather than adding
-to it. To turn a plugin off, give it `mode = "disabled"`.
+The source enables these plugins at the versions and modes every project runs: TruffleHog, markdownlint, yamllint,
+actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP CS Fixer,
+PHPStan, Radarlint, Terraform (formatting only) and TFLint. A plugin with nothing to lint in a repository does not run
+there. The source also sets the PHP runtime and shared excludes, stops qlty discarding PHPCS 4.x findings as a crash,
+and supplies the ESLint and Biome wiring for projects that enable them.
 
-The source also sets the code smell policy: smells are reported as comments rather than failing the check, the
-parameter-count check is off, and the return-statement, function-complexity and file-complexity thresholds are raised
-(see `source.toml`). Leave `[smells]` out of your own `.qlty/qlty.toml` so these apply. To change one for a single
-project, set it there; to turn back on a check the source switches off, set `enabled = true` alongside the threshold,
-because the two files are merged rather than replaced.
+List a plugin in your own file only to change it. A version or mode you leave out is taken from the source, but a list
+you set, such as `drivers` or `extra_packages`, replaces the source's. To turn a plugin off, set `mode = "disabled"`.
 
-The source also drops three Radarlint rules through `[[triage]]` entries. The function naming rule, `php:S100`, wants
-camelCase on every function, which rejects the snake_case global functions
-`SineMacula.NamingConventions.ValidGlobalFunctionName` requires, while methods are already held to camelCase by PSR1.
-The unused private method rule, `php:S1144`, cannot see a call made from a used trait or through a first-class callable
-such as `self::method(...)`, and PHPStan already reports a private method nothing calls. The unused parameter rule,
-`php:S1172`, flags the positional parameters a framework callback has to declare to reach a later one, such as
-`$attribute` in a validation closure taking `($attribute, $value, $fail)`, the same reason the phpcs ruleset leaves its
-own unused parameter sniff off. A `[[triage]]` entry in your own file is added alongside the source's rather than
-replacing it, so nothing needs repeating there.
+The source sets the smell policy (see `source.toml`): smells run in `comment` mode, the parameter-count check is off,
+and the return-statement, function-complexity and file-complexity thresholds are raised. Leave `[smells]` out of your
+own `.qlty/qlty.toml` to inherit it. To change a threshold, set it there; to re-enable a check the source switches off,
+also set `enabled = true`, because the two files are merged.
+
+The source ignores three Radarlint rules through `[[triage]]`:
+
+- `php:S100` (function naming) wants camelCase everywhere, which conflicts with the snake_case global functions
+  `SineMacula.NamingConventions.ValidGlobalFunctionName` requires. PSR1 already covers methods.
+- `php:S1144` (unused private method) cannot see a call from a used trait or a first-class callable such as
+  `self::method(...)`. PHPStan reports private methods nothing calls.
+- `php:S1172` (unused parameter) flags the positional parameters a framework callback must declare to reach a later
+  one, such as `$attribute` in a validation closure taking `($attribute, $value, $fail)`.
+
+Your own `[[triage]]` entries are added alongside the source's.
 
 ### Swift (SwiftLint and SwiftFormat)
 
 Swift repositories consume the shared policy through Qlty. Enable the default source for the tools, this repository
-for the exported configs, and both native plugins:
+for the configs, and both native plugins:
 
 ```toml
 config_version = "0"
 
 # SwiftLint's own `excluded:` list only applies when it walks a directory. Qlty
-# passes explicit file paths, so generated and third-party sources have to be
-# excluded here or the shared policy is reported against machine-written code.
+# passes explicit file paths, so generated and third-party sources are excluded
+# here.
 exclude_patterns = [
     ".build/**",
     "build/**",
@@ -412,33 +373,29 @@ name = "swiftformat"
 mode = "comment"
 ```
 
-This is the same configuration the package's own integration test runs, so what is documented here is what CI exercises.
-
-Run formatting and linting locally:
+This is the configuration the package's integration test runs. Run formatting and linting locally:
 
 ```bash
 qlty fmt --all
 qlty check --all
 ```
 
-SwiftLint and SwiftFormat are native macOS plugins. Qlty Cloud's Linux workers cannot execute them, so every Swift
-consumer needs a macOS CI job that verifies formatting and runs `qlty check`. Qlty Cloud still provides its built-in
-Swift maintainability, duplication, complexity, security, and coverage capabilities.
+SwiftLint and SwiftFormat are native macOS plugins that Qlty Cloud's Linux workers cannot run, so every Swift consumer
+needs a macOS CI job that verifies formatting and runs `qlty check`. Qlty Cloud still provides its built-in Swift
+maintainability, duplication, complexity, security and coverage analysis.
 
-The shared policy targets Swift 6 and deliberately contains no application-specific include paths or architecture
-rules. Xcode compiler checks such as strict concurrency, warnings-as-errors, platform availability, and test builds
-remain the consuming project's responsibility.
+The policy targets Swift 6 and holds no application-specific paths or architecture rules. Compiler checks such as
+strict concurrency, warnings-as-errors, platform availability and test builds stay with the consuming project.
 
-SwiftLint has no configuration inheritance. A `.swiftlint.yml` committed to a consuming repository *replaces* the
-shared policy rather than extending it, so adding one to relax a single rule silently discards the whole standard.
-Raise a pull request here instead, or copy the shared file wholesale and edit the copy.
+SwiftLint has no configuration inheritance: a `.swiftlint.yml` in a consuming repository replaces the shared policy
+entirely. Raise a pull request here instead, or copy the shared file wholesale and edit the copy.
 
 ### Terraform (Terraform and TFLint)
 
-The Qlty source is all a Terraform repository needs: it runs `terraform fmt` and TFLint, at the versions it pins, with
-the shared `.tflint.hcl`. Keep `.terraform-version` at the pinned Terraform release. To change the version, give the
-`terraform` plugin a `version` in your own `.qlty/qlty.toml` and repeat `drivers = ["format"]`, because an entry without
-drivers runs all of them, including a validate driver that cannot pass without `terraform init`.
+The Qlty source runs `terraform fmt` and TFLint at pinned versions with the shared `.tflint.hcl`. Keep
+`.terraform-version` at the pinned Terraform release. To change the version, give the `terraform` plugin a `version` in
+your own `.qlty/qlty.toml` and repeat `drivers = ["format"]`; an entry without drivers runs all of them, including a
+validate driver that cannot pass without `terraform init`.
 
 Validate in CI with the reusable workflow, which initialises without a backend and runs `terraform validate`:
 
@@ -457,8 +414,7 @@ jobs:
 indent_size = 2
 ```
 
-A `.tflint.hcl` committed to a consuming repository replaces the shared policy rather than extending it. Raise a
-pull request here instead.
+A `.tflint.hcl` in a consuming repository replaces the shared policy. Raise a pull request here instead.
 
 ## What's Included
 
@@ -471,6 +427,7 @@ pull request here instead.
 | `js/biome.shared.json`                    | Biome                | JavaScript / TypeScript formatter + linter rules       |
 | `js/eslint/`                              | ESLint               | Structural, type-aware + Vue rules; runs with Biome    |
 | `js/eslint/` (YAML block)                 | ESLint               | Comment width in `.yml` / `.yaml`; yamllint owns rest  |
+| `js/tsconfig.base.json`                   | TypeScript           | Shared strictness and module-resolution options        |
 | `markdown/.markdownlint.json`             | markdownlint         | Markdown linting rules                                 |
 | `yaml/.yamllint.yaml`                     | yamllint             | YAML linting rules                                     |
 | `shell/.shellcheckrc`                     | ShellCheck           | Shell script linting rules                             |
@@ -484,8 +441,8 @@ pull request here instead.
 
 ## Rules
 
-These are the custom rules this package enforces on top of PSR-12. A deliberate exception can be bypassed with the
-native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <identifier>` for a rule,
+The custom rules this package enforces on top of PSR-12. Bypass a deliberate exception with the native directive:
+`// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <identifier>` for a PHPStan rule,
 `// eslint-disable-next-line <rule>` for an ESLint rule.
 
 ### PHPCS sniffs
@@ -523,40 +480,35 @@ native directive - `// phpcs:ignore <code>` for a sniff, `@phpstan-ignore <ident
 | `SineMacula.TypeHints.RequireConstantType`                 | Class/interface/enum/trait constants must declare a native type.            |
 | `SineMacula.WhiteSpace.PromotedConstructorSpacing`         | Blank line above each promoted-constructor parameter.                       |
 
-`DisallowTagDescription` exists because no description on those tags satisfies both tools: the function comment sniff
-wants one capitalised and closed with a full stop, while PHP CS Fixer lowercases it, strips the full stop and pads it
-again. A bare tag, `@param  int  $count` or `@throws \RuntimeException`, is the one shape both accept, so the fixer
+`DisallowTagDescription` exists because the function comment sniff and PHP CS Fixer disagree on a tag description's
+case and full stop. A bare tag, `@param  int  $count` or `@throws \RuntimeException`, satisfies both, so the fixer
 removes the description, continuation lines included.
 
-`RequireParamTag` makes the function comment sniff's checks of an `@param` tag's variable, under the same codes and
-messages, because that sniff reads a tag from its first line only: a type that spans lines, such as an array shape
-written one key to a line, loses its variable there, and a callable type that names its own parameter on that line lends
-the tag its name. A `// phpcs:ignore` of one of those codes now names `SineMacula.Commenting.RequireParamTag` in place
-of `Squiz.Commenting.FunctionComment`. Two misreadings of a single-line tag go with it: a literal type holding a dot,
-such as `'a.b'` or `1.5`, keeps its variable, and a tag typed `$this` documents the variable after it. PHP CS Fixer
-misreads a callable type that names its own parameters, on one line or several or inside an array shape, and adds a
-second `@param` for the parameter, so leave a callable type's parameters unnamed.
+`RequireParamTag` takes over the function comment sniff's `@param` variable checks, under the same codes and messages,
+because that sniff reads only a tag's first line and loses the variable of a type that spans lines. A `// phpcs:ignore`
+for those codes names `SineMacula.Commenting.RequireParamTag` in place of `Squiz.Commenting.FunctionComment`. It also
+reads a literal type holding a dot (`'a.b'`, `1.5`) and a `$this` type correctly. PHP CS Fixer adds a second `@param`
+for a callable type that names its own parameters, so leave a callable type's parameters unnamed.
 
-Slevomat's fully qualified annotation sniff does not yet know a local type alias used inside another alias's definition
-on the class docblock: in `@phpstan-type Rows list<Row>`, it reports `Row` as a class and its fixer rewrites it to
-`\App\Row`, a class that does not exist. The same happens to an alias brought in with `@phpstan-import-type`. A
-suppression inside the docblock does not reach it, so until a fixed release ships, write a local alias's shape out in
-full, `@phpstan-type Rows list<array{id: string}>`, and use an imported alias directly in `@param`, `@return` or `@var`,
-where it is recognised.
+Slevomat's fully qualified annotation sniff treats a local type alias used inside another alias's definition as a
+class: in `@phpstan-type Rows list<Row>` it reports `Row` and its fixer rewrites it to `\App\Row`. The same happens to
+an alias brought in with `@phpstan-import-type`, and a suppression inside the docblock does not reach it. Until a fixed
+release ships, write a local alias's shape out in full (`@phpstan-type Rows list<array{id: string}>`) and use an
+imported alias directly in `@param`, `@return` or `@var`. See [REPORTS.md](REPORTS.md).
 
-Two sniffs take properties that exempt framework code whose names and shapes are fixed by convention.
-`BooleanMethodName` takes `ignoredClassSuffixes`, a list of suffixes: the methods of a named class, interface, trait or
-enum whose name ends with one are not checked, which suits a Laravel policy, whose ability methods (`view`, `update`,
-`before`, ...) the Gate resolves by name. An anonymous class has no name and is never exempt.
-`RequireReadonlyPublicProperty` takes `ignoredParentClasses`, a list of parent classes whose subclasses are exempt, and
-`ignoredInterfaceProperties`, which maps an interface to a comma-separated list of property names exempt in any class,
-named or anonymous, whose own `implements` clause names it, which suits a queued job's `tries`, `timeout` and the like,
-each of which needs a default. Parents and interfaces match case-insensitively on their short name, so a key of
-`ShouldQueue` or `\Illuminate\Contracts\Queue\ShouldQueue` matches whether the clause imports it or names it fully
-qualified; an import aliased with `as` matches only a key of its alias. `ignoredParentClassProperties` does the same for
-the parent a class's own `extends` clause names, for a project whose jobs extend a base that implements the contract,
-since the sniff cannot see what a parent implements; a class matching both gets both lists. Only the listed properties
-are exempt; every other public property in the class is still checked.
+Two sniffs take properties that exempt framework code whose names and shapes are fixed by convention:
+
+- `BooleanMethodName` takes `ignoredClassSuffixes`. Methods of a named class, interface, trait or enum ending in one
+  are not checked, which suits a Laravel policy, whose ability methods (`view`, `update`, `before`) the Gate resolves
+  by name. An anonymous class is never exempt.
+- `RequireReadonlyPublicProperty` takes `ignoredParentClasses`, whose subclasses are exempt, and
+  `ignoredInterfaceProperties`, which maps an interface to a comma-separated list of property names exempt in any
+  class whose own `implements` clause names it, such as a queued job's `tries` and `timeout`.
+  `ignoredParentClassProperties` does the same for the parent a class's own `extends` clause names, for jobs that
+  extend a base implementing the contract; a class matching both gets both lists. Only the listed properties are
+  exempt. Parents and interfaces match case-insensitively on their short name, so `ShouldQueue` and
+  `\Illuminate\Contracts\Queue\ShouldQueue` both match whether the clause imports the name or writes it fully
+  qualified; an import aliased with `as` matches only its alias.
 
 ```xml
 <rule ref="SineMacula.NamingConventions.BooleanMethodName">
@@ -582,15 +534,15 @@ are exempt; every other public property in the class is still checked.
 
 | Identifier                             | Enforces                                                                       |
 |----------------------------------------|--------------------------------------------------------------------------------|
-| `sineMacula.mutableStaticProperty`     | Static properties written at runtime; `@managed-static` opts out.              |
+| `sineMacula.mutableStaticProperty`     | Runtime-written static properties; `@managed-static` opts out; tests exempt.   |
 | `sineMacula.readonlyClass`             | A final class with only readonly properties must be `readonly`.                |
 | `sineMacula.redundantStaticReference`  | In a final class, `new static`, `static::` and `instanceof static` are `self`. |
 | `sineMacula.redundantStaticReturnType` | In a final class, a `static` return type or `@return` must be `self`.          |
 
 ### ESLint rules
 
-All rules run in the base layer except `boolean-method-name`, which resolves return types and so requires the opt-in
-type-checked layer. Every rule is scoped to `.ts`/`.js`; `comment-line-wrap` alone also runs over `.yml`/`.yaml`.
+All rules run in the base layer except `boolean-method-name`, which resolves return types and so needs the
+type-checked layer. `comment-line-wrap` alone also runs over `.yml`/`.yaml`.
 
 | Rule                                           | Enforces                                                                            |
 |------------------------------------------------|-------------------------------------------------------------------------------------|
@@ -608,79 +560,62 @@ type-checked layer. Every rule is scoped to `.ts`/`.js`; `comment-line-wrap` alo
 | `@sinemacula/multiline-function-doc`           | A method's documentation comment spans multiple lines; autofixable.                 |
 | `@sinemacula/comment-line-wrap`                | Standalone comment prose wrapped to 80 chars, YAML included; premature wraps too.   |
 
-`boolean-method-name` takes `additionalPrefixes`, `additionalPredicates` and `additionalCommandVerbs` (string arrays) to
-widen the accepted vocabulary from a consumer config. `max-methods-per-class` takes `max`, `no-base-error` takes
-`allow`, and `require-copyright` and `require-file-description` each take `tags` to adjust their defaults.
-`align-doc-tags` takes `tags` and `column`, the column counting from the `@`, so the default of 14 gives `@author` six
-spaces and `@copyright` three. Together `single-line-property-doc` and `multiline-function-doc` set a member's comment
-shape by its kind: data members (interface property signatures, enum members and data class fields) take one line, while
-methods, interface method signatures and class fields holding a function take several. A data comment is never required,
-only held to one line where present; a free function keeps the freedom of either shape.
+Options:
 
-`require-copyright` and `require-file-description` divide the file header between them: the first asks that a single
-block comment carry `@copyright` and `@author`, the second that the same block open with a prose summary above them,
-which is the shape the convention has always described and the half nothing enforced. Both find that block by the
-tags it carries rather than by its position, so a module documented at its export below the imports is read as the
-header exactly as a comment at the top of the file is; a project that narrows one rule's `tags` should narrow the
-other's to match. Only the block's first non-blank line is read, and only for whether it is prose rather than a tag,
-which puts the summary above the tags and stops a wrapped tag value's continuation line passing as one. What the
-summary says is the author's business. A file carrying no such block at all is left to `require-copyright`, so one
-missing header is never faulted twice.
+- `boolean-method-name`: `additionalPrefixes`, `additionalPredicates`, `additionalCommandVerbs` (string arrays).
+- `require-readonly-public-property`: `ignoredParentClasses`.
+- `max-methods-per-class`: `max`.
+- `no-base-error`: `allow`.
+- `require-copyright`, `require-file-description`: `tags`. A project that narrows one should narrow the other to match.
+- `align-doc-tags`: `tags` and `column`, counted from the `@`; the default of 14 gives `@author` six spaces and
+  `@copyright` three.
+- `comment-line-wrap`: `maxLength` (default 80).
 
-`comment-line-wrap` takes `maxLength` (default 80) and is the syntax-only counterpart of the PHP
-`SineMacula.Commenting.CommentLineLength` sniff. It fills standalone `//` and `#` runs and multi-line docblock prose
-greedily, reporting an overflowing line and a prematurely wrapped line on their own footings and autofixing both.
-Markdown headings, docblock tag lines, machine-parsed tool directives (`eslint`, `biome-ignore`, `@ts-`, `Stryker`,
-`c8`/`v8`/`istanbul ignore`, `@vite-ignore`, `yamllint`, `yaml-language-server`, `renovate:` and the like), fenced code,
-an indented code or command block, a doc-tag whose value opens a multi-line bracketed type (an `array{...}` shape, a
-`<...>` generic or a `\Closure(...)` signature), tables, separators, a line whose overflow is a single unbreakable token
-such as a long name or URL, trailing comments after code and compact single-line docblocks are left untouched. Each
-comment token reclaims its own width from the line, so a `#` comment fills one column further than a `//` one.
-One difference: the PHP sniff starts a new paragraph at a `//` line that opens with a capital letter, unless the line
-above ends with a comma, an open parenthesis, a dash or a function word such as `the`, `of` or `until`, so a title or a
-one-line note is not merged into the sentence below it. This rule still merges them.
+`single-line-property-doc` and `multiline-function-doc` set a member's comment shape by its kind. Data members
+(interface property signatures, enum members, data class fields) take one line; methods, interface method signatures
+and class fields holding a function take several. A data comment is not required, only held to one line where present.
+A free function may use either shape.
 
-This is the one rule the base layer also carries over `.yml` and `.yaml`, which nothing else in the standards bounds for
-comment width: yamllint's `line-length` cannot tell a comment from a value, so it would fault `run:` commands and action
-refs nobody can shorten, and it has no autofix. The YAML block registers `yaml-eslint-parser` for its `#` comments and
-enables this rule alone - none of `eslint-plugin-yml`'s own rules are switched on, so YAML quoting, key order and
-indentation stay yamllint's business. Only standalone comments are reached: a block scalar's body is content rather
-than comment, so a shell comment inside a `run: |` step is never seen, and a comment trailing a value is not standalone.
+`require-copyright` and `require-file-description` split the file header between them. Both find the header by the
+tags it carries, so a module documented at its export below the imports counts. Only the block's first non-blank line
+is read, to check it is prose and not a tag. A file with no header at all is reported by `require-copyright` alone.
 
-The base layer also switches on a set of built-in rules: `@typescript-eslint/no-explicit-any`, `curly` (a brace on every
-control statement, as PSR-12 already requires on the PHP side), `max-lines-per-function` (50 lines, test code exempt)
-and `max-depth` (4, test code exempt), plus `eslint-plugin-jsdoc` rules that require a documentation comment on every
-declared function, method, class, interface member and class field, require a description on every `@param` and
-`@returns`, and keep a blank line above every documentation block, single-line blocks included. The type-checked layer
-adds `@typescript-eslint/explicit-module-boundary-types` and `@typescript-eslint/only-throw-error`.
+`comment-line-wrap` is the counterpart of the `SineMacula.Commenting.CommentLineLength` sniff. It fills standalone
+`//` and `#` runs and multi-line docblock prose greedily, reporting and autofixing both overflowing and prematurely
+wrapped lines. It leaves alone: Markdown headings, docblock tag lines, tool directives (`eslint`, `biome-ignore`,
+`@ts-`, `Stryker`, `c8`/`v8`/`istanbul ignore`, `@vite-ignore`, `yamllint`, `yaml-language-server`, `renovate:` and
+the like), fenced code, indented code or command blocks, a doc tag whose value opens a multi-line bracketed type
+(`array{...}`, `<...>`, `\Closure(...)`), tables, separators, a line whose overflow is a single unbreakable token,
+trailing comments after code and compact single-line docblocks. A `#` comment fills one column further than a `//` one.
+Like the PHP sniff, it starts a new paragraph at a `//` or `#` line opening with a capital letter, unless the line above
+ends mid-sentence, so a title or one-line note is not merged into the sentence below.
 
-Test files - `*.test.*`, `*.spec.*` and anything under `__tests__/`, `tests/` or `test-support/` - are exempt from
-`max-lines-per-function` and `max-depth` alone. A spec body is a long, deeply nested account of one scenario, and
-splitting it to satisfy a metric hides the scenario rather than simplifying it. They are not exempt from documentation:
-`jsdoc/require-jsdoc` reaches declared functions, assigned arrows and classes, which in a spec file are its helpers,
-factories and builders - the code a reader has to understand before the assertions mean anything. A test case is an
-arrow passed as a call argument, which none of the rule's contexts match, so `it('...', () => {})` is never asked to
-carry a block; a spec of test cases alone carries no documentation burden at all.
+Over YAML, `comment-line-wrap` is the only rule enabled, because yamllint's `line-length` cannot tell a comment from a
+value and has no autofix. Only standalone comments are reached: a comment inside a block scalar such as `run: |` is
+content, and a comment trailing a value is not standalone. YAML quoting, key order and indentation stay with yamllint.
 
-`jsdoc/no-types`, which forbids a type in `@param`/`@returns`, runs over `.ts`/`.tsx`/`.mts`/`.cts` alone, alongside
-`@typescript-eslint/no-explicit-any`. A TypeScript signature already records the type, so the tag would only repeat it
-and is free to drift; plain JavaScript has no signature to hold one, which makes the tag the only place a type is
-written down, and clearing it there would delete the type rather than move it. The description rules are not scoped
-that way: a tag says what a value means whether or not it also says what the value is, so `@param` and `@returns` need
-a description in both languages.
+The base layer also enables `@typescript-eslint/no-explicit-any`, `curly` (`all`), `max-lines-per-function` (50) and
+`max-depth` (4), plus `eslint-plugin-jsdoc` rules requiring a documentation comment on every declared function,
+method, class, interface member and class field, a description on every `@param` and `@returns`, and a blank line
+above every documentation block. `jsdoc/no-types` runs over TypeScript files only, where the signature already holds
+the type. The type-checked layer adds `@typescript-eslint/await-thenable`, `consistent-type-imports`, `dot-notation`
+(with `allowIndexSignaturePropertyAccess`), `explicit-module-boundary-types`, `no-floating-promises`,
+`no-misused-promises` and `only-throw-error`.
+
+Test files (`*.test.*`, `*.spec.*`, and anything under `__tests__/`, `tests/` or `test-support/`) are exempt from
+`max-lines-per-function` and `max-depth` only. Their helpers, factories and builders still need documentation; a test
+case passed as an arrow to `it(...)` does not.
 
 ### Swift policy
 
-SwiftLint keeps its default rule set and adds curated opt-in rules with a strong correctness, concurrency, safety,
-performance, or readability signal. The policy intentionally avoids analyzer-only rules, which need an Xcode compiler
-log and cannot run through Qlty's normal lint driver.
+SwiftLint keeps its default rule set and adds opt-in rules for correctness, concurrency, safety, performance and
+readability. Analyzer-only rules are left out, because they need an Xcode compiler log that Qlty's lint driver cannot
+supply.
 
-Notable additions include checks for force-unwrapping, silently discarded throwing tasks, invalid concurrency
-annotations, unsafe optional modelling, empty XCTest methods, unbalanced access control, inefficient collection
-operations, oversized closures, and non-private SwiftUI state. A discarded throwing task is an error because it can
-silently lose an operational failure; most style and maintainability findings retain warning severity.
-
-The main review and hard ceilings are:
+Additions include checks for force-unwrapping, discarded throwing tasks, invalid concurrency annotations, unsafe
+optional modelling, empty XCTest methods, unbalanced access control, inefficient collection operations, oversized
+closures and non-private SwiftUI state. A discarded throwing task is an error, because it can lose a failure; most
+other findings are warnings.
 
 | Metric                | Warning | Error |
 |-----------------------|--------:|------:|
@@ -692,27 +627,22 @@ The main review and hard ceilings are:
 | Cyclomatic complexity |      10 |    20 |
 | Function parameters   |       6 |     8 |
 
-SwiftFormat owns whitespace, wrapping, imports, and other mechanically correctable layout. Its configuration matches
-SwiftLint on 120-column wrapping, import ordering, and no trailing commas, and it is the only tool of the two that
-enforces four-space indentation.
+SwiftFormat owns whitespace, wrapping, imports and other mechanically correctable layout. It matches SwiftLint on
+120-column wrapping, import ordering and no trailing commas, and alone enforces four-space indentation. Formatter rules
+that can alter ownership, control flow, explicit `Sendable` conformance or public API shape are disabled.
 
-The policy also carries over the documentation opinions the PHP and TypeScript standards enforce:
+The policy carries over the documentation rules of the PHP and TypeScript standards:
 
-- `file_header` requires a copyright header, as `RequireCopyrightTagSniff` does for PHP classes and `require-copyright`
-  does for TypeScript declarations. The pattern asserts only that the tag is present, so the holder, year and format
-  stay the consuming project's choice, and SwiftFormat's `--header ignore` leaves an existing header untouched.
-- `missing_docs` requires documentation on `open` and `public` declarations, the Swift equivalent of the PHP docblock
-  sniffs and `jsdoc/require-jsdoc`. It is scoped to the public surface deliberately: demanding a comment on every
-  internal member would generate noise the other two standards do not.
-- `line_length` holds comments to the limit rather than exempting them. SwiftFormat wraps `//` comments to 120 but
-  leaves `///` doc comments alone, so without this an over-long documentation line passes both tools - where PHP and
-  TypeScript both wrap comment prose. Rules that can alter ownership,
-control flow, explicit `Sendable` conformance, or public API shape are disabled; those changes require human review.
+- `file_header` requires a copyright header. It checks only that the tag is present, so the holder, year and format
+  are the project's choice, and SwiftFormat's `--header ignore` leaves an existing header alone.
+- `missing_docs` requires documentation on `open` and `public` declarations.
+- `line_length` applies to comments. SwiftFormat wraps `//` comments at 120 but leaves `///` doc comments alone, so
+  this is what bounds them.
 
 ### Methods that only throw
 
-A method that exists solely to refuse - a `__serialize()` that throws so a value holding a secret cannot reach a queue
-payload or a cache entry - returns nothing on any path, and `never` is how to say so:
+A method that exists only to refuse, such as a `__serialize()` that throws so a value holding a secret cannot reach a
+queue payload or cache, returns nothing on any path. Declare it `never`:
 
 ```php
 /**
@@ -726,9 +656,9 @@ public function __serialize(): never
 }
 ```
 
-`never` is a subtype of every return type, so narrowing to it always satisfies an inherited signature, a magic method's
-expected return included. The one place it does not fit is a method a subclass is meant to return from, because a child
-cannot widen `never` back. Such a method keeps the type it declares and throws anyway, which needs no directive:
+`never` is a subtype of every return type, so it always satisfies an inherited signature, magic methods included. The
+exception is a method a subclass is meant to return from, because a child cannot widen `never`. Keep the declared type
+and throw anyway; no directive is needed:
 
 ```php
 /**
@@ -742,16 +672,14 @@ public function build(): array
 }
 ```
 
-Whether a documented return is ever produced is a question of control flow, not of tokens, so no sniff here asks it -
-`Squiz.Commenting.FunctionComment.InvalidNoReturn` decides by looking for a `return` token and so faults exactly the
-guard above. PHPStan's `return.missing` answers it properly: it reports a method that can reach its end without
-returning the type it documents, and stays quiet where every path throws.
+`Squiz.Commenting.FunctionComment.InvalidNoReturn` is excluded because it looks for a `return` token and so faults the
+guard above. PHPStan's `return.missing` reports a method that can reach its end without returning its documented type.
 
-The one thing still worth knowing is that spelling out the contained type of a documented traversable can drag in
-`mixed`, which the mixed ban faults on its own footing. In a function's docblock, suppress it with
-`@phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`: a `// phpcs:ignore` line cannot reach a type
-further down a multi-line docblock, and placed above the signature it detaches the docblock. A property or constant's
-single-line docblock does not allow that tag, so there the `// phpcs:ignore` line goes directly above the docblock.
+Spelling out the contained type of a documented traversable can introduce `mixed`, which the mixed-type ban reports.
+In a function's docblock, suppress it with `@phpcsSuppress SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint`: a
+`// phpcs:ignore` line cannot reach a type further down a multi-line docblock, and above the signature it detaches the
+docblock. A property or constant's single-line docblock does not allow that tag, so put the `// phpcs:ignore` line
+directly above the docblock.
 
 ## Requirements
 
@@ -762,31 +690,32 @@ single-line docblock does not allow that tag, so there the `// phpcs:ignore` lin
 ## Testing
 
 ```bash
-composer test                # PHPUnit suite for the custom sniffs and PHPStan rule
+composer test                # PHPUnit suite for the custom sniffs and PHPStan rules
 composer test:coverage       # suite with Clover coverage output
-composer test:mutation       # Infection mutation gate (min MSI 90)
+composer test:mutation       # Infection mutation gate on the diff (min MSI 90)
 composer test:mutation:full  # full mutation suite without thresholds
 composer analyse             # PHPStan static analysis
 composer check               # static analysis and lint via qlty
 composer format              # format via qlty
 composer smells              # duplication / complexity smells via qlty
-bash scripts/test-swift-policy.sh # exported Swift policy integration test (macOS)
-bash scripts/test-terraform-policy.sh # exported Terraform policy integration test
+npm run test:js              # Vitest suite for the ESLint rules
+npm run lint:js              # ESLint over this package's own rules
+bash scripts/test-<tool>-policy.sh  # exported policy integration tests (knip, shared, swift, terraform, trivy, zizmor)
 ```
+
+The Swift policy test needs macOS.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for a list of notable changes.
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on branching, commits, code
-quality, and pull requests.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Security
 
-If you discover a security vulnerability, please report it responsibly. See [SECURITY.md](SECURITY.md) for the
-disclosure policy and contact details.
+See [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ## License
 

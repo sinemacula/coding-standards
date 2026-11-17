@@ -1,12 +1,7 @@
-# Shared Swift 6 lint policy for Sine Macula applications and packages.
+# Shared Swift 6 lint policy.
 #
-# Consumer-specific include paths do not belong here. Qlty determines the files
-# passed to SwiftLint, while the exclusions below protect direct CLI and Xcode
-# build-phase usage from generated and third-party code.
-#
-# Note that SwiftLint applies `excluded:` only when it walks a directory itself.
-# Qlty passes explicit file paths, so a consumer must also exclude generated and
-# third-party sources via `exclude_patterns` in its own .qlty/qlty.toml.
+# SwiftLint applies `excluded:` only when it walks a directory itself. Qlty
+# passes explicit paths, so consumers must also set `exclude_patterns`.
 
 excluded:
   - .build
@@ -20,9 +15,7 @@ excluded:
 
 reporter: xcode
 
-# SwiftLint's default rules remain enabled. These opt-in rules add checks with a
-# strong correctness, concurrency, safety, performance, or readability signal
-# without requiring a particular application architecture.
+# Opt-in rules on top of the defaults, none tied to an app architecture.
 opt_in_rules:
   - accessibility_label_for_image
   - accessibility_trait_for_button
@@ -103,8 +96,7 @@ opt_in_rules:
   - xct_specific_matcher
   - yoda_condition
 
-# Thresholds intentionally distinguish a review signal from a hard ceiling. Qlty
-# preserves the warning/error severity in its findings.
+# Warning is a review signal, error a hard ceiling; qlty keeps the severity.
 closure_body_length:
   warning: 50
   error: 80
@@ -149,9 +141,7 @@ line_length:
   error: 160
   ignores_urls: true
   ignores_function_declarations: false
-  # SwiftFormat wraps `//` comments to this width but leaves `///` doc comments
-  # alone, so exempting comments here would let an over-long documentation line
-  # pass both tools. PHP and TypeScript hold comments to the limit too.
+  # SwiftFormat wraps `//` comments but not `///` doc comments.
   ignores_comments: false
   ignores_interpolated_strings: true
   ignores_multiline_strings: true
@@ -186,20 +176,12 @@ type_name:
 trailing_comma:
   mandatory_comma: false
 
-# The PHP standard requires an @copyright tag in every class docblock and the
-# TypeScript standard requires @copyright and @author, so a Swift file carries a
-# copyright header too. The pattern deliberately asserts only that the tag is
-# present: the holder, year and format stay the consuming project's to choose,
-# and SwiftFormat's `--header ignore` leaves an existing header untouched rather
-# than rewriting it to a template.
+# Matches the PHP and TypeScript copyright requirement. Only the tag's presence
+# is checked; the holder, year and format are the project's choice.
 file_header:
   required_pattern: '(?:\/\/|\/\*)(?s:.)*[Cc]opyright(?s:.)*'
 
-# PHP requires a docblock on every class and method, TypeScript requires a JSDoc
-# block with a description. Swift's equivalent is held to the public surface:
-# `open` and `public` declarations are the API a consumer reads, and demanding a
-# comment on every internal member would be noise the other two standards do not
-# generate either.
+# Held to the `open` and `public` surface a consumer reads.
 missing_docs:
   warning: [open, public]
   excludes_extensions: true

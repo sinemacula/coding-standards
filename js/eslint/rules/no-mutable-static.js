@@ -1,9 +1,7 @@
 import { ASTUtils } from '@typescript-eslint/utils';
 import { createRule, isAmbient, isDeclarationFile, isTestClass, isTestPath, nearestClass } from './lib.js';
 
-/**
- * Unwrap a rest element to its bound target, else return the node unchanged.
- */
+/** Unwrap a rest element to its bound target. */
 function restTarget(node) {
     return node.type === 'RestElement' ? node.argument : node;
 }
@@ -41,11 +39,7 @@ function boundIdentifiers(pattern, out) {
     }
 }
 
-/**
- * Whether a resolved binding is a mutable local `let`/`var` (not const, class,
- * function, import or an ambient declaration), and so publishes live module
- * state.
- */
+/** Whether a resolved binding is a non-ambient local `let` or `var`. */
 function bindsMutableVariable(variable, filename) {
     if (isDeclarationFile(filename)) {
         return false;
@@ -72,8 +66,6 @@ function hasManagedTag(node, sourceCode) {
         return true;
     }
 
-    // A docblock tucked between the decorators and the declaration sits before
-    // the first token after the last decorator, not before the whole member.
     if (node.decorators?.length) {
         const afterDecorators = sourceCode.getTokenAfter(node.decorators.at(-1));
         const inner = afterDecorators && sourceCode.getCommentsBefore(afterDecorators).at(-1);
@@ -84,9 +76,7 @@ function hasManagedTag(node, sourceCode) {
     return false;
 }
 
-/**
- * A readable name for a class member key, including private and computed forms.
- */
+/** A readable name for a class member key, private and computed included. */
 function describeKey(node, sourceCode) {
     if (node.computed) {
         return `[${sourceCode.getText(node.key)}]`;
@@ -131,8 +121,7 @@ function reportInlineExports(node, context) {
 
 /** Report `export { x }` specifiers that publish a mutable local binding. */
 function reportSpecifierExports(node, context) {
-    // A re-export carries no local binding; a type-only export carries no
-    // runtime one.
+    // Re-exports and type-only exports bind no local runtime value.
     if (node.source || node.exportKind === 'type') {
         return;
     }
@@ -153,18 +142,12 @@ function reportSpecifierExports(node, context) {
 }
 
 /**
- * Forbids mutable module-level and class-level static state: exported
- * `let`/`var` bindings (declared inline or published through an
- * `export { ... }` specifier) and non-readonly `static` class fields, including
- * `static accessor` auto-accessors. All are global mutable state; `const` and
- * `readonly` express the read-only configuration this allows.
+ * Forbids exported `let`/`var` bindings and non-readonly `static` class fields
+ * (auto-accessors included).
  *
- * The check is syntactic, not write-sensitive: a static is flagged whether or
- * not a reassignment is visible, since cross-file writes are out of a per-file
- * rule's reach. Deliberately mutated statics opt out with a `@managed-static`
- * doc tag on the field or its declaring class, and test classes are exempt.
- * Module scope is limited to exported bindings; an unexported module `let`
- * stays local and is left alone.
+ * The check is syntactic, since a per-file rule cannot see cross-file writes. A
+ * `@managed-static` tag on the field or its class opts out, and test classes
+ * are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -187,8 +170,7 @@ export default createRule({
         const { sourceCode } = context;
 
         /**
-         * Whether a static member is exempt: test code or an opted-out
-         * declaration.
+         * Whether a static member is exempt as test code or by opt-out tag.
          */
         const isStaticExempt = node => {
             if (isTestPath(context.filename)) {
@@ -205,8 +187,7 @@ export default createRule({
         };
 
         /**
-         * Flag a non-readonly static field or auto-accessor as mutable static
-         * state.
+         * Flag a non-readonly static field or auto-accessor.
          */
         const inspectStatic = node => {
             if (!node.static || node.readonly || isAmbient(node, context.filename) || isStaticExempt(node)) {

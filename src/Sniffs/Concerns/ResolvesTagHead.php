@@ -7,17 +7,11 @@ namespace SineMacula\CodingStandards\Sniffs\Concerns;
 use PHP_CodeSniffer\Files\File;
 
 /**
- * Resolves the head of a doc comment tag, its type and what follows the type,
- * however many lines the type spans.
+ * Resolves a doc comment tag's type and what follows it, across however many
+ * lines the type spans.
  *
- * A type may open a bracket on the tag's own line and close it several lines
- * further down, as an array shape or a callable signature written one member to
- * a line does. Reading the tag's lines as one run, and skipping whatever sits
- * inside a bracket, follows such a type to its close, so the variable a
- * callable type names for its own parameter is not taken for the one the tag
- * documents. A bracket inside a quoted literal type, such as '(', opens
- * nothing, and a type closed at the end of a line goes on to the next only when
- * that line carries on its union or intersection.
+ * Bracket contents are skipped, so a callable type's own parameter is not taken
+ * for the tag's variable; brackets inside quoted literals open nothing.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -43,8 +37,7 @@ trait ResolvesTagHead
     private const string CONTINUATION = '/\G[ \t]*(?:\||&(?![.]*\$))/';
 
     /**
-     * The text tokens that belong to the tag at the pointer, from the tag up to
-     * the next tag or the end of the comment.
+     * The text tokens between the tag and the bound.
      *
      * @param  array<int, array<string, mixed>>  $tokens
      * @param  int  $tag
@@ -72,11 +65,11 @@ trait ResolvesTagHead
     }
 
     /**
-     * The first match of the pattern that starts outside every bracket and
-     * quoted literal, read across the lines as one run with a line break
-     * standing between each, as the offset it starts at and the text it
-     * matched, or null when there is none. A line break outside every bracket
-     * ends the run unless the next line carries on a union or intersection.
+     * The offset and text of the first pattern match outside every bracket and
+     * literal, or null when none.
+     *
+     * A line break outside brackets ends the run unless the next line continues
+     * a union or intersection.
      *
      * @param  list<string>  $lines
      * @param  string  $pattern
@@ -107,8 +100,8 @@ trait ResolvesTagHead
     }
 
     /**
-     * Whether the offset is a line break the next line does not carry a union
-     * or intersection over.
+     * Whether the offset is a line break not followed by a union or
+     * intersection continuation.
      *
      * @param  string  $text
      * @param  int  $offset
@@ -120,8 +113,8 @@ trait ResolvesTagHead
     }
 
     /**
-     * Where the quoted literal that opens at the offset closes, or the offset
-     * itself when no literal closes on its line there.
+     * The offset where a quoted literal opening at the offset closes, or the
+     * offset itself when none does.
      *
      * @param  string  $text
      * @param  int  $offset
