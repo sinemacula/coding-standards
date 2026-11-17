@@ -587,8 +587,8 @@ wrapped lines. It leaves alone: Markdown headings, docblock tag lines, tool dire
 the like), fenced code, indented code or command blocks, a doc tag whose value opens a multi-line bracketed type
 (`array{...}`, `<...>`, `\Closure(...)`), tables, separators, a line whose overflow is a single unbreakable token,
 trailing comments after code and compact single-line docblocks. A `#` comment fills one column further than a `//` one.
-Unlike the PHP sniff, it does not start a new paragraph at a `//` line opening with a capital letter, so a title or
-one-line note can be merged into the sentence below.
+Like the PHP sniff, it starts a new paragraph at a `//` or `#` line opening with a capital letter, unless the line above
+ends mid-sentence, so a title or one-line note is not merged into the sentence below.
 
 Over YAML, `comment-line-wrap` is the only rule enabled, because yamllint's `line-length` cannot tell a comment from a
 value and has no autofix. Only standalone comments are reached: a comment inside a block scalar such as `run: |` is
