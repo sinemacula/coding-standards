@@ -1,0 +1,3 @@
+<template>
+    <div v-if="visible" v-for="item in items">{{ item }}</div>
+</template>

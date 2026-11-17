@@ -1,0 +1,4 @@
+import sm from '@sinemacula/coding-standards/js/eslint';
+import vue from '@sinemacula/coding-standards/js/eslint/vue';
+
+export default [...sm, ...vue];

@@ -64,7 +64,7 @@ composer test                 # PHPUnit suite for the sniffs and PHPStan rules
 composer test:coverage        # With Clover coverage report (requires Xdebug)
 composer test:mutation        # Infection mutation gate on the diff against origin/master
 npm run test:js               # Vitest suite for the ESLint rules
-bash scripts/test-<tool>-policy.sh  # Qlty consumer integration test for knip, shared, swift, terraform, trivy or zizmor
+bash scripts/test-<tool>-policy.sh  # Qlty consumer integration test for knip, shared, swift, terraform, trivy, vue or zizmor
 ```
 
 Single test file or method:

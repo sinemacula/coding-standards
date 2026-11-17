@@ -197,6 +197,25 @@ jobs:
                 run: bash scripts/test-knip-policy.sh
 
     # ==========================================================================
+    # JOB: VUE POLICY INTEGRATION
+    # ==========================================================================
+    vue-policy:
+        name: Test / Vue layer under Qlty
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Install Qlty
+                uses: qltysh/qlty-action/install@v2
+
+            -   name: Verify Vue layer
+                run: bash scripts/test-vue-policy.sh
+
+    # ==========================================================================
     # JOB: TERRAFORM POLICY INTEGRATION
     # ==========================================================================
     terraform-policy:

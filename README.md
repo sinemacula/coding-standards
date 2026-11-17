@@ -230,26 +230,40 @@ a four-space indent, because Biome cannot format `.vue` markup. To match, the sh
 well as kebab-case under any `components/` directory, so a component's tests and stories can share its name
 (`UserCard.test.ts`).
 
-Through Qlty, the eslint plugin sandbox installs only `eslint`, `jest` and `prettier` by default, so the config's
-imports fail to resolve. Widen the install filter in your `.qlty/qlty.toml`:
+Through Qlty, enable the eslint plugin on your `package.json`. Its sandbox installs only `eslint`, `jest` and
+`prettier` from that file by default, so widen the filter or the config's imports fail to resolve:
 
 ```toml
-[plugins.definitions.eslint]
+[[plugin]]
+name = "eslint"
+package_file = "package.json"
 package_filters = [
     "@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc",
     "yaml-eslint-parser",
 ]
 ```
 
-With the Vue layer, add its packages too:
+With the Vue layer, add its packages to the filter, and route `.vue` files to ESLint. Qlty has no `vue` file type and
+hands ESLint only JavaScript and TypeScript, so without the last two blocks no single-file component is linted:
 
 ```toml
-[plugins.definitions.eslint]
+[[plugin]]
+name = "eslint"
+package_file = "package.json"
 package_filters = [
     "@sinemacula/coding-standards", "typescript-eslint", "@typescript-eslint", "eslint-plugin-jsdoc",
     "yaml-eslint-parser", "eslint-plugin-vue", "vue-eslint-parser", "eslint-plugin-check-file",
 ]
+
+[file_types.vue]
+globs = ["*.vue", "**/*.vue"]
+
+[plugins.definitions.eslint]
+file_types = ["javascript", "typescript", "jsx", "tsx", "vue"]
 ```
+
+The routing stays with the Vue layer rather than the shared source, because ESLint cannot parse a `.vue` file without
+that layer's parser.
 
 ### TypeScript (tsconfig)
 
@@ -703,7 +717,7 @@ composer format              # format via qlty
 composer smells              # duplication / complexity smells via qlty
 npm run test:js              # Vitest suite for the ESLint rules
 npm run lint:js              # ESLint over this package's own rules
-bash scripts/test-<tool>-policy.sh  # exported policy integration tests (knip, shared, swift, terraform, trivy, zizmor)
+bash scripts/test-<tool>-policy.sh  # exported policy integration tests (knip, shared, swift, terraform, trivy, vue, zizmor)
 ```
 
 The Swift policy test needs macOS.
