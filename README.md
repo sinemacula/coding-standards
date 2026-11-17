@@ -225,8 +225,10 @@ export default [...typeChecked, ...vue];
 ```
 
 The Vue layer registers the single-file-component parser, resolves `<script lang="ts">` through the TypeScript
-parser, and requires kebab-case component filenames. It also carries the template layout rules, set to a four-space
-indent, because Biome cannot format `.vue` markup.
+parser, and requires PascalCase component filenames (`UserCard.vue`). It also carries the template layout rules, set to
+a four-space indent, because Biome cannot format `.vue` markup. To match, the shared Biome config accepts PascalCase as
+well as kebab-case under any `components/` directory, so a component's tests and stories can share its name
+(`UserCard.test.ts`).
 
 Through Qlty, the eslint plugin sandbox installs only `eslint`, `jest` and `prettier` by default, so the config's
 imports fail to resolve. Widen the install filter in your `.qlty/qlty.toml`:

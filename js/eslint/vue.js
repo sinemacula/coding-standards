@@ -28,7 +28,7 @@ export default [
             'vue/html-indent': ['error', 4],
 
             'check-file/filename-naming-convention': ['error', {
-                '**/*.vue': 'KEBAB_CASE',
+                '**/*.vue': 'PASCAL_CASE',
             }, {
                 ignoreMiddleExtensions: true,
             }],
