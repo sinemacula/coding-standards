@@ -8,14 +8,9 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Promoted constructor parameter spacing sniff.
- *
- * Requires a blank line above each parameter of a constructor that promotes
- * properties: one after the opening parenthesis and one between parameters.
- * This pads the one-per-line promoted constructor that cs-fixer produces via
- * multiline_promoted_properties. The closing parenthesis stays tight against
- * the last parameter (cs-fixer strips a blank there), so none is required
- * before it.
+ * Requires a blank line before each parameter of a multi-line constructor that
+ * promotes properties. None is required before the closing parenthesis, where
+ * php-cs-fixer strips one.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -92,8 +87,8 @@ final class PromotedConstructorSpacingSniff implements Sniff
     }
 
     /**
-     * Advance past a tool-directive suppression comment (qlty-ignore, phpstan,
-     * phpcs) that trails the boundary line, so the blank is measured after it.
+     * Advance past a suppression comment trailing the boundary line, so the
+     * blank line is measured after it.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $boundary

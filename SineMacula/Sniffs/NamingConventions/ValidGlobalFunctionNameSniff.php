@@ -8,10 +8,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Global function naming sniff.
- *
- * Ensures every global (non-member) function is declared in snake_case,
- * matching the naming convention used by PHP's own global functions.
+ * Requires global functions to be named in snake_case, like PHP's own.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -24,9 +21,6 @@ final class ValidGlobalFunctionNameSniff implements Sniff
     /**
      * Register the tokens this sniff listens for.
      *
-     * Closures and arrow functions use their own tokens (T_CLOSURE / T_FN), so
-     * only named function declarations reach this sniff.
-     *
      * @return array<int, int|string>
      */
     #[\Override]
@@ -37,9 +31,6 @@ final class ValidGlobalFunctionNameSniff implements Sniff
 
     /**
      * Process a function declaration token.
-     *
-     * Methods carry a class/interface/trait/enum scope condition; a global
-     * function has none, which is how the two are told apart.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

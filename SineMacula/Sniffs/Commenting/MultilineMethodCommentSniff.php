@@ -9,14 +9,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Multi-line method comment sniff.
- *
- * A method earns a fuller account than a data field: what it does, and its
- * parameters and what it returns. Holding its doc comment open across lines
- * keeps that room ready and sets behaviour apart from data at a glance, the
- * mirror of the single-line form data members take. Methods declared in a
- * class, interface, trait or enum are governed; a free function is left to the
- * author, since a short helper reads well on one line.
+ * Requires a method doc comment to span multiple lines, the counterpart of the
+ * single-line form data members take. Free functions are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -73,8 +67,8 @@ final class MultilineMethodCommentSniff implements Sniff
     }
 
     /**
-     * Whether the function at the pointer is a method: one declared directly in
-     * a class, interface, trait or enum rather than a free or nested function.
+     * Determine whether the function is declared directly in a class-like
+     * scope.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

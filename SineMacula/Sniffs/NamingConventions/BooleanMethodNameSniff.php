@@ -9,19 +9,12 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Boolean method name sniff.
+ * Requires a function returning `bool` to be named as a predicate.
  *
- * A method (or function) returning `bool` should read as a predicate. A name is
- * accepted when its first camelCase word is a copular or modal prefix (is, has,
- * can, ...), an idiomatic predicate from $allowedPredicates (e.g. successful),
- * or a verb ending in `s` (third-person: permits, passes) or `ed` (past tense:
- * succeeded, failed, expired). An imperative command verb (execute, persist,
- * guard, ...) that returns a result bool is exempt via $commandVerbs, which a
- * consuming ruleset can extend. A method may also opt out with an @imperative
- * docblock tag. Magic methods are exempt, as are the methods of a named class,
- * interface, trait or enum whose name ends with one of $ignoredClassSuffixes,
- * and a method carrying an Override attribute, whose name is set by the parent
- * or interface it overrides and is checked where that declares it.
+ * The first camelCase word must be an allowed prefix or predicate, or end in
+ * `s` or `ed` (`permits`, `failed`). Command verbs, magic methods, overrides,
+ * methods of classes with an ignored suffix and `@imperative` methods are
+ * exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -103,7 +96,7 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * The leading camelCase word of a method name.
+     * Read the leading camelCase word of a method name.
      *
      * @param  string  $name
      * @return string
@@ -114,7 +107,7 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the name is an imperative command verb, not a predicate.
+     * Determine whether the name starts with a command verb.
      *
      * @param  string  $name
      * @return bool
@@ -125,9 +118,7 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the name reads as a predicate: a copular/modal prefix, an
-     * idiomatic predicate, or a verb ending in `s` (third-person) or `ed` (past
-     * tense).
+     * Determine whether the name reads as a predicate.
      *
      * @param  string  $name
      * @return bool
@@ -143,8 +134,7 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the method is exempt whatever its name: it belongs to an ignored
-     * class, overrides a parent or interface method, or opts out by tag.
+     * Determine whether the method is exempt whatever its name.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -158,12 +148,9 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the function is a method of a named class, interface, trait or
-     * enum whose name ends with a configured suffix.
-     *
-     * Methods whose names a framework resolves by convention (e.g. the ability
-     * methods of a Laravel policy) cannot be renamed into predicates. An
-     * anonymous class has no name and so is never exempt.
+     * Determine whether the method belongs to a named structure whose name ends
+     * with an ignored suffix, for framework classes that fix method names by
+     * convention.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -189,8 +176,8 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the method carries an Override attribute, its name being set by
-     * the parent or interface it overrides.
+     * Determine whether the method carries an Override attribute, its name
+     * being checked where the parent declares it.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -218,8 +205,8 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * The lowercased names of the attributes in the group between the brackets,
-     * without a leading separator, their arguments or any comments.
+     * Read the lowercased attribute names in the group, without a leading
+     * separator, arguments or comments.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $opener
@@ -247,7 +234,7 @@ final class BooleanMethodNameSniff implements Sniff
     }
 
     /**
-     * Whether the method docblock carries an @imperative opt-out tag.
+     * Determine whether the method docblock carries an @imperative tag.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

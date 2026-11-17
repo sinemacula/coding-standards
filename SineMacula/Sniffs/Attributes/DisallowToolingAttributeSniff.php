@@ -9,13 +9,8 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
- * Disallow IDE / tooling attributes.
- *
- * PHP attributes should describe runtime behaviour, not feed IDE or static
- * analysis hints. This sniff forbids attributes declared under known tooling
- * namespaces (JetBrains\PhpStorm by default); native PHP attributes and runtime
- * framework attributes are unaffected. Express the same intent with real types
- * and docblocks instead.
+ * Forbids attributes from IDE and tooling namespaces, `JetBrains\PhpStorm` by
+ * default. Native and runtime framework attributes are unaffected.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -135,10 +130,8 @@ final class DisallowToolingAttributeSniff implements Sniff
     }
 
     /**
-     * Parse a single `use` statement into [alias, fully qualified name].
-     *
-     * Returns null when the statement is not a class import (closure use, or a
-     * function/const import) or carries no name.
+     * Parse a class `use` import into [alias, fully qualified name], or null
+     * for any other `use` statement.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $usePtr

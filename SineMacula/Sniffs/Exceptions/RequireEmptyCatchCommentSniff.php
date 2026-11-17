@@ -8,13 +8,10 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Empty catch comment sniff.
+ * Requires an empty catch block to hold a comment explaining the swallow.
  *
- * An empty catch must carry a comment explaining the intentional swallow. A
- * documented swallow (a non-JSON-scalar fallback, an expected-exception test
- * asserting on state afterwards) is deliberate; a bare `catch (E $e) {}` is a
- * silently discarded error and a likely bug. This replaces the core
- * Generic.CodeAnalysis.EmptyStatement.DetectedCatch, which flags both forms.
+ * Replaces Generic.CodeAnalysis.EmptyStatement.DetectedCatch, which also flags
+ * a commented catch.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

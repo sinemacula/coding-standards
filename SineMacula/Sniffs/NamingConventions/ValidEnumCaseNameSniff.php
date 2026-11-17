@@ -8,10 +8,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Enum case naming sniff.
- *
- * Ensures every enum case is declared in SCREAMING_SNAKE_CASE, matching the
- * Sine Macula house convention for enum cases.
+ * Requires enum case names in SCREAMING_SNAKE_CASE.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -24,8 +21,7 @@ final class ValidEnumCaseNameSniff implements Sniff
     /**
      * Register the tokens this sniff listens for.
      *
-     * PHP_CodeSniffer re-tokenises an enum `case` to its own `T_ENUM_CASE`
-     * token, so switch cases (which stay `T_CASE`) are never seen here.
+     * An enum `case` tokenises as T_ENUM_CASE, so switch cases never reach it.
      *
      * @return array<int, int|string>
      */

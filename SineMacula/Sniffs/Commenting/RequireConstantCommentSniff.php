@@ -9,11 +9,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Class constant doc comment sniff.
- *
- * Requires a doc comment directly above every class, interface, enum or trait
- * constant. The native phpcs variable-comment sniff covers properties but not
- * constants, so this closes that gap. Global constants are not affected.
+ * Requires a doc comment above every class, interface, enum or trait constant.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

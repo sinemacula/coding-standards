@@ -8,10 +8,8 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Typed class constant sniff.
- *
- * Requires a native type on every class, interface, enum or trait constant (PHP
- * 8.3+): `const string FOO = '...'` rather than `const FOO = '...'`.
+ * Requires a native type on every class, interface, enum or trait constant, as
+ * in `const string FOO = '...'`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -32,9 +30,8 @@ final class RequireConstantTypeSniff implements Sniff
     /**
      * Process a constant declaration token.
      *
-     * Global constants cannot be typed, so only constants declared inside an
-     * object structure are checked. A type sits between `const` and the name;
-     * an untyped constant has the name immediately after `const`.
+     * Global constants cannot be typed. An untyped constant has its name
+     * directly after `const`.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr

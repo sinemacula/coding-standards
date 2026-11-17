@@ -9,11 +9,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 
 /**
- * Enum case comment consistency sniff.
- *
- * Enum cases need no doc comment, but documentation must be all-or-nothing: if
- * any case in an enum is documented, every case must be. (The enum itself still
- * requires a docblock - that is handled by the class comment sniff.)
+ * Requires every case of an enum to be documented once any one case is.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

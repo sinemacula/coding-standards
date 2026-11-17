@@ -8,10 +8,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
- * Interface name prefix sniff.
- *
- * Forbids the Hungarian "I" prefix on interface names (IUserRepository), which
- * adds nothing over the language's own type system.
+ * Forbids the Hungarian "I" prefix on interface names, as in `IUserRepository`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

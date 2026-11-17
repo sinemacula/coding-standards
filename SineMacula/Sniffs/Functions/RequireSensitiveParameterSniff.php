@@ -10,21 +10,11 @@ use SineMacula\CodingStandards\Sniffs\Concerns\DetectsTestClasses;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
- * Sensitive parameter attribute sniff.
+ * Requires #[\SensitiveParameter] on parameters whose name signals a secret,
+ * such as `$password` or `$accessToken`, unless their type cannot hold one.
  *
- * Requires #[\SensitiveParameter] on parameters whose name signals a secret
- * (password, secret, access_token, ...), so their values are redacted from
- * stack traces. The name only decides the question where the declared type can
- * carry a secret in the first place: a parameter typed solely as a class,
- * interface or `object` holds the thing a secret belongs to rather than the
- * secret itself, and redacting it costs a stack trace its usefulness for
- * nothing. A union naming any value type still counts, since that is the member
- * the secret would arrive in, and an untyped parameter counts because there is
- * nothing to judge it on. Bare "token" is intentionally excluded - it matches
- * operator and CSRF tokens that are not secrets. The list is a public
- * $sensitiveNames array a ruleset can extend or override. Test classes are
- * exempt, where sensitive-looking names exercise redaction rather than handle
- * real secrets.
+ * Bare "token" is excluded since it matches operator and CSRF tokens. Test
+ * classes are exempt.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -107,8 +97,7 @@ final class RequireSensitiveParameterSniff implements Sniff
     }
 
     /**
-     * Whether the function is declared in a test class, where sensitive-looking
-     * parameter names exercise redaction rather than handle real secrets.
+     * Determine whether the function is declared in a test class.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $stackPtr
@@ -143,12 +132,9 @@ final class RequireSensitiveParameterSniff implements Sniff
     }
 
     /**
-     * Determine whether the declared type can carry a secret. An untyped
-     * parameter can, having declared nothing to the contrary. A typed one can
-     * only where some member of the type is a value type: a type made purely of
-     * class, interface, `object` or `self` names describes the holder of a
-     * secret rather than the secret, and `null`, `false` and `true` carry no
-     * value worth redacting.
+     * Determine whether the declared type can carry a secret: it is untyped, or
+     * some union member is a value type. A class or `object` type holds the
+     * secret's owner, not the secret.
      *
      * @param  string  $hint
      * @return bool
@@ -159,9 +145,7 @@ final class RequireSensitiveParameterSniff implements Sniff
             return true;
         }
 
-        // Only the union members are worth splitting on: an intersection can
-        // name nothing but class and interface types, so neither it nor the
-        // parentheses a disjunctive-normal form wraps it in can hide one.
+        // An intersection names only class types, so splitting on `|` suffices.
         foreach (explode('|', ltrim($hint, '?')) as $member) {
             if (in_array(strtolower($member), self::VALUE_TYPES, true)) {
                 return true;

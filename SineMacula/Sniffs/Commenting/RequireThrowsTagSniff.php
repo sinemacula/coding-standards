@@ -11,16 +11,12 @@ use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesDocComment;
 use SineMacula\CodingStandards\Sniffs\Concerns\ResolvesQualifiedNames;
 
 /**
- * Throws tag sniff.
+ * Requires a @throws tag for each exception a documented function's body
+ * throws.
  *
- * A documented function declares each exception its body throws in a tag of its
- * own. Unlike the core throw tag sniff, the number of tags is not held to the
- * number of exceptions thrown in the body: PHPStan asks for the checked
- * exceptions a callee propagates to be declared too, so a function that both
- * throws and propagates carries more tags than its body throws, and each type
- * thrown is still checked however many tags there are. An exception thrown
- * inside a closure, an arrow function or an anonymous class is not the
- * function's own.
+ * Unlike the core throw tag sniff, extra tags are allowed, since propagated
+ * checked exceptions are declared too. Throws inside closures, arrow functions
+ * and anonymous classes are not the function's own.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -83,9 +79,8 @@ final class RequireThrowsTagSniff implements Sniff
     }
 
     /**
-     * The exception types the function at the pointer throws in its own body,
-     * an empty list when it throws only what cannot be named, or null when it
-     * throws nothing.
+     * Collect the exception types the function throws in its own body: an empty
+     * list when none can be named, or null when it throws nothing.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $function
@@ -112,8 +107,8 @@ final class RequireThrowsTagSniff implements Sniff
     }
 
     /**
-     * The exception types the throw at the pointer raises, read from the class
-     * it instantiates or names, or from the catch whose variable it re-throws.
+     * Resolve the types a throw raises, from the class it names or the catch
+     * whose variable it re-throws.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $function
@@ -139,8 +134,8 @@ final class RequireThrowsTagSniff implements Sniff
     }
 
     /**
-     * The types caught by the nearest catch before the re-thrown variable at
-     * the pointer, when that catch binds the same variable.
+     * Read the types caught by the nearest preceding catch, when it binds the
+     * re-thrown variable.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $function
@@ -169,8 +164,7 @@ final class RequireThrowsTagSniff implements Sniff
     }
 
     /**
-     * The types the @throws tags of the doc comment at the pointer declare,
-     * each member of a union counted on its own.
+     * Collect the types the @throws tags declare, splitting unions.
      *
      * @param  \PHP_CodeSniffer\Files\File  $phpcsFile
      * @param  int  $opener
@@ -194,9 +188,8 @@ final class RequireThrowsTagSniff implements Sniff
     }
 
     /**
-     * Whether the thrown type is among the declared ones, a name written
-     * qualified on one side and imported on the other matching by the part the
-     * two share.
+     * Determine whether the thrown type is declared, matching a qualified name
+     * against an imported one by their shared suffix.
      *
      * @param  string  $type
      * @param  list<string>  $declared
@@ -231,8 +224,8 @@ final class RequireThrowsTagSniff implements Sniff
     }
 
     /**
-     * A class name without surrounding space, a leading separator or the
-     * namespace keyword of a relative name.
+     * Strip surrounding space, a leading separator and a relative name's
+     * `namespace` keyword from a class name.
      *
      * @param  string  $name
      * @return string
