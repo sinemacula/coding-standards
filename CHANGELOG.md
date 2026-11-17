@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.1](https://github.com/sinemacula/coding-standards/compare/v1.31.0...v1.31.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* route .vue files to ESLint under qlty when the Vue layer is enabled ([#215](https://github.com/sinemacula/coding-standards/issues/215)) ([225ace7](https://github.com/sinemacula/coding-standards/commit/225ace730dd2f011d37431979e7cf750032fee9d))
+
 ## [1.31.0](https://github.com/sinemacula/coding-standards/compare/v1.30.2...v1.31.0) (2026-11-17)
 
 
