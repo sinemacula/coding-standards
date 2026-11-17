@@ -182,6 +182,25 @@ jobs:
                 run: bash scripts/test-zizmor-policy.sh
 
     # ==========================================================================
+    # JOB: KNIP POLICY INTEGRATION
+    # ==========================================================================
+    knip-policy:
+        name: Test / Knip policy exports
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v5
+                with:
+                    persist-credentials: false
+
+            -   name: Install Qlty
+                uses: qltysh/qlty-action/install@v2
+
+            -   name: Verify Knip policy
+                run: bash scripts/test-knip-policy.sh
+
+    # ==========================================================================
     # JOB: TERRAFORM POLICY INTEGRATION
     # ==========================================================================
     terraform-policy:
