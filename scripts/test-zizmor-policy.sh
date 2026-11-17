@@ -39,8 +39,8 @@ fail() {
     exit 1
 }
 
-# The fixture's lines 13 to 16 are the checkout, the organization action, the
-# third-party action and the injected run step.
+# The fixture's lines 13 to 17 are the checkout, the two organizations' actions,
+# the third-party action and the injected run step.
 expect_reported() {
     if ! grep -Eq "^ +$1:[0-9]+ .*zizmor/$2" <<< "${scan_output}"; then
         fail "Expected zizmor to report $2 on line $1."
@@ -55,10 +55,11 @@ expect_silent() {
 
 # A third-party tag and an injected expression must still be reported, or a
 # green run would prove nothing.
-expect_reported 15 unpinned-uses
-expect_reported 16 template-injection
+expect_reported 16 unpinned-uses
+expect_reported 17 template-injection
 
-# The shared policy lets GitHub's and this organization's actions keep a tag,
+# The shared policy lets GitHub's and both organizations' actions keep a tag,
 # and turns off the checkout credential audit.
 expect_silent 13
 expect_silent 14
+expect_silent 15

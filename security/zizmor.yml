@@ -6,6 +6,7 @@ rules:
                 actions/*: ref-pin
                 github/*: ref-pin
                 sinemacula/*: ref-pin
+                gigly-inc/*: ref-pin
                 '*': hash-pin
 
     # Flags every checkout that keeps its token, which release and deploy jobs

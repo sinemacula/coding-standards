@@ -12,5 +12,6 @@ jobs:
         steps:
             -   uses: actions/checkout@v5
             -   uses: sinemacula/example-action@v1
+            -   uses: gigly-inc/example-action@v1
             -   uses: example-vendor/example-action@v1
             -   run: echo "${{ github.event.pull_request.title }}"
