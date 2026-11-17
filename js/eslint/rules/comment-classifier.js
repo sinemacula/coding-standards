@@ -1,14 +1,7 @@
 /**
- * Classifies a single content line of a comment.
- *
- * Only prose and list items are reflowed; every other kind is preserved
- * verbatim and acts as a paragraph boundary. Directives, docblock tags, fenced
- * or indented code, tables and rule separators are left exactly as written, so
- * a reflow never disturbs a construct whose position or spacing carries
- * meaning. The directive set spans the tools that read instructions out of a
- * comment in any of the governed languages, YAML's included: a schema
- * association or a Renovate manager hint is machine-read, so wrapping it would
- * silently sever it from the key it annotates.
+ * Classifies a single content line of a comment. Only prose and list items
+ * reflow; every other kind is kept verbatim as a paragraph boundary, so a
+ * machine-read directive is never wrapped away from what it annotates.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -4,11 +4,8 @@ import { createRule } from './lib.js';
 const NAME_PATTERN = /^[A-Z][A-Z0-9_]*$/;
 
 /**
- * Enum member naming rule.
- *
- * Ensures every enum member is declared in SCREAMING_SNAKE_CASE, matching the
- * Sine Macula house convention for enum members. Only real `enum` declarations
- * are checked; object-literal "as const" pseudo-enums are out of scope.
+ * Require enum members in SCREAMING_SNAKE_CASE. Object-literal `as const`
+ * pseudo-enums are not checked.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -27,14 +24,10 @@ export default createRule({
     },
     defaultOptions: [],
     create(context) {
-        // Only enum members are visited; a switch `case` is a SwitchCase node
-        // and never reaches this visitor.
         return {
             TSEnumMember(node) {
                 const id = node.id;
-                // A member name is either a bare identifier or a string
-                // literal; a string literal is checked by its resolved value,
-                // not the raw source text.
+                // A string-literal name is checked by its value.
                 const name = id.type === 'Identifier' ? id.name : String(id.value);
 
                 if (!NAME_PATTERN.test(name)) {

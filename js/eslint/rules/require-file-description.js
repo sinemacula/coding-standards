@@ -26,26 +26,10 @@ function described(comment) {
 }
 
 /**
- * Require the file's descriptive docblock to carry a summary, not tags alone.
+ * Require the file's docblock to open with a prose summary above its tags.
  *
- * The house convention is a prose summary followed by the tags every file
- * declares, so `@author` and `@copyright` annotate a description rather than
- * standing as a header of their own. `require-copyright` has always asked for
- * the tags; this asks for the sentence they were meant to sit beneath, which
- * was the intent all along and the half nothing enforced. A file whose entire
- * header is two tags says who owns it and nothing about what it is.
- *
- * The block is located exactly as `require-copyright` locates it, by the tags
- * it carries, so the two rules always speak about the same comment; a project
- * changing one rule's `tags` should change the other's to match. A file with no
- * such block is left alone, since `require-copyright` already owns the block's
- * existence and faulting one omission twice would only double the report.
- *
- * Only the block's first non-blank line is read, and only whether it is prose.
- * That places the summary above the tags, as the convention writes it, and
- * keeps a wrapped tag value's continuation line from passing as a description.
- * What the sentence says is the author's business: the rule asserts that prose
- * is there, never that it is good.
+ * The block is found by its tags, as `require-copyright` finds it, so the two
+ * rules' `tags` options should match. A missing block is left to that rule.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

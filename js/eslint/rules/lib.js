@@ -101,13 +101,8 @@ export function tagMatcher(tag) {
 }
 
 /**
- * The file's descriptive docblock: the block comment carrying all of the given
- * tags together, or null when no comment carries them.
- *
- * The block is found by its tags rather than its position, since the header
- * need not open the file: a module documented at its export sits below the
- * imports. Requiring one comment to carry every tag is what makes the match a
- * single block rather than a header split across several.
+ * The first block comment carrying all of the given tags, or null. Matched by
+ * tags, not position, since a module may be documented at its export.
  */
 export function fileDocBlock(sourceCode, tags) {
     const matchers = tags.map(tagMatcher);

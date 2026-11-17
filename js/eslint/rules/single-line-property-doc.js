@@ -28,21 +28,11 @@ function contentLines(value) {
 }
 
 /**
- * Require a data member's documentation comment to sit on a single line.
+ * Require a data member's documentation comment (interface property, enum
+ * member, non-function class field) to sit on a single line.
  *
- * A field's description is a single phrase, so it belongs on one line however
- * long it runs; nothing wraps a comment to a width, and breaking it by hand
- * only scatters the phrase down the file. Interface property signatures, enum
- * members and class fields that hold data are governed; a class field holding a
- * function reads as behaviour, may document parameters and is left to span as
- * many lines as it needs, as are methods and every free function. A comment is
- * never required here, only held to one line where it is present, so enum
- * members stay documented at the author's discretion.
- *
- * A block already on one line passes. A multi-line block collapses to one, its
- * lines joined by single spaces, provided it carries prose alone: a block
- * bearing a tag such as `@deprecated` keeps its shape and is reported without a
- * fix, since folding a tag into a running line would change its meaning.
+ * A block carrying a tag such as `@deprecated` is reported without a fix, since
+ * folding the tag into running prose would change its meaning.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -83,8 +73,7 @@ export default createRule({
 
             const lines = contentLines(doc.value);
 
-            // An empty block is the description rule's to report; there is no
-            // prose to fold onto one line.
+            // An empty block is the description rule's to report.
             if (lines.length === 0) {
                 return;
             }

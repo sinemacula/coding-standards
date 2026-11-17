@@ -3,11 +3,7 @@ import base from './index.js';
 import plugin from './plugin.js';
 
 /**
- * Opt-in type-aware layer: the cross-file and type-driven rules. Spreads the
- * base config, then turns on type information via the project service so the
- * type-aware custom rules and the curated typescript-eslint rules can resolve.
- * Layered on only where a consumer tsconfig exists, keeping the base config the
- * cheap fast path.
+ * Opt-in type-aware layer over the base config, for repos with a tsconfig.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -31,14 +27,12 @@ export default [
 
             '@typescript-eslint/await-thenable': 'error',
             '@typescript-eslint/consistent-type-imports': 'error',
-            // Type-aware replacement for Biome's useLiteralKeys: dot access for
-            // real properties, bracket access allowed on index signatures.
+            // Type-aware replacement for Biome's useLiteralKeys.
             '@typescript-eslint/dot-notation': ['error', { allowIndexSignaturePropertyAccess: true }],
             '@typescript-eslint/explicit-module-boundary-types': 'error',
             '@typescript-eslint/no-floating-promises': 'error',
             '@typescript-eslint/no-misused-promises': 'error',
             '@typescript-eslint/only-throw-error': 'error',
-            // '@typescript-eslint/strict-boolean-expressions': 'error',
         },
     },
 ];

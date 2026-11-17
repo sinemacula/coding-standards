@@ -60,10 +60,8 @@ function isEventHandler(name) {
 }
 
 /**
- * Whether a return type resolves to boolean, ignoring a nullable `?bool`-style
- * null/undefined/void tail so an optional boolean still counts. Promise
- * wrappers are unwrapped before this is called, so an awaited boolean counts
- * too.
+ * Whether a return type resolves to boolean, ignoring a null, undefined or void
+ * union member.
  */
 function returnsBoolean(type) {
     if (type.flags & (ts.TypeFlags.Boolean | ts.TypeFlags.BooleanLiteral)) {
@@ -81,9 +79,7 @@ function returnsBoolean(type) {
     return false;
 }
 
-/**
- * Whether the node is a function expression carrying an inspectable signature.
- */
+/** Whether the node is an arrow or function expression. */
 function isFunctionExpression(node) {
     return node != null
         && (node.type === 'ArrowFunctionExpression' || node.type === 'FunctionExpression');
@@ -102,9 +98,7 @@ function keyName(keyNode) {
     return null;
 }
 
-/**
- * Peel `as`/`satisfies`/non-null wrappers off an expression to reach the value.
- */
+/** Peel `as`, `satisfies` and non-null wrappers off an expression. */
 function unwrapExpression(node) {
     let current = node;
 
@@ -141,10 +135,8 @@ function hasImperativeTag(sourceCode, docHost, nameNode) {
 }
 
 /**
- * Whether the name is outside the rule's reach: a magic member, a name that
- * already reads as a predicate, a command or event handler, a well-known type
- * accessor, a member whose name is set by the parent it overrides, or a member
- * carrying the @imperative opt-out tag.
+ * Whether the member is exempt: magic, an override, a type accessor, already a
+ * predicate, a command or event handler, or tagged @imperative.
  */
 function isExempt(state, nameNode, name, docHost) {
     if (name.startsWith('__') || TYPE_ACCESSOR_NAMES.has(name) || docHost.override === true) {
@@ -163,9 +155,8 @@ function isExempt(state, nameNode, name, docHost) {
 }
 
 /**
- * Report the name when it neither reads as a predicate nor is exempt and the
- * resolved (awaited) return type is boolean. Type-predicate guards are
- * predicates by structure and left alone.
+ * Report a non-exempt name whose awaited return type is boolean, skipping
+ * type-predicate guards.
  */
 function inspect(state, nameNode, name, fnNode, docHost) {
     const { checker, services, context } = state;
@@ -189,10 +180,7 @@ function inspect(state, nameNode, name, fnNode, docHost) {
     context.report({ node: nameNode, messageId: 'notPredicate', data: { name } });
 }
 
-/**
- * Guard a statically named function value (arrow field, object method or const
- * binding) down to a named key, then inspect it.
- */
+/** Inspect a function value bound to a statically named key. */
 function inspectFunctionValue(state, keyNode, valueNode, docHost) {
     const name = keyName(keyNode);
 
@@ -202,10 +190,8 @@ function inspectFunctionValue(state, keyNode, valueNode, docHost) {
 }
 
 /**
- * Guard a class member down to a statically named, non-accessor method, then
- * inspect it. A bodiless member is dropped as an overload signature so the
- * implementation reports once, unless it is abstract or ambient, where the
- * bodiless declaration is the real thing to check.
+ * Inspect a statically named method. A bodiless overload signature is skipped
+ * unless abstract or ambient, so the implementation reports once.
  */
 function inspectMember(state, node, allowEmptyBody) {
     if (node.computed || node.kind !== 'method') {
@@ -225,11 +211,7 @@ function inspectMember(state, node, allowEmptyBody) {
     inspect(state, node.key, name, node, node);
 }
 
-/**
- * The visitor: inspect each named function, method, signature and
- * function-valued member for a boolean return that does not read as a
- * predicate.
- */
+/** The listeners for every named function, method and signature form. */
 function buildListeners(state) {
     return {
         FunctionDeclaration(node) {
@@ -282,25 +264,12 @@ function buildListeners(state) {
 }
 
 /**
- * Boolean method name rule.
+ * Require a function or method returning boolean (awaited included) to read as
+ * a predicate.
  *
- * A function, method, arrow-bound class field, object method or interface/type
- * signature returning boolean should read as a predicate. A name is accepted
- * when its first camelCase word is a copular or modal prefix (is, has, can,
- * ...), an idiomatic predicate from ALLOWED_PREDICATES (e.g. successful), or a
- * verb ending in `s` (third-person: permits, passes) or `ed` (past tense:
- * succeeded, failed, expired). An imperative command verb (execute, persist,
- * guard, ...) that returns a result bool is exempt via COMMAND_VERBS. A member
- * may also opt out with an
- * @imperative docblock tag. An on* event-handler callback (onError) and a
- * method named after a primitive type (a typed accessor such as boolean()) are
- * exempt, as is a member carrying the override modifier, whose name is set by
- * the parent it overrides and is checked where that declares it, and so are
- * accessors, the constructor, computed names, magic names and type-predicate
- * guards (x is T). The return type is resolved from type information - inferred
- * booleans and awaited Promise<boolean> included - so the rule degrades to a
- * no-op when no type information is available. The accepted vocabulary can be
- * widened per consumer through the rule options.
+ * Its first camelCase word must be an allowed prefix or predicate, or a verb
+ * ending in `s` or `ed`. Command verbs, `on*` handlers, overrides and members
+ * tagged `@imperative` are exempt. Needs type information; a no-op without it.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -329,15 +298,10 @@ export default createRule({
     create(context, [options]) {
         const services = ESLintUtils.getParserServices(context, true);
 
-        // Without a type-checker program the return type can't be resolved, so
-        // the rule cannot decide anything; degrade to a no-op rather than
-        // throw.
         if (!services.program) {
             return {};
         }
 
-        // Merge consumer additions onto the defaults so a downstream ruleset
-        // can widen the accepted vocabulary without losing the built-in words.
         const state = {
             context,
             services,

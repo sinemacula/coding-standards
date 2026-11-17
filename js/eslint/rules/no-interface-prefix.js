@@ -1,9 +1,6 @@
 import { createRule } from './lib.js';
 
-/**
- * Disallowed "I" prefix: a capital I directly followed by another uppercase
- * letter.
- */
+/** A capital I directly followed by another uppercase letter. */
 const PREFIX_PATTERN = /^I[A-Z]/;
 
 /** A global or string-named module block augments types we do not own. */
@@ -12,8 +9,8 @@ const isExternalAugmentation = node =>
     && (node.kind === 'global' || node.id.type === 'Literal');
 
 /**
- * Forbids the Hungarian "I" prefix on interface and type-alias names
- * (IUserRepository), which adds nothing over the language's own type system.
+ * Forbids the Hungarian "I" prefix on interface and type-alias names, such as
+ * `IUserRepository`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -44,8 +41,8 @@ export default createRule({
                 return;
             }
 
-            // Augmenting an external module or the global scope cannot rename
-            // it.
+            // An augmentation of an external module or the global scope cannot
+            // rename the type.
             if (sourceCode.getAncestors(node).some(isExternalAugmentation)) {
                 return;
             }

@@ -1,10 +1,6 @@
 /**
- * Text primitives for the comment reflow engine.
- *
- * Splits prose into wrapping tokens, keeping inline code, an inline `{@link}`
- * tag and a Markdown link whole even when they hold spaces, and measures widths
- * in Unicode code points. Widths and whitespace match the PHP engine exactly:
- * code points as mb_strlen counts them, and ASCII-only trimming as trim does.
+ * Text primitives for the comment reflow engine. Widths and trimming match the
+ * PHP engine (mb_strlen code points, ASCII-only trim).
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

@@ -3,16 +3,8 @@ import { createRule, fileDocBlock } from './lib.js';
 const DEFAULT_TAGS = ['copyright', 'author'];
 
 /**
- * Require a documentation comment carrying the tags every source file must
- * declare, `@copyright` and `@author` by default.
- *
- * A single block comment must carry all of the required tags together, so they
- * sit inside the file's descriptive docblock alongside its summary rather than
- * in a separate header. Only the presence of each tag is checked, never its
- * value or alignment, which are matters of formatting. The required set is
- * configurable, so a project may drop `@author` or add tags of its own. The
- * summary those tags sit beside is the separate concern of
- * `require-file-description`, which locates the same block by the same tags.
+ * Require one documentation comment carrying every listed tag (`@copyright` and
+ * `@author` by default). Only presence is checked, not value or alignment.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited

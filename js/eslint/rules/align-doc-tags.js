@@ -17,19 +17,10 @@ function padding(tag, column) {
 }
 
 /**
- * Align the values of the documentation tags a file's header declares,
- * `@author` and `@copyright` by default.
+ * Align the values of the listed documentation tags (`@author` and `@copyright`
+ * by default) at one column, counted from the `@`.
  *
- * The tags a file must carry read as a block, so their values line up at a
- * single column rather than sitting at whatever offset each tag's own length
- * happens to produce. The column counts from the `@`, which at the default of
- * 14 gives `@author` six spaces and `@copyright` three.
- *
- * Only the run of whitespace between a listed tag and its value is considered,
- * and only on the line the tag opens; a wrapped value's continuation lines, a
- * tag with no value and every unlisted tag are left alone. A tag longer than
- * the column can accommodate is skipped rather than reported, as no spacing
- * would satisfy the requirement. Presence of the tags is a separate concern,
+ * A tag too long to reach the column is skipped. Presence of the tags is
  * enforced by `require-copyright`.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
@@ -110,8 +101,7 @@ export default createRule({
                         continue;
                     }
 
-                    // The comment's value begins after the opening `/*`, so an
-                    // offset within it maps onto the source two characters in.
+                    // Skip the opening `/*`.
                     let offset = comment.range[0] + 2;
 
                     for (const line of comment.value.split('\n')) {
