@@ -48,8 +48,7 @@ exclude_patterns = [
 test_patterns = [
     "**/test/**",
     "**/spec/**",
-    # Match PHPUnit's PascalCase layout (Tests/, *Test.php); the defaults below
-    # are lowercase-only, so without these qlty treats tests as source.
+    # The defaults are lowercase-only; match PHPUnit's Tests/ and *Test.php.
     "**/Tests/**",
     "**/*Test.php",
     "**/*.test.*",
@@ -89,69 +88,54 @@ name = "editorconfig-checker"
 name = "markdownlint"
 mode = "comment"
 
-# Dogfood this repo's own standards on its own code: phpcs and php-cs-fixer use
-# the in-tree configs under .qlty/configs, not a released tag. slevomat comes
-# from composer.json; the base class loads via .qlty/configs/autoload.php (qlty
-# Cloud has no project vendor/autoload.php).
+# Lint with the in-tree configs under .qlty/configs, not a released tag. qlty
+# Cloud has no project vendor, so .qlty/configs/autoload.php loads the bases.
 [[plugin]]
 name = "php-codesniffer"
-# Pinned to the 4.x major consumers run via qlty; the suite is tested on both
-# 3.x and 4.x in CI (the Tests workflow's phpcs matrix). Must stay at or above
-# 4.0.2: earlier 4.x is affected by a command-injection advisory that Composer
-# refuses to install, which fails the plugin outright rather than reporting it.
+# The major consumers run. Composer refuses 4.x below 4.0.2 over a security
+# advisory, which fails the plugin outright.
 version = "4.0.4"
 mode = "comment"
 package_file = "composer.json"
 package_filters = ["slevomat", "dealerdirect"]
 
-# phpcs 4.x exits 3 on errors (bitmask: 1 errors + 2 fixable), which qlty's
-# built-in driver, written for 3.x exit semantics, treats as a plugin failure -
-# silently discarding the findings. The self-lint resolves php-codesniffer from
-# the default source (not this repo's source.toml), so the override that
-# source.toml ships to consumers is mirrored here. 0/1/2/3 = "ran and found
-# issues" on both majors; a real fatal exits higher (255) and still errors.
+# phpcs 4.x exits 3 on fixable errors, which qlty treats as a plugin failure
+# and silently drops the findings. Mirrors the source.toml override, which the
+# self-lint does not load.
 [plugins.definitions.php-codesniffer.drivers.lint]
 success_codes = [0, 1, 2, 3]
 
-# This repo's fixer config builds its rules from the working tree rather than
-# from the installed standards package, so the sandbox needs nothing but the
-# tool itself - hence no package_file.
+# The fixer config reads its rules from the working tree, so no package_file.
 [[plugin]]
 name = "php-cs-fixer"
 version = "3.95.19"
 
-# phpstan is NOT wired here: it needs the project vendor (composer install) that
-# qlty Cloud lacks. Run it locally with `composer analyse` (phpstan.neon.dist).
+# phpstan needs the project vendor, which qlty Cloud lacks; run `composer
+# analyse` instead.
 
-# php/ and .qlty/configs hold tool configs, not source, so the PHP plugins skip
-# them; php/ stays so the cs-fixer config can require its rules file.
+# php/ and .qlty/configs hold tool configs.
 [[exclude]]
 plugins = ["php-codesniffer", "php-cs-fixer"]
 file_patterns = ["php/**", ".qlty/configs/**"]
 
-# Release-please generates CHANGELOG.md with `*` bullets and long lines that
-# markdownlint (MD004) and editorconfig-checker would reject. It is
-# tool-authored, so exclude it from both (mirrors the source.toml excludes).
+# Release-please writes CHANGELOG.md with `*` bullets and long lines.
 [[exclude]]
 plugins = ["editorconfig-checker", "markdownlint"]
 file_patterns = ["**/CHANGELOG.md"]
 
-# The qlty-generated git hooks carry tab indentation; they are tool-authored, so
-# their indent style is not ours to fix. Exclude them from editorconfig-checker.
+# The qlty-generated hooks are tab-indented.
 [[exclude]]
 plugins = ["editorconfig-checker"]
 file_patterns = [".qlty/hooks/**"]
 
-# Radarlint's function naming rule fights the snake_case global functions the
-# standard requires; mirrors the source.toml triage, which this repo does not
-# consume.
+# Mirrors the source.toml triage: S100 fights the required snake_case global
+# function names.
 [[triage]]
 match.rules = ["radarlint-php:php:S100"]
 set.ignored = true
 
-# Radarlint's unused private method and unused parameter rules misread trait
-# calls, first-class callables and framework callbacks; mirrors the source.toml
-# triage.
+# S1144 and S1172 misread trait calls, first-class callables and framework
+# callbacks.
 [[triage]]
 match.rules = ["radarlint-php:php:S1144"]
 set.ignored = true

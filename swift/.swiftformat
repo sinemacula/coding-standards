@@ -1,4 +1,4 @@
-# Shared Swift 6 formatting policy for Sine Macula applications and packages.
+# Shared Swift 6 formatting policy.
 
 --swiftversion 6.0
 --indent 4
@@ -7,7 +7,6 @@
 --trim-whitespace always
 --xcode-indentation enabled
 
-# Keep multiline declarations deterministic and easy to diff.
 --wrap-arguments before-first
 --wrap-parameters before-first
 --wrap-collections before-first
@@ -17,37 +16,27 @@
 --closing-paren balanced
 --call-site-paren balanced
 
-# Match SwiftLint and avoid formatter/linter churn. SwiftLint's sorted_imports
-# orders imports by module name alone, while SwiftFormat defaults to grouping by
-# access level first (access-control,alpha). On a file using Swift 6 access-level
-# imports that disagreement makes `qlty fmt` emit an order `qlty check` rejects,
-# and re-running the formatter never settles it.
+# SwiftLint's sorted_imports ignores access level; the default grouping would
+# make fmt and check disagree forever on access-level imports.
 --import-grouping alpha
 --trailing-commas never
 --semicolons never
 --self remove
 --ifdef no-indent
 
-# SwiftLint's file_header rule owns the copyright header. `ignore` leaves an
-# existing header alone rather than rewriting every file to one template, so the
-# holder and format stay the consuming project's choice.
+# SwiftLint's file_header rule owns the copyright header.
 --header ignore
 
-# Do not rewrite public function signatures just because an implementation
-# does not currently use an argument. Removing unused closure arguments is
-# local and cannot alter a declared API.
+# Unused arguments are stripped only where it cannot change a declared API.
 --strip-unused-args closure-only
 
 # Formatting must not change ownership, control flow, or API shape.
 --anonymous-for-each ignore
 --disable enumNamespaces,initCoderUnavailable,preferForLoop,redundantSendable,strongOutlets
 
-# Single-line if bodies are wrapped: statements as the PHP and TypeScript
-# standards require, and expressions to match. Both rules are new in SwiftFormat
-# 0.62 and on by default, so neither is named here: a SwiftFormat older than
-# 0.62 rejects a rule it does not know.
+# The single-line if body rules are on by default from 0.62 and left unnamed,
+# since older versions reject unknown rules.
 
-# Mirror the exclusions in .swiftlint.yml. SwiftFormat rewrites files in place,
-# and unlike SwiftLint's `excluded:` it honours these even when a path is passed
-# explicitly - so generated and third-party code is protected under Qlty too.
+# Mirrors .swiftlint.yml; unlike `excluded:` there, this holds for explicit
+# paths too.
 --exclude .build,build,DerivedData,Carthage,Pods,vendor,**/Generated

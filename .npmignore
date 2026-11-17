@@ -1,9 +1,6 @@
-# Defensive backstop - `files` in package.json is the primary allowlist, but npm
-# still walks the working tree and applies .gitignore-like rules first. Anything
-# below is excluded even if it matches a `files` entry.
+# Excluded even when matched by `files` in package.json.
 
-# PHP-only distribution (Composer ships this separately as
-# sinemacula/coding-standards).
+# Shipped via Composer.
 src/
 SineMacula/
 php/
@@ -12,7 +9,7 @@ composer.lock
 vendor/
 .php-cs-fixer.cache
 
-# Repo tooling that doesn't belong in the npm tarball.
+# Repo tooling.
 .github/
 .idea/
 .qlty/
@@ -20,7 +17,7 @@ vendor/
 .editorconfig
 source.toml
 
-# Test specs and fixtures - kept in git and CI, never shipped to consumers.
+# Tests and fixtures.
 js/eslint/__tests__/
 js/eslint/rules/__tests__/
 tests/

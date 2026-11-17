@@ -1,25 +1,17 @@
-# Dogfood the SineMacula PHPStan standard on this repo's own code. Run in CI
-# (GitHub Actions) and locally via `composer analyse`, where the full Composer
-# vendor is installed. NOT run via qlty: qlty Cloud never runs
-# `composer install`, so it cannot scan PHP_CodeSniffer's (non-PSR-4) source
-# that the sniff code depends on, nor autoload the in-repo rule.
+# Run via `composer analyse`, not qlty: qlty Cloud never runs `composer
+# install`, so it can load neither PHP_CodeSniffer's source nor the in-repo rule.
 includes:
     - php/phpstan-base.neon
 
 parameters:
-    # This repo is the exception that runs PHPStan itself rather than through
-    # qlty, so it is the one config that has to state the level. 9 is what
-    # qlty's driver enforces everywhere else.
+    # qlty pins 9 everywhere else; this repo bypasses qlty, so it states it.
     level: 9
 
-    # PHP_CodeSniffer's File API declares some returns more tightly in 4.x than
-    # 3.x via PHPDoc (e.g. getDeclarationName(): string), so version-defensive
-    # null guards read as "always false" under whichever major is installed.
-    # Treat stub PHPDoc as uncertain so those guards stay valid on both.
+    # phpcs 4.x tightens some PHPDoc return types, so null guards still needed
+    # on 3.x would otherwise read as always false.
     treatPhpDocTypesAsCertain: false
 
-    # PHP_CodeSniffer ships a bespoke autoloader (its classes are not on the
-    # Composer classmap), so its source is scanned explicitly.
+    # PHP_CodeSniffer's classes are not on the Composer classmap.
     scanDirectories:
         - vendor/squizlabs/php_codesniffer/src
 
@@ -29,8 +21,7 @@ parameters:
         - SineMacula/Tests
 
     ignoreErrors:
-        # PHP_CodeSniffer exposes token data as mixed, so sniff code that reads
-        # and accumulates token values trips these level-9 mixed checks.
+        # PHP_CodeSniffer exposes token data as mixed.
         - identifier: offsetAccess.invalidOffset
         - identifier: binaryOp.invalid
         - identifier: assignOp.invalid

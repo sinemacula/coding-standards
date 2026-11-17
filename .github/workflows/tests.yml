@@ -1,11 +1,5 @@
-# ==============================================================================
-# TESTS
-# ==============================================================================
 name: Tests
 
-# ==============================================================================
-# TRIGGERS
-# ==============================================================================
 on:
     push:
         branches: [ master ]
@@ -13,39 +7,24 @@ on:
         types: [ opened, synchronize, reopened, ready_for_review ]
     workflow_dispatch:
 
-# ==============================================================================
-# CONCURRENCY
-# ==============================================================================
 concurrency:
     group: tests-${{ github.event.pull_request.number || github.ref }}
     cancel-in-progress: true
 
-# ==============================================================================
-# PERMISSIONS
-# ==============================================================================
 permissions:
     contents: read
     id-token: write
 
-# ==============================================================================
-# DEFAULTS
-# ==============================================================================
 defaults:
     run:
         shell: bash
 
 jobs:
-
-    # ==========================================================================
-    # JOB: TESTS
-    # ==========================================================================
     tests:
         name: Test / PHP ${{ matrix.php }} / phpcs ${{ matrix.phpcs }}
         runs-on: ubuntu-latest
 
-        # Consumers run the sniffs under phpcs 4.x via qlty, so the suite is
-        # tested against both the 3.x and 4.x token streams. The resolver pulls
-        # the slevomat line that matches each phpcs major automatically.
+        # Consumers run phpcs 4.x via qlty; 3.x stays supported.
         strategy:
             fail-fast: false
             matrix:
@@ -75,8 +54,7 @@ jobs:
                     composer update --prefer-dist --no-interaction --no-progress
                     --with "squizlabs/php_codesniffer:${{ matrix.constraint }}"
 
-            # Analysed on the PHP floor only: newer versions ask for attributes,
-            # such as #[\Override] on a property, that the floor cannot parse.
+            # Floor only: newer PHP asks for attributes the floor cannot parse.
             -   name: PHPStan
                 if: ${{ matrix.php == '8.3' }}
                 run: composer analyse
@@ -93,9 +71,6 @@ jobs:
                     oidc: true
                     files: clover.xml
 
-    # ==========================================================================
-    # JOB: JS RULE TESTS
-    # ==========================================================================
     js-tests:
         name: Test / ESLint rules
         runs-on: ubuntu-latest
@@ -121,9 +96,6 @@ jobs:
             -   name: ESLint dogfood
                 run: npm run lint:js
 
-    # ==========================================================================
-    # JOB: SWIFT POLICY INTEGRATION
-    # ==========================================================================
     swift-policy:
         name: Test / Swift policy exports
         runs-on: macos-15
@@ -137,15 +109,11 @@ jobs:
             -   name: Install Qlty
                 uses: qltysh/qlty-action/install@v2
 
-            # Qlty anchors configuration at a Git worktree's root. The script
-            # creates an isolated consumer that exercises this checkout just as
-            # a downstream repository would.
+            # Qlty anchors config at the worktree root, so the script builds an
+            # isolated consumer.
             -   name: Verify Swift policy
                 run: bash scripts/test-swift-policy.sh
 
-    # ==========================================================================
-    # JOB: TRIVY POLICY INTEGRATION
-    # ==========================================================================
     trivy-policy:
         name: Test / Trivy policy exports
         runs-on: ubuntu-latest
@@ -162,9 +130,6 @@ jobs:
             -   name: Verify Trivy policy
                 run: bash scripts/test-trivy-policy.sh
 
-    # ==========================================================================
-    # JOB: ZIZMOR POLICY INTEGRATION
-    # ==========================================================================
     zizmor-policy:
         name: Test / Zizmor policy exports
         runs-on: ubuntu-latest
@@ -181,9 +146,6 @@ jobs:
             -   name: Verify Zizmor policy
                 run: bash scripts/test-zizmor-policy.sh
 
-    # ==========================================================================
-    # JOB: KNIP POLICY INTEGRATION
-    # ==========================================================================
     knip-policy:
         name: Test / Knip policy exports
         runs-on: ubuntu-latest
@@ -200,9 +162,6 @@ jobs:
             -   name: Verify Knip policy
                 run: bash scripts/test-knip-policy.sh
 
-    # ==========================================================================
-    # JOB: TERRAFORM POLICY INTEGRATION
-    # ==========================================================================
     terraform-policy:
         name: Test / Terraform policy exports
         runs-on: ubuntu-latest
@@ -219,9 +178,6 @@ jobs:
             -   name: Verify Terraform policy
                 run: bash scripts/test-terraform-policy.sh
 
-    # ==========================================================================
-    # JOB: SHARED POLICY INTEGRATION
-    # ==========================================================================
     shared-policy:
         name: Test / Shared policy exports
         runs-on: ubuntu-latest

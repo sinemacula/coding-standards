@@ -1,13 +1,11 @@
 config_version = "0"
 
-# Release-please writes CHANGELOG.md with `*` bullets; markdownlint (MD004)
-# enforces `-`. The file is tool-generated, so exclude it from markdownlint.
+# Release-please writes CHANGELOG.md with `*` bullets, which MD004 rejects.
 [[exclude]]
 plugins = ["markdownlint"]
 file_patterns = ["**/CHANGELOG.md"]
 
-# The qlty-generated git hooks carry tab indentation; they are tool-authored, so
-# their indent style is not ours to fix. Exclude them from editorconfig-checker.
+# The qlty-generated git hooks are tab-indented.
 [[exclude]]
 plugins = ["editorconfig-checker"]
 file_patterns = [".qlty/hooks/**"]
@@ -22,42 +20,36 @@ file_patterns = ["tests/**"]
 plugins = ["eslint"]
 file_patterns = [".qlty/**"]
 
-# terraform init downloads modules into .terraform; that code is not ours to lint.
+# terraform init downloads third-party modules into .terraform.
 [[exclude]]
 plugins = ["terraform", "tflint"]
 file_patterns = ["**/.terraform/**"]
 
-# Radarlint's function naming rule wants camelCase everywhere, but a global
-# function is snake_case under the ValidGlobalFunctionName sniff, and a method
-# is already held to camelCase by PSR1, so the rule can only conflict.
+# S100 wants camelCase global functions, which ValidGlobalFunctionName forbids;
+# PSR1 already covers methods.
 [[triage]]
 match.rules = ["radarlint-php:php:S100"]
 set.ignored = true
 
-# Radarlint's unused private method rule cannot see a call from a used trait or
-# a first-class callable such as `self::method(...)`, and PHPStan already
-# reports a private method nothing calls.
+# S1144 misses calls from a used trait or a first-class callable; PHPStan
+# already reports unused private methods.
 [[triage]]
 match.rules = ["radarlint-php:php:S1144"]
 set.ignored = true
 
-# Radarlint's unused parameter rule flags the positional parameters a framework
-# callback must declare to reach a later one, the case the phpcs ruleset leaves
-# its own unused parameter sniff off for.
+# S1172 flags the leading parameters a framework callback must declare, which
+# the phpcs ruleset allows.
 [[triage]]
 match.rules = ["radarlint-php:php:S1172"]
 set.ignored = true
 
-# A consumer that analyses on another PHP sets its own [runtimes.enabled]; qlty
-# resolves each tool sandbox for that runtime.
+# A consumer on another PHP sets its own [runtimes.enabled].
 [runtimes.enabled]
 php = "8.5"
 
-# The plugins, versions and modes every consumer runs; a plugin with nothing to
-# lint in a repository does not run there. A consumer's own entry for the same
-# plugin falls back to the version and mode set here when it leaves them out, but
-# any list it sets, drivers included, replaces the one here rather than adding to
-# it, and an entry that sets no drivers runs all of them.
+# A consumer's entry for one of these plugins inherits an unset version or mode,
+# but any list it sets, drivers included, replaces this one; an entry with no
+# drivers runs them all.
 [[plugin]]
 name = "trufflehog"
 
@@ -90,8 +82,7 @@ mode = "comment"
 name = "php-cs-fixer"
 version = "3.95.30"
 
-# The analysis stack comes from each project's own package_file, which its entry
-# keeps, so only the version is set here.
+# The analysis stack comes from each project's own package_file.
 [[plugin]]
 name = "phpstan"
 version = "2.3.5"
@@ -111,9 +102,8 @@ drivers = ["format"]
 name = "tflint"
 version = "0.64.0"
 
-# Code smells for every consumer. A threshold flags at that value or more. A
-# consumer's own qlty.toml still wins, but re-enabling a check switched off here
-# needs enabled = true there too, because the two are merged, not replaced.
+# A threshold flags at that value or more. The configs are merged, so a consumer
+# re-enabling a check disabled here must set enabled = true.
 [smells]
 mode = "comment"
 
@@ -129,10 +119,8 @@ threshold = 43
 [smells.file_complexity]
 threshold = 400
 
-# Every plugin definition here must carry exported_config_paths, even as an
-# empty list. qlty resolves exported paths one definition at a time, in
-# alphabetical order, and stops at the first without that key, so every plugin
-# sorted after it silently falls back to its built-in configuration.
+# Every definition needs exported_config_paths, even empty: qlty stops at the
+# first definition without one, so later plugins fall back to built-in configs.
 [plugins.definitions.markdownlint]
 exported_config_paths = ["markdown/.markdownlint.json"]
 
@@ -142,9 +130,8 @@ exported_config_paths = ["yaml/.yamllint.yaml"]
 [plugins.definitions.shellcheck]
 exported_config_paths = ["shell/.shellcheckrc"]
 
-# actionlint knows no ubuntu-26.04 runner label in any release yet
-# (rhysd/actionlint#682), so a workflow that runs on one fails on its runs-on
-# line. Remove the -ignore once a release adds the label.
+# No actionlint release knows the ubuntu-26.04 runner label yet. Remove the
+# -ignore once one does.
 [plugins.definitions.actionlint]
 exported_config_paths = []
 
@@ -189,9 +176,8 @@ exported_config_paths = ["swift/.swiftlint.yml"]
 [plugins.definitions.swiftformat]
 exported_config_paths = ["swift/.swiftformat"]
 
-# The config is staged at the repository root, but TFLint runs from each
-# module's directory and reads .tflint.hcl only from there, so without --config
-# a nested module silently falls back to TFLint's default preset.
+# TFLint reads .tflint.hcl from each module's directory, so without --config a
+# nested module falls back to the default preset.
 [plugins.definitions.tflint]
 exported_config_paths = ["terraform/.tflint.hcl"]
 
