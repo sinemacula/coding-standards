@@ -35,8 +35,7 @@ final class MethodLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The error message reports the measured line count and the limit, so the
-     * count must exclude the brace lines themselves.
+     * The message reports the body line count and the limit.
      *
      * @return void
      */
@@ -71,8 +70,7 @@ final class MethodLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A class declared inside a test method is judged on its own name, so its
-     * over-long methods are still flagged.
+     * A class declared inside a test method is judged on its own name.
      *
      * @return void
      */

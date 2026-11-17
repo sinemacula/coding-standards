@@ -57,9 +57,7 @@ final class StaticPropertyWriteCollectorTest extends TestCase
     }
 
     /**
-     * Every write form - assignment, compound assignment, and the four
-     * increment/decrement operators - yields the "Class::property" key of its
-     * target.
+     * Every write form yields the "Class::property" key of its target.
      *
      * @param  \PhpParser\Node\Expr  $node
      * @return void
@@ -87,8 +85,7 @@ final class StaticPropertyWriteCollectorTest extends TestCase
     }
 
     /**
-     * Expressions that read or reference values without writing to a static
-     * property, all of which must be ignored.
+     * Expressions that do not write a static property.
      *
      * @return iterable<string, array{\PhpParser\Node\Expr}>
      */
@@ -100,9 +97,7 @@ final class StaticPropertyWriteCollectorTest extends TestCase
     }
 
     /**
-     * Non-write expressions yield null cleanly - the collector scans every
-     * expression in a program, so it must not raise diagnostics while
-     * discarding them.
+     * Non-write expressions yield null without raising diagnostics.
      *
      * @param  \PhpParser\Node\Expr  $node
      * @return void

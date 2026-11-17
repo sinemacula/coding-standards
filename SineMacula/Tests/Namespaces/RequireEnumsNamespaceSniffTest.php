@@ -38,8 +38,7 @@ final class RequireEnumsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The reported code names the segment the declaration is missing, so a
-     * ruleset can silence this sniff alone without reaching for the others.
+     * Reports under its own code so a ruleset can silence this sniff alone.
      *
      * @return void
      */
@@ -49,8 +48,7 @@ final class RequireEnumsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * An enum in the global namespace (no namespace declaration) is also
-     * flagged.
+     * An enum in the global namespace is also flagged.
      *
      * @return void
      */
@@ -60,8 +58,7 @@ final class RequireEnumsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The namespace is still resolved when its keyword directly follows the
-     * semicolon of the preceding statement with no whitespace between them.
+     * The namespace still resolves when it directly follows a semicolon.
      *
      * @return void
      */

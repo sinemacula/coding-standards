@@ -38,8 +38,7 @@ final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The reported code names the segment the declaration is missing, so a
-     * ruleset can silence this sniff alone without reaching for the others.
+     * Reports under its own code so a ruleset can silence this sniff alone.
      *
      * @return void
      */
@@ -49,8 +48,7 @@ final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * An interface in the global namespace (no namespace declaration) is also
-     * flagged.
+     * An interface in the global namespace is also flagged.
      *
      * @return void
      */
@@ -60,9 +58,7 @@ final class RequireContractsNamespaceSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * An interface inside a braced global namespace is flagged even when the
-     * opening brace directly follows the namespace keyword and the interface
-     * shares the segment's name.
+     * An interface in a braced global namespace is flagged too.
      *
      * @return void
      */

@@ -30,8 +30,7 @@ final class DisallowInterfacePrefixSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered message names the offending interface, proving the name is
-     * passed through to the report.
+     * The message names the offending interface.
      *
      * @return void
      */

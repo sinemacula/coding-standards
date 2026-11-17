@@ -23,11 +23,7 @@ use SineMacula\CodingStandards\PHPStan\Rules\RequireReadonlyClassRule;
 final class RequireReadonlyClassRuleTest extends RuleTestCase
 {
     /**
-     * A final class whose every property is readonly - including one
-     * contributed by an all-readonly trait - is flagged. A class with a mutable
-     * or static property, one whose trait declares a mutable property, one that
-     * extends a parent, that holds no properties, or is already readonly,
-     * non-final, abstract, an enum, an interface or a test class, is not.
+     * Flags final classes whose properties, traits included, are all readonly.
      *
      * @return void
      */
@@ -40,8 +36,7 @@ final class RequireReadonlyClassRuleTest extends RuleTestCase
     }
 
     /**
-     * A final all-readonly class under a tests/ directory is exempt whatever
-     * its name.
+     * A final all-readonly class under a tests/ directory is exempt.
      *
      * @return void
      */

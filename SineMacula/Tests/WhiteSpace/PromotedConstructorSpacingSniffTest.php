@@ -31,9 +31,7 @@ final class PromotedConstructorSpacingSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A directive comment tight against the opening parenthesis is skipped, a
-     * plain trailing comment is not, one that merely mentions a directive is
-     * not, and a directive on its own line still needs a blank line above it.
+     * Only a directive comment trailing the opening parenthesis is skipped.
      *
      * @return void
      */

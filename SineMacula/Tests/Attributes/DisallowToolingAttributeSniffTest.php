@@ -37,8 +37,7 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered message names the attribute exactly as written in the code,
-     * including any leading backslash.
+     * The message names the attribute as written, leading backslash included.
      *
      * @return void
      */
@@ -52,9 +51,7 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A configured namespace still matches when written with leading and
-     * trailing backslashes, so sloppy configuration values behave the same as
-     * the canonical form.
+     * A configured namespace matches with leading and trailing backslashes.
      *
      * @return void
      */
@@ -66,8 +63,7 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Overlapping configured namespaces that both match the same attribute
-     * report a single error, not one per entry.
+     * Overlapping configured namespaces report one error per attribute.
      *
      * @return void
      */
@@ -83,10 +79,8 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Names are resolved through the file's imports: a namespace-prefix alias,
-     * a class alias and a leading-backslash import all resolve into the
-     * forbidden namespace, the namespace itself is flagged, and a sibling
-     * namespace that merely shares the prefix as a substring is not.
+     * Names resolve through the file's imports, and a sibling namespace sharing
+     * the prefix is not flagged.
      *
      * @return void
      */
@@ -96,8 +90,7 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Every name in a grouped attribute is checked, while tokens inside an
-     * attribute's argument list are never mistaken for attribute names.
+     * Every name in an attribute group is checked; argument lists are skipped.
      *
      * @return void
      */
@@ -107,10 +100,8 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The import map is built from the use statements alone: a name imported
-     * from a safe namespace stays safe even when a forbidden class is
-     * referenced elsewhere in the file, and an import directly adjacent to the
-     * previous statement's semicolon is still parsed on its own.
+     * The import map comes from use statements only, including one flush
+     * against the previous semicolon.
      *
      * @return void
      */
@@ -120,8 +111,7 @@ final class DisallowToolingAttributeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Apply the forbidden-namespace override chosen by the current test, if
-     * any.
+     * Apply the current test's forbidden-namespace override, if any.
      *
      * @return array<string, mixed>
      */

@@ -27,10 +27,7 @@ final class DisallowCoalesceAfterConcatSniffTest extends AbstractSniffTestCase
     private const array FLAGGED_LINES = [4, 5, 6, 9, 10, 11, 12, 16, 19];
 
     /**
-     * A `??` whose whole left operand is a concatenation is flagged, wrapped in
-     * parentheses or not, across lines, and wherever the expression sits. One
-     * that applies to a nullable operand, sits inside a bracketed group, or
-     * follows a looser operator is not.
+     * Flags a `??` whose whole left operand is a concatenation.
      *
      * @return void
      */

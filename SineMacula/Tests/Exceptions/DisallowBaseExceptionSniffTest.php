@@ -29,10 +29,7 @@ final class DisallowBaseExceptionSniffTest extends AbstractSniffTestCase
     private ?array $forbiddenExceptions = null;
 
     /**
-     * Throwing the base exception is flagged, including when the throw shares
-     * its line with a preceding statement; throwing a domain exception,
-     * re-throwing a variable, and a `new` in the statement after a re-throw are
-     * not.
+     * Flags throwing the base exception, not a domain one or a re-throw.
      *
      * @return void
      */
@@ -42,8 +39,7 @@ final class DisallowBaseExceptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered message names the thrown class exactly as written in the
-     * code, including its leading backslash.
+     * The message names the thrown class as written in the code.
      *
      * @return void
      */
@@ -69,8 +65,7 @@ final class DisallowBaseExceptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Overlapping configured entries that both match the same throw report a
-     * single error, not one per entry.
+     * Overlapping configured entries report one error per throw.
      *
      * @return void
      */
@@ -84,8 +79,7 @@ final class DisallowBaseExceptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Apply the forbidden-exception override chosen by the current test, if
-     * any.
+     * Apply the current test's forbidden-exception override, if any.
      *
      * @return array<string, mixed>
      */

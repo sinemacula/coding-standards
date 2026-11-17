@@ -30,8 +30,7 @@ final class ValidGlobalFunctionNameSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The rendered message names the offending function, proving the name is
-     * passed through to the report.
+     * The message names the offending function.
      *
      * @return void
      */

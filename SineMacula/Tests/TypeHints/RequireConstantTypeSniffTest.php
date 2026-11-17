@@ -31,9 +31,8 @@ final class RequireConstantTypeSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Untyped constants keep their error when the spacing around the equals
-     * sign is tight, and a comment between `const` and the name leaves the
-     * declaration ambiguous, so it is not flagged.
+     * Tight spacing around the equals sign is still flagged; a comment between
+     * `const` and the name is not.
      *
      * @return void
      */

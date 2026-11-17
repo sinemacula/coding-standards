@@ -19,8 +19,7 @@ use SineMacula\Tests\AbstractStandardTestCase;
 final class CommentedOutCodeTest extends AbstractStandardTestCase
 {
     /**
-     * A label with a colon and its limits in brackets reads as prose, while a
-     * commented-out statement, a short assignment scoring 45% or a return is
+     * A label with its limits in brackets reads as prose; commented-out code is
      * still reported.
      *
      * @return void

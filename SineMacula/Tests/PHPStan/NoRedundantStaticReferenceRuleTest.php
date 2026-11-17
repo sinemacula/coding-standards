@@ -29,11 +29,8 @@ final class NoRedundantStaticReferenceRuleTest extends RuleTestCase
     private const string ACCESSOR = 'static::';
 
     /**
-     * Every way of deferring to static from inside a final class or an enum is
-     * flagged: instantiation, a static call, a constant, a static property, the
-     * class name and an instanceof. Writing `self` outright is not, nor is any
-     * of it inside a non-final or abstract class, nor a trait body a final
-     * class uses - a trait cannot know whether its host is final.
+     * Flags every reference through static inside a final class or enum; a
+     * trait cannot know its host is final.
      *
      * @return void
      */
