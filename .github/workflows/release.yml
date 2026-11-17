@@ -13,6 +13,10 @@ permissions:
     pull-requests: write
 
 jobs:
+
+    # ==========================================================================
+    # JOB: RELEASE
+    # ==========================================================================
     release:
         uses: sinemacula/.github/.github/workflows/release.yml@v1.5.0
         secrets: inherit
