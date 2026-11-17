@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.31.0](https://github.com/sinemacula/coding-standards/compare/v1.30.2...v1.31.0) (2026-11-17)
+
+
+### Features
+
+* require PascalCase Vue component filenames ([#212](https://github.com/sinemacula/coding-standards/issues/212)) ([e356844](https://github.com/sinemacula/coding-standards/commit/e35684406337161c2a5a5e92ca79de0b74dae32b))
+
+
+### Bug Fixes
+
+* pin zizmor 1.32.0 so local runs match qlty Cloud ([#214](https://github.com/sinemacula/coding-standards/issues/214)) ([1925e5e](https://github.com/sinemacula/coding-standards/commit/1925e5ed89f22821e4e5e7274cfe25e808d2c569))
+
 ## [1.30.2](https://github.com/sinemacula/coding-standards/compare/v1.30.1...v1.30.2) (2026-11-17)
 
 
