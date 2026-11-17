@@ -23,10 +23,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequireCopyrightTagSniffTest extends AbstractSniffTestCase
 {
     /**
-     * A docblock without @copyright is flagged; one with it, and a structure
-     * with no docblock at all (left to the class-comment sniff), are not. The
-     * docblock is still found when an attribute sits between it and the class,
-     * so an attribute-tagged class missing @copyright is flagged.
+     * A docblock without @copyright is flagged; a missing docblock is not.
      *
      * @return void
      */
@@ -36,9 +33,8 @@ final class RequireCopyrightTagSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The docblock is found past an abstract modifier, so an abstract class
-     * missing @copyright is flagged; the tag is matched case-insensitively, so
-     * a mixed-case @Copyright satisfies the sniff.
+     * The docblock is found past `abstract`, and the tag matches
+     * case-insensitively.
      *
      * @return void
      */

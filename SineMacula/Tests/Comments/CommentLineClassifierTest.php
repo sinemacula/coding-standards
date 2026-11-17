@@ -10,9 +10,7 @@ use PHPUnit\Framework\TestCase;
 use SineMacula\CodingStandards\Comments\CommentLineClassifier;
 
 /**
- * Tests for the classifier's structural probes: fence detection, list-marker
- * parsing, indent measurement, type boundaries and the depth a type-annotation
- * tag's bracketed value opens.
+ * Tests for the comment line classifier.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -23,8 +21,7 @@ use SineMacula\CodingStandards\Comments\CommentLineClassifier;
 final class CommentLineClassifierTest extends TestCase
 {
     /**
-     * Fence cases: a delimiter counts however it is indented, while backticks
-     * that do not open the line do not.
+     * Fence delimiter cases.
      *
      * @return iterable<string, array{string, bool}>
      */
@@ -42,8 +39,8 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * A fenced-code delimiter is recognised whatever its indent, while a
-     * delimiter that does not open the line is not a fence.
+     * A fence delimiter is recognised at any indent, but only at the line
+     * start.
      *
      * @param  string  $content
      * @param  bool  $expected
@@ -56,9 +53,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * List-marker cases: bullets and ordinals at the line start parse into
-     * their marker, indent and occupied width, while anything else yields
-     * nothing.
+     * List marker cases.
      *
      * @return iterable<string, array{string, array{marker: string, indent: int, width: int}|null}>
      */
@@ -77,9 +72,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * A list marker parses only at the start of the line, yielding the bullet
-     * or ordinal, the indent before it and the width it occupies with its
-     * trailing space.
+     * A list marker parses only at the line start.
      *
      * @param  string  $content
      * @param  array{marker: string, indent: int, width: int}|null  $expected
@@ -92,8 +85,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * The indent width counts leading spaces in code points, so multibyte prose
-     * after the indent never inflates the measurement.
+     * Indent width is measured in code points.
      *
      * @return void
      */
@@ -107,8 +99,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * Type-boundary cases: a blank line or a fresh tag ends a type block,
-     * however it is indented, while a shape member or closing brace does not.
+     * Type boundary cases.
      *
      * @return iterable<string, array{string, bool}>
      */
@@ -125,8 +116,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * A type block ends at a blank line or a fresh tag, whatever whitespace
-     * surrounds it, and continues through shape members and closing braces.
+     * A blank line or a fresh tag ends a type block.
      *
      * @param  string  $content
      * @param  bool  $expected
@@ -139,8 +129,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * Type-tag depth cases: only a recognised type tag whose bracketed value is
-     * cut off mid-construct opens a block, at the net depth of its type slot.
+     * Type tag depth cases.
      *
      * @return iterable<string, array{string, int}>
      */
@@ -157,9 +146,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * Only a recognised type tag whose type slot is cut off mid-construct opens
-     * a verbatim block, at the net bracket depth of the slot; prose,
-     * unrecognised tags and same-line types open nothing.
+     * A type tag cut off mid-construct opens a block at its net bracket depth.
      *
      * @param  string  $content
      * @param  int  $expected
@@ -172,9 +159,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * Bracket-delta cases: net depth counts braces, angle brackets and
-     * parentheses in the type slot only, ignoring arrow operators, inline spans
-     * and everything from the first variable onward.
+     * Bracket delta cases.
      *
      * @return iterable<string, array{string, int}>
      */
@@ -192,9 +177,7 @@ final class CommentLineClassifierTest extends TestCase
     }
 
     /**
-     * The bracket delta reflects the type slot alone: arrow operators and
-     * inline spans never count, the slot is cut at the first variable in code
-     * points, and a bracket in the trailing description is ignored.
+     * The bracket delta counts the type slot only.
      *
      * @param  string  $text
      * @param  int  $expected

@@ -20,8 +20,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequirePromotedPropertyCommentSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Only promoted properties without a doc comment should be flagged;
-     * documented and non-promoted parameters should not.
+     * Undocumented promoted properties are flagged.
      *
      * @return void
      */

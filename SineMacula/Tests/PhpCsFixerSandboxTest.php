@@ -8,14 +8,7 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests that the fixer sandbox is given everything it needs.
- *
- * A project's php-cs-fixer sandbox is installed from `extra_packages`, not from
- * the project's own manifest, so what is listed there is the whole of what the
- * tool gets beyond its own dependencies. It needs the standards package, which
- * a project's fixer config autoloads its rules from and which each project
- * lists on its own entry. qlty resolves the sandbox for the project's PHP
- * runtime, so the fixer's Symfony needs no pin.
+ * Tests that the documented fixer sandbox gets the standards package.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -29,8 +22,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     private const string PACKAGE = 'sinemacula/coding-standards';
 
     /**
-     * The sandbox is given the standards package, since a project's fixer
-     * config autoloads its rules from there and nothing else supplies it.
+     * The documented wiring gives the sandbox the standards package.
      *
      * @return void
      */
@@ -40,8 +32,8 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * This repo sets no package_file on the plugin. qlty ignores extra_packages
-     * entirely when one is present, silently.
+     * This repo sets no package_file, which would silently disable
+     * extra_packages.
      *
      * @return void
      */
@@ -55,11 +47,8 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * The entry a project adds for this package sits in a file no dependency
-     * manager reads, so the shared preset carries the rule that raises it. The
-     * rule has to select that file, name this package, read it from the right
-     * registry, and capture an exact version: a constraint resolves to the
-     * newest release it already allows, so a range leaves nothing to raise.
+     * The shared preset has a rule that raises the documented exact-version
+     * entry.
      *
      * @return void
      */
@@ -80,8 +69,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * Whether the given rule is pointed at this package, in the file the entry
-     * lives in, and at the registry the entry is written for.
+     * Whether the rule targets this package on Packagist in the qlty config.
      *
      * @param  array<mixed, mixed>  $rule
      * @return bool
@@ -94,9 +82,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * Whether the given rule takes the version out of the entry. Capturing it
-     * is what the update is calculated from, so a rule that matches the line
-     * without capturing raises nothing.
+     * Whether the rule captures the entry's version as `currentValue`.
      *
      * @param  array<mixed, mixed>  $rule
      * @param  string  $entry
@@ -117,9 +103,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * Whether any of the given file patterns selects the given path. Renovate
-     * reads a pattern between slashes as a regex and anything else as a glob;
-     * the preset uses only regexes, so a glob selects nothing here.
+     * Whether any of the slash-delimited regex patterns selects the path.
      *
      * @param  array<mixed, mixed>  $patterns
      * @param  string  $path
@@ -141,9 +125,7 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * A pattern from the preset, delimited for use here. Match strings are
-     * stored bare and file patterns arrive with their own slashes removed, as
-     * neither is a PHP pattern.
+     * Wrap a bare preset pattern in PHP regex delimiters.
      *
      * @param  mixed  $pattern
      * @return string
@@ -180,8 +162,8 @@ final class PhpCsFixerSandboxTest extends TestCase
     }
 
     /**
-     * The `name@constraint` entries added to the fixer sandbox, read from the
-     * first extra_packages list after the given marker in the given file.
+     * Read the `name@constraint` entries of the first extra_packages list after
+     * the marker.
      *
      * @param  string  $path
      * @param  string  $marker

@@ -23,9 +23,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class SingleLineMemberCommentSniffTest extends AbstractSniffTestCase
 {
     /**
-     * A multi-line doc comment on a property, class constant or enum case is
-     * flagged, whatever its modifiers or type; a single-line one, an
-     * undocumented member and a documented local variable are not.
+     * A multi-line doc comment on a property, constant or enum case is flagged.
      *
      * @return void
      */
@@ -35,8 +33,7 @@ final class SingleLineMemberCommentSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Interface constants are governed too: a multi-line doc comment on an
-     * interface constant is flagged and a single-line one is not.
+     * A multi-line doc comment on an interface constant is flagged.
      *
      * @return void
      */

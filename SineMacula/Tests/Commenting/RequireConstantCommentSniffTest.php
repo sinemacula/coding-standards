@@ -23,10 +23,7 @@ use SineMacula\Tests\AbstractSniffTestCase;
 final class RequireConstantCommentSniffTest extends AbstractSniffTestCase
 {
     /**
-     * Undocumented class constants are flagged; documented and global constants
-     * are not. A doc comment is still found when an attribute sits between it
-     * and the constant, so an attribute-tagged undocumented constant is flagged
-     * while an attribute-tagged documented one is not.
+     * Undocumented class constants are flagged, including behind an attribute.
      *
      * @return void
      */

@@ -21,11 +21,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
 {
     /**
      * Overflowing prose reports TooLong and prematurely wrapped prose reports
-     * PrematurelyWrapped, each on its own line, across `//` runs and docblocks,
-     * while exempt lines (tags, directives, code, tables, separators, URLs,
-     * single-line docblocks and trailing comments) report nothing. A `//` line
-     * opening with a capital still continues a line that ends mid-sentence, and
-     * a docblock sentence on a line of its own is still merged.
+     * PrematurelyWrapped, while exempt lines report nothing.
      *
      * @return void
      */
@@ -45,9 +41,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The fixer reflows every faulted paragraph to its greedy canonical form,
-     * preserving indentation, delimiters and hanging list indent, and a second
-     * pass over the result leaves it unchanged.
+     * The fixer reflows each faulted paragraph to its greedy canonical form.
      *
      * @return void
      */
@@ -57,9 +51,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Comments that are already canonical, or exempt from reflow, report no
-     * faults at all, including a `//` line that opens with a capital after a
-     * title or a finished sentence.
+     * Canonical and exempt comments report nothing.
      *
      * @return void
      */
@@ -69,8 +61,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Adjacent `//` comments at different indents are separate runs: each
-     * reflows within its own indent rather than merging into one paragraph.
+     * Adjacent `//` runs at different indents reflow separately.
      *
      * @return void
      */
@@ -80,11 +71,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Every kind of comment the sniff does not govern is left alone, however
-     * far beyond the width it runs: hash comments, single- and multi-line block
-     * comments, framework configuration blocks, single-line docblocks, docblock
-     * tags, fenced code, tables, separators, trailing comments and malformed
-     * docblocks all report no faults.
+     * Comment kinds the sniff does not govern report nothing, however long.
      *
      * @return void
      */
@@ -94,8 +81,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Each fault message renders the configured width into its prose, so the
-     * report tells the author the exact limit the line must respect.
+     * Fault messages include the configured width.
      *
      * @return void
      */
@@ -118,8 +104,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A run whose every line overflows reports each line and is still reflowed:
-     * the whole run reads as one paragraph and wraps to the greedy form.
+     * A run whose every line overflows is reported per line and reflowed.
      *
      * @return void
      */
@@ -134,8 +119,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A docblock indented inside a class is governed like one at the margin:
-     * its faults are reported and its paragraph reflows within the indent.
+     * An indented docblock is reported and reflowed within its indent.
      *
      * @return void
      */
@@ -149,8 +133,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * Accented prose measures by characters, not bytes: the indent survives the
-     * reflow intact and the wrap point is chosen by visible width.
+     * Multibyte prose is measured in characters, not bytes.
      *
      * @return void
      */
@@ -164,8 +147,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A comment line landing exactly on the width limit is canonical: neither
-     * the slash form nor the docblock form reports a fault at the boundary.
+     * A line exactly at the width limit is clean.
      *
      * @return void
      */
@@ -175,9 +157,8 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A docblock shell outside the plain shape is never governed: an opener or
-     * closer carrying prose, or an interior line without its leading star,
-     * leaves the whole block alone, as does a comment trailing a closing brace.
+     * Docblocks outside the plain shape, and comments after a closing brace,
+     * are exempt.
      *
      * @return void
      */
@@ -187,8 +168,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A file with carriage-return line endings measures each line without the
-     * carriage return, so a line at exactly the limit stays clean.
+     * CRLF lines are measured without the carriage return.
      *
      * @return void
      */
@@ -198,8 +178,7 @@ final class CommentLineLengthSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A fault suppressed by an inline annotation is neither reported nor fixed:
-     * the fixer must leave a suppressed block byte-for-byte intact.
+     * A suppressed fault is neither reported nor fixed.
      *
      * @return void
      */

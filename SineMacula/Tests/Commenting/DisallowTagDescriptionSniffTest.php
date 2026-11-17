@@ -26,10 +26,7 @@ final class DisallowTagDescriptionSniffTest extends AbstractSniffTestCase
     private const string THROWS_MESSAGE = 'An @throws tag must not carry a description; leave the tag bare, as in @throws \RuntimeException.';
 
     /**
-     * A description on an @param or @throws tag is flagged under its own code,
-     * whether it shares the tag's line or starts on the next, and whatever the
-     * parameter is: variadic, by reference or typed with a space. A bare tag is
-     * not.
+     * A description on an @param or @throws tag is flagged under its own code.
      *
      * @return void
      */
@@ -47,8 +44,7 @@ final class DisallowTagDescriptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The fixer leaves each tag bare, dropping the continuation lines of its
-     * description, and a second pass over the result changes nothing.
+     * The fixer strips each description, including its continuation lines.
      *
      * @return void
      */
@@ -58,11 +54,7 @@ final class DisallowTagDescriptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A type that spans lines, holds a variable of its own, quotes a bracket or
-     * is $this is read to the parameter it types, an untyped parameter and a
-     * union, spaced or not, are still found, and a tag in any doc comment is
-     * governed. A tag with no variable or no type, a bare tag closing a
-     * single-line comment, and every other tag, are left alone.
+     * The description is found past multi-line, quoted and union types.
      *
      * @return void
      */
@@ -87,10 +79,7 @@ final class DisallowTagDescriptionSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * The fixer keeps a type spread over lines whole, keeps a single-line
-     * comment closed with a space, removes a description that runs past a blank
-     * line, and keeps the comment closed when its description ended on the
-     * closing line.
+     * The fixer keeps multi-line types whole and the comment closed.
      *
      * @return void
      */

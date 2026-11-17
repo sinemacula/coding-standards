@@ -50,8 +50,7 @@ final class CommentWrapperTest extends TestCase
     private const string TITLE = 'Section title';
 
     /**
-     * Cases exercising overflow, premature wrapping, atoms, lists and the
-     * verbatim kinds, each with its expected canonical lines and fault indices.
+     * Overflow, premature wrapping, atom, list and verbatim cases.
      *
      * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
      */
@@ -197,10 +196,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Cases exercising the walk across segments: fault accumulation over
-     * paragraphs, fault indices offset to the paragraph's base, the bounds of a
-     * list item's continuation lines, and the state that follows a type block
-     * or an indented line.
+     * Cases crossing paragraph, list item and type block boundaries.
      *
      * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
      */
@@ -272,9 +268,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Cases pinning the exact wrap boundary: which tokens may open a wrapped
-     * line when the break lands directly before them, the one-column edges of
-     * the premature-wrap check, and separated premature indices.
+     * Cases at the exact wrap boundary.
      *
      * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
      */
@@ -351,8 +345,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Cases pinning code-point width counting in every measurement and how odd
-     * leading whitespace and small indents are carried through a reflow.
+     * Code point width and leading whitespace cases.
      *
      * @return iterable<string, array{list<string>, int, list<string>, list<int>, list<int>}>
      */
@@ -419,10 +412,8 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Reflowing a paragraph fills each line greedily, reports overflowing and
-     * prematurely wrapped lines on their own indices, and leaves atoms, lists,
-     * canonical prose and verbatim kinds intact. Wrapping the result again is a
-     * stable no-op, so the fix converges in a single pass.
+     * Paragraphs reflow greedily, faults land on their own indices, and a
+     * second pass is a no-op.
      *
      * @param  list<string>  $lines
      * @param  int  $margin
@@ -465,8 +456,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A width of exactly one column still wraps: single-character tokens are
-     * laid out one per line rather than the paragraph being left verbatim.
+     * A width of one column still wraps, one token per line.
      *
      * @return void
      */
@@ -480,8 +470,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A token exactly as wide as the available width still wraps onto its own
-     * line rather than the paragraph being left verbatim.
+     * A token exactly as wide as the available width wraps onto its own line.
      *
      * @return void
      */
@@ -495,9 +484,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A paragraph reflow reports its fault indices offset from the given base
-     * and as plain lists, so a caller can splice them straight into its own
-     * block-level indices even when the faulted lines are not consecutive.
+     * Fault indices are offset from the given base and returned as lists.
      *
      * @return void
      */
@@ -516,8 +503,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Prose on either side of a fenced block is reflowed while the fence and
-     * its contents stay verbatim, and the result is stable.
+     * Prose around a fenced block reflows while the fence stays verbatim.
      *
      * @return void
      */
@@ -549,8 +535,8 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * The tokenizer keeps inline code, link tags and Markdown links whole, and
-     * treats an unclosed delimiter as an ordinary character.
+     * The tokenizer keeps atomic spans whole and treats unclosed delimiters as
+     * ordinary characters.
      *
      * @return void
      */
@@ -591,8 +577,8 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A tool-directive comment is recognised whatever the tool, while prose
-     * that merely begins with a similar word is left as prose.
+     * Tool directives are recognised; prose starting with a similar word is
+     * not.
      *
      * @return void
      */
@@ -614,9 +600,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Prose that merely starts with a keyword, or mentions code inside an
-     * inline span such as a `{@link}` or backticks, is prose; a line carrying
-     * real code syntax is code.
+     * Prose that mentions code is prose; a line with code syntax is code.
      *
      * @return void
      */
@@ -636,9 +620,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A markdown heading, an indented code or command block, and a
-     * type-annotation tag whose bracketed value spans lines are each left
-     * verbatim rather than reflowed as prose.
+     * Headings, indented code blocks and multi-line type tags stay verbatim.
      *
      * @return void
      */
@@ -673,9 +655,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A stray bracket in a tag's description never opens a verbatim type block
-     * that swallows the rest of the comment: a following prose paragraph is
-     * still reflowed and its overflow flagged.
+     * A stray bracket in a tag description does not freeze the prose after it.
      *
      * @return void
      */
@@ -697,9 +677,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * The classifier recognises a markdown heading, a line indented past the
-     * prose baseline, and the depth a type-annotation tag opens, guarding a
-     * stray bracket in a prose description.
+     * The classifier detects headings, over-indented lines and type tag depth.
      *
      * @return void
      */
@@ -735,8 +713,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * The classifier parses a list marker's bullet, indent and occupied width,
-     * and yields nothing for a non-list line.
+     * The classifier parses list markers and rejects non-list lines.
      *
      * @return void
      */
@@ -750,8 +727,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Widths count Unicode code points, so an astral emoji is one column and a
-     * line of 76 columns fits within 80 rather than overflowing.
+     * Widths count code points, so an emoji is one column.
      *
      * @return void
      */
@@ -765,8 +741,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Whitespace is matched as ASCII only, so a line of a single non-breaking
-     * space is prose, not a blank boundary, and the paragraph merges across it.
+     * Only ASCII whitespace counts, so a line of a non-breaking space is prose.
      *
      * @return void
      */
@@ -780,8 +755,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * Cases for a wrapper that lets a capital open a paragraph, each with its
-     * expected lines and premature indices.
+     * Cases for a wrapper that lets a capital open a paragraph.
      *
      * @return iterable<string, array{list<string>, list<string>, list<int>}>
      */
@@ -809,10 +783,8 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A wrapper asked to let a capital open a paragraph keeps a line that opens
-     * with a capital apart from a line above that does not end mid-sentence,
-     * and still merges it into one ending in a comma, an open parenthesis, a
-     * dash or a function word, or one it continues in lowercase.
+     * When enabled, a capitalised line opens a paragraph unless the line above
+     * ends mid-sentence.
      *
      * @param  list<string>  $lines
      * @param  list<string>  $expected
@@ -829,8 +801,7 @@ final class CommentWrapperTest extends TestCase
     }
 
     /**
-     * A wrapper not asked to let a capital open a paragraph merges a title into
-     * the sentence below it.
+     * By default, a title merges into the sentence below it.
      *
      * @return void
      */

@@ -35,12 +35,8 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
     private const string SURPLUS = 'Superfluous parameter comment';
 
     /**
-     * A parameter with no tag, a tag naming no variable, another variable or
-     * the right one in another case, and a tag past the last parameter are each
-     * flagged in the core sniff's words, however many lines the type spans. A
-     * type the core sniff reports as missing leaves its parameter undocumented,
-     * as does a comment that only inherits; abstract, interface and promoted
-     * constructor parameters are held to the same rule.
+     * Each parameter no tag names, and each tag past the last parameter, is
+     * flagged in the core sniff's words.
      *
      * @return void
      */
@@ -114,11 +110,8 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * An ampersand is reported only on a tag that otherwise names the
-     * parameter, and is not counted against the name it prefixes. A name that
-     * starts with `this` is a variable, not a type, and a line comment is not
-     * read as a doc comment. A tag after another kind of tag is still checked,
-     * and a difference of case alone is told apart whichever side is capital.
+     * Ampersand, `$this` and case differences in a tag's name are read
+     * correctly.
      *
      * @return void
      */
@@ -137,10 +130,8 @@ final class RequireParamTagSniffTest extends AbstractSniffTestCase
     }
 
     /**
-     * A bracket inside a quoted literal type opens nothing, so the variable
-     * after it is still found. A type closed at the end of a line ends there
-     * unless the next line carries on its union or intersection, so a variable
-     * on a later line is not read as the tag's.
+     * A tag's type ends where the tag does, so a later variable is not read as
+     * its name.
      *
      * @return void
      */

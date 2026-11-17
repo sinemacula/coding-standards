@@ -21,8 +21,7 @@ final class RequireNonPromotedParameterCommentSniffTest extends AbstractSniffTes
 {
     /**
      * In a mixed constructor, plain parameters without a preceding comment are
-     * flagged; commented ones, promoted properties, and all-promoted
-     * constructors are not.
+     * flagged.
      *
      * @return void
      */
@@ -32,10 +31,8 @@ final class RequireNonPromotedParameterCommentSniffTest extends AbstractSniffTes
     }
 
     /**
-     * A constructor with only plain parameters is not mixed, so its parameters
-     * need no comments; a comment hugging the opening parenthesis or the
-     * preceding parameter counts only for the parameter that follows it, so the
-     * next uncommented plain parameter is still flagged.
+     * A comment documents only the parameter after it, and plain-only
+     * constructors are exempt.
      *
      * @return void
      */
