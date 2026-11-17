@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.2](https://github.com/sinemacula/coding-standards/compare/v1.30.1...v1.30.2) (2026-11-17)
+
+
+### Bug Fixes
+
+* stop the shared Knip config colliding with a project's own ([6810385](https://github.com/sinemacula/coding-standards/commit/681038580a4cc9043d3f2383cd47d53d565ef7a2))
+
 ## [1.30.1](https://github.com/sinemacula/coding-standards/compare/v1.30.0...v1.30.1) (2026-11-16)
 
 
