@@ -11,9 +11,7 @@ import config from '../index.js';
 
 const linter = new Linter({ configType: 'flat' });
 
-// One documented function whose tags carry both a type and a description, so
-// every jsdoc rule under test has something to say about it. The source is
-// valid in either language, leaving the file extension as the only variable.
+// Valid in either language, so the file extension is the only variable.
 const TYPED_TAGS = [
     '/**',
     ' * Adds two numbers.',
@@ -28,13 +26,8 @@ const TYPED_TAGS = [
     '',
 ].join('\n');
 
-// The same function with the types stripped and the descriptions left, which is
-// what no-types asks a TypeScript file to become.
 const UNTYPED_TAGS = TYPED_TAGS.replace(/ \{number\}/g, '');
 
-// A file header in the shape the convention describes: a summary, then the tags
-// that annotate it. Stripping the summary leaves the tags-only header the
-// description rule exists to catch.
 const DESCRIBED_HEADER = [
     '/**',
     ' * Adds numbers, and says so.',
@@ -47,17 +40,11 @@ const DESCRIBED_HEADER = [
 
 const TAGS_ONLY_HEADER = DESCRIBED_HEADER.replace(' * Adds numbers, and says so.\n *\n', '');
 
-// The same tags with the descriptions stripped and the types left, which is
-// what a plain-JavaScript codebase looks like where the tag is doing the typing
-// rather than the describing.
 const DESCRIPTIONLESS_TAGS = TYPED_TAGS
     .replace(' augend The number added to.', ' augend')
     .replace(' addend The number added.', ' addend')
     .replace(' The sum of the two.', '');
 
-// A spec file's furniture: a helper declared beside the test case that uses it.
-// The helper is what require-jsdoc reaches in a test file; the arrow passed to
-// `it` is a call argument, which none of the rule's contexts match.
 const SPEC = [
     "describe('build', () => {",
     '    function build(values) {',
@@ -71,8 +58,6 @@ const SPEC = [
     '',
 ].join('\n');
 
-// The same spec with its helper removed: nothing but the arrows the test
-// framework takes as call arguments.
 const CASES_ONLY = [
     "describe('build', () => {",
     "    it('builds', () => {",
@@ -82,8 +67,6 @@ const CASES_ONLY = [
     '',
 ].join('\n');
 
-// A documented function whose body is both long enough and nested deeply enough
-// to fault the metric rules, which a test body is still exempt from.
 const OVERSIZED = [
     '/** Runs a scenario. */',
     'function scenario(a, b, c, d, e) {',
@@ -103,10 +86,7 @@ const OVERSIZED = [
     '',
 ].join('\n');
 
-/**
- * Lint a source under the base config as the given filename and return the
- * rules that reported, deduplicated.
- */
+/** The distinct rules that reported on a source linted as the given filename. */
 function report(source, filename) {
     return [...new Set(linter.verify(source, config, filename).map(message => message.ruleId))];
 }
@@ -170,9 +150,6 @@ describe('jsdoc/require-jsdoc in test files', () => {
     });
 
     it('asks nothing of a spec that declares no helper of its own', () => {
-        // Every function in it is an arrow passed as a call argument, which
-        // none of the rule's contexts match, so a spec of test cases alone
-        // carries no documentation burden at all.
         expect(linesReported(CASES_ONLY, 'build.spec.ts', 'jsdoc/require-jsdoc')).toEqual([]);
     });
 });

@@ -8,8 +8,6 @@
 import rule from '../no-mutable-static.js';
 import { ruleTester } from './tester.js';
 
-// The rule is syntactic and needs no parser services, so the type-free tester
-// also stands in for the "no type information available" case.
 ruleTester.run('no-mutable-static', rule, {
     valid: [
         'export const MAX = 10;',
@@ -18,8 +16,7 @@ ruleTester.run('no-mutable-static', rule, {
         'class Widget {} export { Widget };',
         "export { anything } from './other';",
         'type T = number; export type { T };',
-        // Only exported bindings are in scope; an unexported module let/var
-        // stays local.
+        // Unexported module bindings stay local.
         'let counter = 0;',
         'var scratch = 0;',
         'namespace N { export const x = 0; }',
@@ -38,24 +35,21 @@ ruleTester.run('no-mutable-static', rule, {
         'class Box<T> { static readonly EMPTY = 0; }',
         'class C { static of<T>(value: T): T { return value; } }',
         'abstract class C { abstract run(): void; abstract value: number; }',
-        // Deliberately mutated statics opt out with a doc tag on the field or
-        // class.
+        // The @managed-static opt-out, on the field or the class.
         'class C { /** @managed-static */ static cache: Record<string, number> = {}; }',
         '/** @managed-static */ class C { static cache = {}; static hits = 0; }',
-        // The opt-out tag is honoured even when tucked behind a decorator.
+        // The opt-out still applies behind a decorator.
         'declare const track: any; class C { @track /** @managed-static */ static cache = {}; }',
-        // Test classes are exempt, by their own name, their parent's, or the
-        // file path.
+        // Test classes are exempt by name, parent or path.
         'class WidgetTest { static shared = 0; }',
         'class TestCase {} class C extends TestCase { static shared = 0; }',
         { code: 'class C { static shared = 0; }', filename: 'widget.test.ts' },
         { code: 'class C { static shared = 0; }', filename: '/repo/__tests__/widget.ts' },
-        // Ambient declarations describe existing shape, not runtime state.
+        // Ambient declarations hold no runtime state.
         'export declare let external: number;',
         'declare class C { static count: number; }',
         'declare namespace N { export let x: number; }',
         'class C { declare static count: number; }',
-        // Declaration files are ambient across all module extensions.
         { code: 'export let external: number;', filename: 'shape.d.ts' },
         { code: 'export let external: number;', filename: 'shape.d.mts' },
         { code: 'export let external: number;', filename: 'shape.d.cts' },
@@ -85,8 +79,7 @@ ruleTester.run('no-mutable-static', rule, {
                 { messageId: 'mutableExport', data: { name: 'second' } },
             ],
         },
-        // Indirect specifier exports of a mutable local publish live module
-        // state.
+        // Specifier exports of a mutable local.
         {
             code: 'let counter = 0; export { counter };',
             errors: [{ messageId: 'mutableExport', data: { name: 'counter' } }],
@@ -115,10 +108,7 @@ ruleTester.run('no-mutable-static', rule, {
             code: 'class C { static config: Record<string, number> = {}; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'config' } }],
         },
-        // A static callable slot is still reassignable state, so it is flagged
-        // like any other mutable static rather than exempted as behaviour.
-        // Function-typed, union-callable and any-typed slots are all treated
-        // the same way.
+        // A static callable slot is still reassignable state.
         {
             code: 'class C { static make = () => 1; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'make' } }],
@@ -139,8 +129,7 @@ ruleTester.run('no-mutable-static', rule, {
             code: 'class C { static data: any = 1; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'data' } }],
         },
-        // A static that is only read is still flagged; the check is
-        // write-insensitive.
+        // The check ignores whether the static is ever written.
         {
             code: 'const defaults = { a: 1 }; class C { static settings = defaults; '
                 + 'static read() { return C.settings; } }',
@@ -166,7 +155,7 @@ ruleTester.run('no-mutable-static', rule, {
             code: 'abstract class C { static count = 0; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'count' } }],
         },
-        // A near-miss tag does not opt out; the boundary is exact.
+        // A near-miss tag does not opt out.
         {
             code: 'class C { /** @managed-statics */ static count = 0; }',
             errors: [{ messageId: 'mutableStatic', data: { name: 'count' } }],

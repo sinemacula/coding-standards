@@ -10,32 +10,22 @@ import { ruleTester } from './tester.js';
 
 ruleTester.run('valid-enum-member-name', rule, {
     valid: [
-        // Plain SCREAMING_SNAKE_CASE members.
         'enum Color { RED, GREEN, BLUE }',
         // Single letter, digits and underscores are permitted.
         'enum Grade { A, B, C }',
         'enum HttpStatus { OK_200, NOT_FOUND_404 }',
         'enum Flag { RED_ }',
-        // Explicit initialisers do not change the member name.
         'enum Level { LOW = 1, HIGH = 2 }',
         'enum Suit { CLUB = "club", HEART = "heart" }',
-        // String-literal member names that resolve to SCREAMING_SNAKE_CASE.
         'enum Weird { "RED" = 1, "GREEN_LIGHT" = 2 }',
-        // A string literal is checked by its resolved value, so an escaped name
-        // that decodes to SCREAMING_SNAKE_CASE passes even though the raw
-        // source text does not match the pattern.
+        // A string literal is checked by its decoded value, not its raw text.
         'enum Escaped { "R\\u0045D" = 1 }',
-        // const enums and ambient declarations are still checked.
         'const enum Mode { ON, OFF }',
         'declare enum Ambient { YES, NO }',
-        // Ambient members in a declaration file.
         { code: 'enum Ambient { YES, NO }', filename: 'types.d.ts' },
-        // Enum inside a TSX file.
         { code: 'enum Theme { LIGHT, DARK }', filename: 'react.tsx' },
-        // The selector must not fire on non-enum constructs. Object-literal "as
-        // const" pseudo-enum members are a documented gap.
+        // Non-enum constructs; `as const` pseudo-enums are a known gap.
         'const config = { red: 1, greenLight: 2 };',
-        // A switch `case` is a SwitchCase node, never an enum member.
         'function grade(n: number) { switch (n) { case 1: return "a"; default: return "b"; } }',
         'interface Options { red: number; greenLight: string; }',
         'class Box { private width = 0; get size() { return this.width; } set size(v: number) { this.width = v; } }',
@@ -81,24 +71,19 @@ ruleTester.run('valid-enum-member-name', rule, {
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: '1RED' } }],
         },
         {
-            // An empty string-literal name never matches the pattern.
             code: 'enum Weird { "" = 1 }',
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: '' } }],
         },
         {
-            // A string-literal name that is a valid identifier in the wrong
-            // case.
             code: 'enum Weird { "redValue" = 1 }',
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: 'redValue' } }],
         },
         {
-            // The pattern is ASCII-only, so a unicode uppercase letter is
-            // flagged.
+            // The pattern is ASCII-only.
             code: 'enum Accent { Ä }',
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: 'Ä' } }],
         },
         {
-            // A dollar-prefixed identifier does not start with an ASCII A-Z.
             code: 'enum Dollar { $VALUE }',
             errors: [{ messageId: 'notUpperSnakeCase', data: { name: '$VALUE' } }],
         },

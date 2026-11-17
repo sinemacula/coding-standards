@@ -13,19 +13,14 @@ const methods = n => Array.from({ length: n }, (_, i) => `m${i}() {}`).join(' ')
 
 ruleTester.run('max-methods-per-class', rule, {
     valid: [
-        // A count equal to the maximum is allowed; only exceeding it is
-        // flagged.
         { code: 'class C { a() {} b() {} }', options: [{ max: 2 }] },
         { code: 'class C { a() {} }', options: [{ max: 2 }] },
         'class C {}',
-        // The default maximum is twenty.
         `class C { ${methods(20)} }`,
-        // The constructor counts, but a class within the limit still passes.
         { code: 'class C { constructor() {} a() {} }', options: [{ max: 2 }] },
-        // Accessors and static methods count towards the same total.
         { code: 'class C { get x() { return 1; } set x(v: number) {} }', options: [{ max: 2 }] },
         { code: 'class C { static a() {} static b() {} }', options: [{ max: 2 }] },
-        // A method spread across overload signatures counts once, via its body.
+        // Overloads count once, via the implementation.
         {
             code: `class C {
                 foo(a: number): number;
@@ -35,15 +30,11 @@ ruleTester.run('max-methods-per-class', rule, {
             }`,
             options: [{ max: 2 }],
         },
-        // Abstract signatures declare a contract, not a method body, so are not
-        // counted.
+        // Abstract signatures are not counted.
         { code: 'abstract class C { abstract foo(): void; abstract bar(): void; run() {} }', options: [{ max: 1 }] },
-        // Methods on a nested class belong to it, not the class enclosing it.
         { code: 'class Outer { a() {} run() { class Inner { x() {} } } }', options: [{ max: 2 }] },
-        // An anonymous class expression within the limit passes.
         { code: 'const C = class { a() {} }; C;', options: [{ max: 1 }] },
-        // Test classes gather many methods legitimately: by name, by parent, or
-        // by path.
+        // Test classes are exempt by name, parent or path.
         { code: `class WidgetTest { ${methods(5)} }`, options: [{ max: 1 }] },
         { code: `class C extends TestCase { ${methods(5)} }`, options: [{ max: 1 }] },
         { code: `class C { ${methods(5)} }`, filename: 'widget.test.ts', options: [{ max: 1 }] },
@@ -55,26 +46,21 @@ ruleTester.run('max-methods-per-class', rule, {
             options: [{ max: 2 }],
             errors: [{ messageId: 'tooMany', data: { count: 3, max: 2 } }],
         },
-        // The constructor is one of the counted methods.
         {
             code: 'class C { constructor() {} a() {} b() {} }',
             options: [{ max: 2 }],
             errors: [{ messageId: 'tooMany', data: { count: 3, max: 2 } }],
         },
-        // Get and set accessors each add to the total.
         {
             code: 'class C { get x() { return 1; } set x(v: number) {} }',
             options: [{ max: 1 }],
             errors: [{ messageId: 'tooMany', data: { count: 2, max: 1 } }],
         },
-        // Static methods count alongside instance methods.
         {
             code: 'class C { static a() {} static b() {} }',
             options: [{ max: 1 }],
             errors: [{ messageId: 'tooMany', data: { count: 2, max: 1 } }],
         },
-        // Overload signatures do not inflate the count, but the implementation
-        // does.
         {
             code: `class C {
                 foo(a: number): number;
@@ -86,19 +72,15 @@ ruleTester.run('max-methods-per-class', rule, {
             options: [{ max: 2 }],
             errors: [{ messageId: 'tooMany', data: { count: 3, max: 2 } }],
         },
-        // A nested class is measured on its own, independently of its
-        // enclosure.
         {
             code: 'class Outer { run() { class Inner { a() {} b() {} } } }',
             options: [{ max: 1 }],
             errors: [{ messageId: 'tooMany', data: { count: 2, max: 1 } }],
         },
-        // The default limit of twenty is exceeded at twenty-one methods.
         {
             code: `class C { ${methods(21)} }`,
             errors: [{ messageId: 'tooMany', data: { count: 21, max: 20 } }],
         },
-        // An anonymous class expression is reported on its class keyword.
         {
             code: 'const C = class { a() {} b() {} }; C;',
             options: [{ max: 1 }],

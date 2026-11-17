@@ -10,7 +10,6 @@ import { ruleTester } from './tester.js';
 
 ruleTester.run('no-interface-prefix', rule, {
     valid: [
-        // Plain, correctly named declarations.
         'interface UserRepository {}',
         'interface Item {}',
         'type UserId = string;',
@@ -21,16 +20,15 @@ ruleTester.run('no-interface-prefix', rule, {
         'interface Interface {}',
         'interface Iterable {}',
 
-        // Generic parameters are not the declaration name, so they are ignored.
+        // Generic parameters are not the declaration name.
         'interface Box<TItem> {}',
         'type Container<TValue> = TValue[];',
         'interface Registry<IItem> { value: IItem; }',
 
-        // Overload signatures and "I"-prefixed members are not declaration
-        // names.
+        // Members are not declaration names.
         'interface Repository { find(id: number): void; find(id: string): void; ILoad(): void; ICount: number; }',
 
-        // The rule targets interfaces and type aliases only, never other kinds.
+        // Only interfaces and type aliases are checked.
         '@sealed class IController {}',
         'abstract class Base { abstract IRun(): void; get IValue(): number { return 1; } ["IKey"](): void {} }',
         'enum IStatus { Active }',
@@ -38,8 +36,7 @@ ruleTester.run('no-interface-prefix', rule, {
         'const IThing = 1;',
         'namespace IUtils {}',
 
-        // References to an externally-owned "I"-prefixed type are never the
-        // declaration name, so nothing that merely mentions one is flagged.
+        // References to an external "I"-prefixed type are not declarations.
         'import { IFoo } from "./types";',
         'import type { IFoo } from "./types";',
         'export { IFoo } from "./types";',
@@ -48,13 +45,12 @@ ruleTester.run('no-interface-prefix', rule, {
         'type Wrapped = IFoo;',
         'interface Repository extends IFoo {}',
 
-        // Augmenting a string-named external module patches a type we cannot
-        // rename.
+        // Augmenting an external module patches a type we cannot rename.
         'declare module "pkg" { interface INested {} }',
         'declare module "some-lib" { interface IConfig { extra: string; } }',
         'declare module "m" { type IBaz = number; }',
 
-        // Global augmentation patches ambient types we do not own.
+        // So does global augmentation.
         'declare global { interface IWindow {} }',
         'declare global { interface IToastOptions {} }',
     ],
@@ -102,7 +98,7 @@ ruleTester.run('no-interface-prefix', rule, {
             errors: [{ messageId: 'prefixed', data: { kind: 'Interface', name: 'IThing' } }],
         },
 
-        // A namespace or internal module you own does not exempt its members.
+        // An owned namespace does not exempt its members.
         {
             code: 'namespace Owned { interface INested {} }',
             errors: [{ messageId: 'prefixed', data: { kind: 'Interface', name: 'INested' } }],
