@@ -9,8 +9,7 @@ fi
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# TMPDIR is unset in many shells. Left bare, the template collapses to a path at
-# the filesystem root and mktemp fails with an error that names neither cause.
+# TMPDIR is often unset; without a fallback mktemp targets the filesystem root.
 trivy_consumer_dir="$(mktemp -d "${TMPDIR:-/tmp}/coding-standards-trivy.XXXXXX")"
 
 cleanup() {
@@ -55,9 +54,8 @@ for reported in Dockerfile deploy/pod.yaml; do
     fi
 done
 
-# qlty drops vendor and node_modules paths from its own report whatever Trivy
-# scanned, so what Trivy walked is read from its raw output in the invocation
-# record instead.
+# qlty drops vendor and node_modules paths from its report, so what Trivy walked
+# is read from the raw invocation record.
 trivy_record="$(grep -l 'trivy config' .qlty/out/invoke-*.yaml)"
 
 if ! grep -qF 'Loaded\tfile_path=\"trivy.yaml\"' "${trivy_record}"; then

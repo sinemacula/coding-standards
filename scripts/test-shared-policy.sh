@@ -9,8 +9,7 @@ fi
 
 repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# TMPDIR is unset in many shells. Left bare, the template collapses to a path at
-# the filesystem root and mktemp fails with an error that names neither cause.
+# TMPDIR is often unset; without a fallback mktemp targets the filesystem root.
 consumer_dir="$(mktemp -d "${TMPDIR:-/tmp}/coding-standards-shared.XXXXXX")"
 
 cleanup() {
