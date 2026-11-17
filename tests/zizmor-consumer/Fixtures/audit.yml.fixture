@@ -14,3 +14,9 @@ jobs:
             -   uses: sinemacula/example-action@v1
             -   uses: example-vendor/example-action@v1
             -   run: echo "${{ github.event.pull_request.title }}"
+
+    build:
+        uses: sinemacula/example-workflows/.github/workflows/build.yml@v1
+
+    deploy:
+        uses: example-vendor/example-workflows/.github/workflows/deploy.yml@v1

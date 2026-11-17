@@ -164,8 +164,11 @@ exported_config_paths = ["security/.gitleaks.toml"]
 [plugins.definitions.trivy]
 exported_config_paths = ["security/trivy.yaml"]
 
+# Pins the version a consumer runs without turning zizmor on for every consumer.
+# Earlier releases skip reusable workflow references, which qlty Cloud reports.
 [plugins.definitions.zizmor]
 exported_config_paths = ["security/zizmor.yml"]
+known_good_version = "1.32.0"
 
 [plugins.definitions.editorconfig-checker]
 exported_config_paths = ["editorconfig/.editorconfig-checker.json"]

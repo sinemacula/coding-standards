@@ -311,7 +311,8 @@ The source enables these plugins at the versions and modes every project runs: T
 actionlint, OSV-Scanner, Trivy (misconfiguration and dependency scanning), editorconfig-checker, PHPCS, PHP CS Fixer,
 PHPStan, Radarlint, Terraform (formatting only) and TFLint. A plugin with nothing to lint in a repository does not run
 there. The source also sets the PHP runtime and shared excludes, stops qlty discarding PHPCS 4.x findings as a crash,
-and supplies the ESLint and Biome wiring for projects that enable them.
+supplies the ESLint and Biome wiring for projects that enable them, and sets the zizmor version for projects that enable
+zizmor.
 
 List a plugin in your own file only to change it. A version or mode you leave out is taken from the source, but a list
 you set, such as `drivers` or `extra_packages`, replaces the source's. To turn a plugin off, set `mode = "disabled"`.
