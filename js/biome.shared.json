@@ -135,5 +135,23 @@
             "trailingCommas": "none",
             "bracketSpacing": true
         }
-    }
+    },
+    "overrides": [
+        {
+            "includes": ["**/components/**"],
+            "linter": {
+                "rules": {
+                    "style": {
+                        "useFilenamingConvention": {
+                            "level": "warn",
+                            "options": {
+                                "strictCase": false,
+                                "filenameCases": ["kebab-case", "PascalCase"]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
 }

@@ -18,6 +18,7 @@ vendor/
 source.toml
 
 # Tests and fixtures.
+js/__tests__/
 js/eslint/__tests__/
 js/eslint/rules/__tests__/
 tests/
