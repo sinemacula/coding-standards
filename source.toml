@@ -156,9 +156,6 @@ script = "actionlint -ignore 'label .ubuntu-26\\.04(-arm)?. is unknown' -format 
 [plugins.definitions.biome]
 exported_config_paths = ["js/biome.shared.json"]
 
-[plugins.definitions.knip]
-exported_config_paths = ["js/knip.json"]
-
 [plugins.definitions.eslint]
 exported_config_paths = []
 config_files = [".qlty/configs/eslint.config.mjs"]

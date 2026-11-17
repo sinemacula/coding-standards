@@ -26,7 +26,7 @@ This package ships config files only - no runtime dependencies. Consuming projec
 composer require --dev sinemacula/coding-standards
 ```
 
-### npm (JS-side: Biome, Knip)
+### npm (JS-side: Biome, ESLint)
 
 ```bash
 npm install --save-dev @sinemacula/coding-standards
@@ -321,14 +321,16 @@ access for real properties instead. Load the type-checked ESLint layer to get it
 
 ### Knip (JavaScript / TypeScript)
 
-```json
-{
-    "$schema": "https://unpkg.com/knip@6/schema.json",
-    "extends": [
-        "@sinemacula/coding-standards/js/knip.json"
-    ]
-}
+Knip needs no shared config. Its defaults find a project's entry points from `package.json` and its plugins (Vite,
+Vitest and the like), so most projects run it without one. Enable it in `.qlty/qlty.toml`:
+
+```toml
+[[plugin]]
+name = "knip"
 ```
+
+Add a `knip.json` at the project root only for what Knip cannot find on its own, such as an entry point outside its
+defaults. Knip has no `extends`, so that file holds the project's whole Knip config.
 
 ### Qlty
 
@@ -467,7 +469,6 @@ pull request here instead.
 | `SineMacula/ruleset.xml`                  | PHPCS                | Auto-discovered coding standard (PSR-12 + exclusions)  |
 | `php/phpstan-base.neon`                   | PHPStan              | Base config (org-wide ignored errors + settings)       |
 | `js/biome.shared.json`                    | Biome                | JavaScript / TypeScript formatter + linter rules       |
-| `js/knip.json`                            | Knip                 | Unused-export detection rules                          |
 | `js/eslint/`                              | ESLint               | Structural, type-aware + Vue rules; runs with Biome    |
 | `js/eslint/` (YAML block)                 | ESLint               | Comment width in `.yml` / `.yaml`; yamllint owns rest  |
 | `markdown/.markdownlint.json`             | markdownlint         | Markdown linting rules                                 |
