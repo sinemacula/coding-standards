@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.2](https://github.com/sinemacula/coding-standards/compare/v1.31.1...v1.31.2) (2026-11-18)
+
+
+### Bug Fixes
+
+* accept consecutive capitals in identifiers ([#217](https://github.com/sinemacula/coding-standards/issues/217)) ([6802c0c](https://github.com/sinemacula/coding-standards/commit/6802c0c52f61ff835ea16a6d33701a73177870d9))
+
 ## [1.31.1](https://github.com/sinemacula/coding-standards/compare/v1.31.0...v1.31.1) (2026-11-17)
 
 
