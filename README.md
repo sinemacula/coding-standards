@@ -228,7 +228,8 @@ The Vue layer registers the single-file-component parser, resolves `<script lang
 parser, and requires PascalCase component filenames (`UserCard.vue`). It also carries the template layout rules, set to
 a four-space indent, because Biome cannot format `.vue` markup. To match, the shared Biome config accepts PascalCase as
 well as kebab-case under any `components/` directory, so a component's tests and stories can share its name
-(`UserCard.test.ts`).
+(`UserCard.test.ts`). Its identifier naming accepts consecutive capitals, so a component whose name opens with an
+acronym or a one-letter prefix (`UIButton`) is imported under that name.
 
 Through Qlty, enable the eslint plugin on your `package.json`. Its sandbox installs only `eslint`, `jest` and
 `prettier` from that file by default, so widen the filter or the config's imports fail to resolve:

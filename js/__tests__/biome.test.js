@@ -1,6 +1,6 @@
 /**
- * Tests for the shared Biome config's filename convention, run through the
- * Biome version the README has consumers pin.
+ * Tests for the shared Biome config's filename and identifier conventions, run
+ * through the Biome version the README has consumers pin.
  *
  * @author      Ben Carey <bdmc@sinemacula.co.uk>
  * @copyright   2026 Sine Macula Limited
@@ -28,17 +28,25 @@ afterAll(() => {
     rmSync(consumer, { recursive: true, force: true });
 });
 
-/** The filename diagnostics Biome reports for a file at the given path. */
-function filenameDiagnostics(path) {
+/** The diagnostics of one rule that Biome reports for a file with the given path and source. */
+function diagnostics(rule, path, source) {
     mkdirSync(dirname(join(consumer, path)), { recursive: true });
-    writeFileSync(join(consumer, path), 'export const value = 1;\n');
+    writeFileSync(join(consumer, path), source);
 
-    // The rule only warns, so Biome exits cleanly either way.
+    // The rules only warn, so Biome exits cleanly either way.
     const output = execFileSync(BIOME, ['lint', '--reporter=rdjson', path], { cwd: consumer, encoding: 'utf8' });
 
-    return JSON.parse(output).diagnostics.filter(
-        diagnostic => diagnostic.code.value === 'lint/style/useFilenamingConvention',
-    );
+    return JSON.parse(output).diagnostics.filter(diagnostic => diagnostic.code.value === `lint/style/${rule}`);
+}
+
+/** The filename diagnostics Biome reports for a file at the given path. */
+function filenameDiagnostics(path) {
+    return diagnostics('useFilenamingConvention', path, 'export const value = 1;\n');
+}
+
+/** The identifier naming diagnostics Biome reports for the given source. */
+function namingDiagnostics(source) {
+    return diagnostics('useNamingConvention', 'src/naming.ts', source);
 }
 
 describe('filenames', () => {
@@ -67,5 +75,16 @@ describe('filenames', () => {
         for (const path of ['src/components/UserCard/useHover.ts', 'src/components/UserCard/User_Card.ts']) {
             expect(filenameDiagnostics(path)).toHaveLength(1);
         }
+    });
+});
+
+describe('identifiers', () => {
+    it('accepts consecutive capitals', () => {
+        expect(namingDiagnostics("import UIButton from './ui-button.js';\n\nexport { UIButton };\n")).toEqual([]);
+        expect(namingDiagnostics('export function parseJSON() {}\n')).toEqual([]);
+    });
+
+    it('still rejects other casings', () => {
+        expect(namingDiagnostics('export const user_name = 1;\n')).toHaveLength(1);
     });
 });
