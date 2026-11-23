@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.31.3](https://github.com/sinemacula/coding-standards/compare/v1.31.2...v1.31.3) (2026-11-23)
+
+
+### Bug Fixes
+
+* raise the shared PHPStan pin to 2.3.7 ([#220](https://github.com/sinemacula/coding-standards/issues/220)) ([ed4a8ca](https://github.com/sinemacula/coding-standards/commit/ed4a8ca755da6d5643c436b0c27d244236986a57))
+
 ## [1.31.2](https://github.com/sinemacula/coding-standards/compare/v1.31.1...v1.31.2) (2026-11-18)
 
 
